@@ -10,6 +10,38 @@ namespace TestBigDecimal
 	public class TestBigDecimalCritical
 	{
 		[TestMethod]
+		public void TestConstructor()
+		{
+			BigDecimal a = 0;
+			BigDecimal b = new BigDecimal(0, 0);
+			BigDecimal c = new BigDecimal(123456789);
+			BigDecimal d = new BigDecimal(3141592793238462, -15);
+			BigDecimal e = new BigDecimal(1000000000, -25);
+			BigDecimal f = new BigDecimal(-1, -2);
+			BigDecimal g = new BigDecimal(0, -1);
+			BigDecimal h = new BigDecimal(-0.0012345);
+			BigDecimal i = new BigDecimal(0.5d);
+			BigDecimal j = new BigDecimal(0.01d);
+
+			Assert.IsInstanceOfType(a, typeof(BigDecimal), "Constructor parameters: '0'");
+			Assert.IsInstanceOfType(b, typeof(BigDecimal), "Constructor parameters: '0, 0'");
+			Assert.IsInstanceOfType(c, typeof(BigDecimal), "Constructor parameters: '123456789'");
+			Assert.IsInstanceOfType(d, typeof(BigDecimal), "Constructor parameters: '3141592793238462, -15'");
+			Assert.IsInstanceOfType(e, typeof(BigDecimal), "Constructor parameters: '1000000000, -25'");
+			Assert.IsInstanceOfType(f, typeof(BigDecimal), "Constructor parameters: '-1, -2'");
+			Assert.IsInstanceOfType(g, typeof(BigDecimal), "Constructor parameters: ' 0, -1'");
+			Assert.IsInstanceOfType(h, typeof(BigDecimal), "Constructor parameters: '-0.0012345'");
+			Assert.AreEqual(0, a);
+			Assert.AreEqual(0, b);
+			Assert.AreEqual(123456789, c);
+			Assert.AreEqual(-0.01d, f);
+			Assert.AreEqual("-0.0", g.ToString());
+			Assert.AreEqual(-0.0012345, h);
+			Assert.AreEqual(0.5d, i);
+			Assert.AreEqual(0.01d, j);
+		}
+
+		[TestMethod]
 		public void TestParse()
 		{
 			BigDecimal a = BigDecimal.Parse("");

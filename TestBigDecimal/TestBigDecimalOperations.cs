@@ -66,13 +66,24 @@ namespace TestBigDecimal
 		[TestMethod]
 		public void TestDivide()
 		{
-			BigDecimal expectedResult = BigDecimal.Parse("40094690950920881030683735292761468389214899724061");
+			BigDecimal expectedResult1 = BigDecimal.Parse("40094690950920881030683735292761468389214899724061");
+			double expectedResult2 = 0.02d;
+			int expectedResult3 = 50;
+			double expectedResult4 = 0.05d;
+
 			BigDecimal dividend = BigDecimal.Parse("1522605027922533360535618378132637429718068114961380688657908494580122963258952897654000350692006139");
 			BigDecimal divisor = BigDecimal.Parse("37975227936943673922808872755445627854565536638199");
 
-			BigDecimal result = BigDecimal.Divide(dividend, divisor);
+			BigDecimal result1 = BigDecimal.Divide(dividend, divisor);
+			BigDecimal result2 = new BigDecimal(0.01d) / new BigDecimal(0.5d);
+			BigDecimal result3 = BigDecimal.Divide(new BigDecimal(0.5d), new BigDecimal(0.01d));
+			BigDecimal result4 = BigDecimal.Divide(new BigDecimal(1), new BigDecimal(20));
 
-			Assert.AreEqual(expectedResult, result);
+
+			Assert.AreEqual(expectedResult1, result1);
+			Assert.AreEqual(expectedResult2, result2);
+			Assert.AreEqual(expectedResult3, result3);
+			Assert.AreEqual(expectedResult4, result4);
 		}
 
 		[TestMethod]
@@ -83,9 +94,6 @@ namespace TestBigDecimal
 
 			BigDecimal number = BigDecimal.Parse("5040");
 			BigDecimal result = BigDecimal.Pow(number, 12);
-
-			//string resultString = result.ToString();
-			//bool equalsTarget = expectedResult.Equals(result);
 
 			Assert.AreEqual(expectedResult, result, "5040 ^ 12  =  268637376395543538746286686601216000000000000");
 		}

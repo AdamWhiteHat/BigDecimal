@@ -107,7 +107,7 @@ namespace TestBigDecimal
 			BigDecimal zero4 = new BigDecimal(BigInteger.Zero);
 			BigDecimal zero5 = new BigDecimal(0, -1);
 			BigDecimal zero6 = BigInteger.Subtract(BigInteger.Add(BigInteger.Divide(2, 3), BigInteger.Multiply(-1, BigInteger.Divide(1, 3))), BigInteger.Divide(1, 3));
-			BigDecimal zero7 = BigDecimal.Add(BigDecimal.Divide(1, 10), -0.1d);
+			BigDecimal zero7 = BigDecimal.Subtract(BigDecimal.Divide(1, 10), 0.1d);
 			BigDecimal zero8 = BigDecimal.Add((new BigDecimal(1, -1)), ((double)-1 / 10));
 			BigDecimal zero9 = (new BigDecimal(15274, -7) * 0);
 

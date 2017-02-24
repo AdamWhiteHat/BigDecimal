@@ -49,6 +49,8 @@ namespace AJRLibray.Mathematics
 
 		private static NumberFormatInfo BigDecimalNumberFormatInfo = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
 
+		#region Constructors
+
 		public BigDecimal(BigInteger value)
 			: this(value, 0)
 		{
@@ -118,6 +120,8 @@ namespace AJRLibray.Mathematics
 			return new BigDecimal(mantessa, exponent);
 		}
 
+		#endregion
+
 		#region Truncate/Normalize
 
 		/// <summary>
@@ -169,7 +173,7 @@ namespace AJRLibray.Mathematics
 		{
 			Normalize();
 
-			int sign = System.Math.Sign(Exponent);
+			int sign = Math.Sign(Exponent);
 			int difference = (precision - GetSignifigantDigits(Mantissa)) * -1;
 			if (difference >= 1)
 			{
@@ -385,7 +389,7 @@ namespace AJRLibray.Mathematics
 
 		public static explicit operator double(BigDecimal value)
 		{
-			return (double)value.Mantissa * System.Math.Pow(10, value.Exponent);
+			return (double)value.Mantissa * Math.Pow(10, value.Exponent);
 		}
 
 		public static explicit operator float(BigDecimal value)
@@ -395,7 +399,7 @@ namespace AJRLibray.Mathematics
 
 		public static explicit operator decimal(BigDecimal value)
 		{
-			return (decimal)value.Mantissa * (decimal)System.Math.Pow(10, value.Exponent);
+			return (decimal)value.Mantissa * (decimal)Math.Pow(10, value.Exponent);
 		}
 
 		public static explicit operator int(BigDecimal value)
@@ -510,19 +514,25 @@ namespace AJRLibray.Mathematics
 			return new BigDecimal(left.Mantissa * right.Mantissa, left.Exponent + right.Exponent);
 		}
 
+		//Division operator
 		public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor)
 		{
-			if (divisor.Mantissa == 0) { throw new DivideByZeroException(); }
+			dividend.Normalize();
+			divisor.Normalize();
 
-			int exponentChange = Precision - (GetSignifigantDigits(dividend.Mantissa) - GetSignifigantDigits(divisor.Mantissa));
-			if (exponentChange < 0)
+			BigDecimal result = 0;
+			BigInteger remainder = 0;
+			result.Mantissa = BigInteger.DivRem(dividend.Mantissa, divisor.Mantissa, out remainder);
+			while (remainder != 0)
 			{
-				exponentChange = 0;
+				while (BigInteger.Abs(remainder) < BigInteger.Abs(divisor.Mantissa))
+				{
+					remainder *= 10;
+					result.Mantissa *= 10;
+				}
+				result.Mantissa = result.Mantissa + BigInteger.DivRem(remainder, divisor.Mantissa, out remainder);
 			}
-			dividend.Mantissa *= BigInteger.Pow(TenInt, exponentChange);
-			BigInteger quotient = BigInteger.Divide(dividend.Mantissa, divisor.Mantissa);
-			var difference = (dividend.Exponent - divisor.Exponent - exponentChange);
-			return new BigDecimal(quotient, difference);
+			return result;
 		}
 
 		#endregion
@@ -604,13 +614,13 @@ namespace AJRLibray.Mathematics
 		public static BigDecimal Exp(double exponent)
 		{
 			BigDecimal tmp = (BigDecimal)1;
-			while (System.Math.Abs(exponent) > 100)
+			while (Math.Abs(exponent) > 100)
 			{
 				int diff = exponent > 0 ? 100 : -100;
-				tmp *= System.Math.Exp(diff);
+				tmp *= Math.Exp(diff);
 				exponent -= diff;
 			}
-			return tmp * System.Math.Exp(exponent);
+			return tmp * Math.Exp(exponent);
 		}
 
 		public static BigDecimal Exp(BigInteger exponent)
@@ -619,72 +629,51 @@ namespace AJRLibray.Mathematics
 			while (BigInteger.Abs(exponent) > 100)
 			{
 				int diff = exponent > 0 ? 100 : -100;
-				tmp *= System.Math.Exp(diff);
+				tmp *= Math.Exp(diff);
 				exponent -= diff;
 			}
 			double exp = (double)exponent;
-			return (tmp * System.Math.Exp(exp));
+			return (tmp * Math.Exp(exp));
 		}
 
-		public static BigDecimal Pow(BigInteger value, BigInteger exponent)
-		{
-			return Pow(new BigDecimal(value), new BigDecimal(exponent));
-		}
-
-		public static BigDecimal Pow(BigDecimal value, BigDecimal exponent)
+		public static BigDecimal Pow(BigDecimal baseValue, BigInteger exponent)
 		{
 			if (exponent.IsZero)
 			{
-				return new BigDecimal(1);
+				return BigDecimal.One;
 			}
-			else if (exponent.IsNegative)
+			else if (exponent.Sign < 0)
 			{
-				return new BigDecimal(value);
-			}
-
-			int diff = 100;
-			int sign = GetSign(exponent);
-			BigDecimal exp = new BigDecimal(exponent);
-			BigDecimal total = new BigDecimal(value);
-
-			int log10 = BigIntegerHelper.GetLength((BigInteger)exp);
-			if (log10 >= 5)
-			{
-				diff = 10000;
-			}
-
-			while (Abs(exp) > diff)
-			{
-				if (exp < 0)
-				{   // Divide
-					total *= BigDecimal.Divide(BigDecimal.One, BigInteger.Pow(TenInt, diff));
-					exp += diff;
-				}
-				else
+				if (baseValue == BigDecimal.Zero)
 				{
-					total *= BigInteger.Pow(TenInt, diff);
-					exp -= diff;
+					throw new NotSupportedException("Cannot raise zero to a negative power");
 				}
+
+				// n^(-e) -> (1/n)^e
+				baseValue = BigDecimal.One / baseValue;
+				exponent = BigInteger.Negate(exponent);
 			}
 
-			if (exp > 0)
+			BigDecimal result = baseValue;
+			while (exponent > BigInteger.One)
 			{
-				total *= BigInteger.Pow(TenInt, (int)exp);
+				result = result * baseValue;
+				exponent--;
 			}
 
-			return total;
+			return result;
 		}
 
 		public static BigDecimal Pow(double basis, double exponent)
 		{
 			BigDecimal tmp = (BigDecimal)1;
-			while (System.Math.Abs(exponent) > 100)
+			while (Math.Abs(exponent) > 100)
 			{
 				int diff = exponent > 0 ? 100 : -100;
-				tmp *= System.Math.Pow(basis, diff);
+				tmp *= Math.Pow(basis, diff);
 				exponent -= diff;
 			}
-			return (tmp * System.Math.Pow(basis, exponent));
+			return (tmp * Math.Pow(basis, exponent));
 		}
 
 		#endregion
@@ -763,7 +752,7 @@ namespace AJRLibray.Mathematics
 			bool matchMantissa = this.Mantissa.Equals(other.Mantissa);
 			bool matchExponent = this.Exponent.Equals(other.Exponent);
 			bool matchSign = this.Sign.Equals(other.Sign);
-			
+
 			if (matchMantissa && matchExponent && matchSign)
 			{
 				return true;
