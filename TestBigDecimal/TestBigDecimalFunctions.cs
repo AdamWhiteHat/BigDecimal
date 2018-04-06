@@ -66,16 +66,16 @@ namespace TestBigDecimal
 			BigDecimal bd = BigDecimal.Parse("10000000000000000000000000000000000000000000000000001");
 
 
-			BigDecimal up = new BigDecimal(0.50001d);
-			BigDecimal down = new BigDecimal(0.49d);
-			BigDecimal oneAndAhalf = new BigDecimal(1.5d);
+			BigDecimal up = BigDecimal.Parse(0.50001);
+			BigDecimal down = BigDecimal.Parse(0.49);
+			BigDecimal oneAndAhalf = BigDecimal.Parse("1.5");
 
-			BigDecimal negEightPointFive = new BigDecimal(-8.5d);
+			BigDecimal negEightPointFive = BigDecimal.Parse(-8.5);
 			BigDecimal negNinePointFive = -9.5d;
 
-			BigDecimal threePointFourNine = new BigDecimal(3.49d);
-			BigDecimal threePointFiveOne = new BigDecimal(3.51d);
-			BigDecimal sixPointFive = new BigDecimal(6.5d);
+			BigDecimal threePointFourNine = BigDecimal.Parse(3.49);
+			BigDecimal threePointFiveOne = BigDecimal.Parse(3.51);
+			BigDecimal sixPointFive = BigDecimal.Parse(6.5);
 
 			BigInteger one = BigDecimal.Round(up);
 			BigInteger zero = BigDecimal.Round(down);
@@ -107,7 +107,12 @@ namespace TestBigDecimal
 			BigDecimal zero4 = new BigDecimal(BigInteger.Zero);
 			BigDecimal zero5 = new BigDecimal(0, -1);
 			BigDecimal zero6 = BigInteger.Subtract(BigInteger.Add(BigInteger.Divide(2, 3), BigInteger.Multiply(-1, BigInteger.Divide(1, 3))), BigInteger.Divide(1, 3));
-			BigDecimal zero7 = BigDecimal.Subtract(BigDecimal.Divide(1, 10), 0.1d);
+
+			BigDecimal oneTenth = BigDecimal.Divide(BigDecimal.One, new BigDecimal(10));
+			BigDecimal pointZeroOne = 0.1d;
+
+
+			BigDecimal zero7 = BigDecimal.Subtract(oneTenth, pointZeroOne);
 			BigDecimal zero8 = BigDecimal.Add((new BigDecimal(1, -1)), ((double)-1 / 10));
 			BigDecimal zero9 = (new BigDecimal(15274, -7) * 0);
 
@@ -125,7 +130,7 @@ namespace TestBigDecimal
 			Assert.AreEqual(0, zero4.Sign, "new BigDecimal(BigInteger.Zero)");
 			Assert.AreEqual(0, zero5.Sign, "new BigDecimal(0, -1);");
 			Assert.AreEqual(0, zero6.Sign, "2/3  -1/3 - 1/3");
-			Assert.AreEqual(0, zero7.Sign, "1/10 + -1/10");
+			Assert.AreEqual(0, zero7.Sign, "1/10 - 1/10");
 			Assert.AreEqual(0, zero8.Sign, "1 + -1/10");
 			Assert.AreEqual(0, zero9.Sign, "0.0015274");
 

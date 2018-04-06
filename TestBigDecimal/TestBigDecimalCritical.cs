@@ -19,9 +19,9 @@ namespace TestBigDecimal
 			BigDecimal e = new BigDecimal(1000000000, -25);
 			BigDecimal f = new BigDecimal(-1, -2);
 			BigDecimal g = new BigDecimal(0, -1);
-			BigDecimal h = new BigDecimal(-0.0012345);
-			BigDecimal i = new BigDecimal(0.5d);
-			BigDecimal j = new BigDecimal(0.01d);
+			BigDecimal h = BigDecimal.Parse("-0.0012345");
+			BigDecimal i = BigDecimal.Parse("0.5");
+			BigDecimal j = BigDecimal.Parse("0.01");
 
 			Assert.IsInstanceOfType(a, typeof(BigDecimal), "Constructor parameters: '0'");
 			Assert.IsInstanceOfType(b, typeof(BigDecimal), "Constructor parameters: '0, 0'");

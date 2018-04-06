@@ -12,30 +12,6 @@ namespace AJRLibray.Mathematics
 	/// </summary>
 	public static class BigIntegerHelper
 	{
-		public static int GetLength(this BigInteger number)
-		{
-			if(number.IsZero)
-			{
-				return 0;
-			}
-			double log10 = BigInteger.Log10(BigInteger.Abs(number));
-			int result = (int)Math.Floor(log10) + 1;
-			return result;
-		}
-
-		public static IEnumerable<BigInteger> GetRange(BigInteger min, BigInteger max)
-		{
-			BigInteger counter = min;
-
-			while (counter < max)
-			{
-				yield return counter;
-				counter++;
-			}
-
-			yield break;
-		}
-
 		public static bool IsCoprime(BigInteger value1, BigInteger value2)
 		{
 			return GCD(value1, value2) == 1;
@@ -138,7 +114,7 @@ namespace AJRLibray.Mathematics
 			}
 			return input == p ? n : low;
 		}
-		
+
 		// Returns the NTHs root of a BigInteger with Remainder.
 		// The root must be greater than or equal to 1 or value must be a positive integer.
 		public static BigInteger NthRoot(this BigInteger value, int root, ref BigInteger remainder)

@@ -15,13 +15,16 @@ namespace AJRLibray.Mathematics
 		: IComparable
 		, IComparable<BigDecimal>
 	{
-		public static BigDecimal Ten;
-		public static BigDecimal One;
-		public static BigDecimal Zero;
-		public static BigDecimal OneHalf;
-		public static BigDecimal MinusOne;
-		//public static BigDecimal E = new BigDecimal(BigInteger.Parse("271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383"), 1);
-		//public static BigDecimal Pi = new BigDecimal(BigInteger.Parse("314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196"), 1);
+		public readonly static BigDecimal Ten;
+		public readonly static BigDecimal One;
+		public readonly static BigDecimal Zero;
+		public readonly static BigDecimal OneHalf;
+		public readonly static BigDecimal MinusOne;
+		public readonly static BigDecimal E;
+		public readonly static BigDecimal Pi;
+		private static readonly BigInteger TenInt;
+		private static readonly string NumericCharacters;
+		private static NumberFormatInfo BigDecimalNumberFormatInfo;
 
 		static BigDecimal()
 		{
@@ -31,49 +34,56 @@ namespace AJRLibray.Mathematics
 			Zero = new BigDecimal(0);
 			OneHalf = 0.5d;
 			MinusOne = new BigDecimal(BigInteger.MinusOne, 0);
+			E = new BigDecimal(BigInteger.Parse("271828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383"), 1);
+			Pi = new BigDecimal(BigInteger.Parse("314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196"), 1);
+
+			NumericCharacters = "-0.1234567890";
+			BigDecimalNumberFormatInfo = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
 		}
 
-		public BigInteger Mantissa { get; set; } // 
-		public int Exponent { get; set; } // 
-		public int Sign { get { return GetSign(this); } } // 
+		public BigInteger Mantissa { get; private set; } // 
+		public int Exponent { get; private set; } // 
+		public int Sign { get { return GetSign(); } } // 
 		public int SignifigantDigits { get { return GetSignifigantDigits(Mantissa); } } // 
 		public int DecimalPlaces { get { return (SignifigantDigits + Exponent); } } // 
-		public BigInteger WholeValue { get { return GetWholeDigits(this); } } // 
+		public BigInteger WholeValue { get { return GetWholeDigits(); } } // 
 		public int Length { get { return BigDecimal.GetSignifigantDigits(this.Mantissa) + this.Exponent; } } // 
 
 		public static int Precision = 5000; // Sets the maximum precision of division operations. If AlwaysTruncate is set to true all operations are affected.
 		public static bool AlwaysTruncate = false; // Specifies whether the significant digits should be truncated to the given precision after each operation.
 
-		private static BigInteger TenInt;
-		private static string NumericCharacters = "-0.1234567890";
-
-		private static NumberFormatInfo BigDecimalNumberFormatInfo = (NumberFormatInfo)CultureInfo.InvariantCulture.NumberFormat.Clone();
-
 		#region Constructors
+
+		public BigDecimal(int value)
+			: this(new BigInteger(value), 0)
+		{
+		}
 
 		public BigDecimal(BigInteger value)
 			: this(value, 0)
 		{
 		}
 
-		public BigDecimal(BigDecimal value)
-			: this(value.Mantissa, value.Exponent)
-		{
-		}
-
 		public BigDecimal(BigInteger mantissa, int exponent)
 		{
-			this.Mantissa = new BigInteger();
-			this.Mantissa = mantissa;
-			Exponent = exponent;
-
-			if (AlwaysTruncate)
+			if (mantissa != null)
 			{
-				Truncate();
+				this.Mantissa = mantissa;
+				this.Exponent = exponent;
+
+				if (AlwaysTruncate)
+				{
+					Truncate();
+				}
+				else
+				{
+					Normalize();
+				}
 			}
 			else
 			{
-				Normalize();
+				this.Mantissa = new BigInteger();
+				this.Exponent = 0;
 			}
 		}
 
@@ -81,8 +91,35 @@ namespace AJRLibray.Mathematics
 		{
 			AlwaysTruncate = alwaysTruncate;
 			Precision = precision;
-			Mantissa = new BigInteger();
+			Mantissa = new BigInteger(0);
 			Exponent = 0;
+		}
+
+		private static bool CheckIsValidObject(BigDecimal instance)
+		{
+			if (instance == null)
+			{
+				throw new TypeInitializationException(nameof(BigDecimal), new NullReferenceException());
+			}
+
+			if (instance.Mantissa == null)
+			{
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		}
+
+		public static BigDecimal Parse(double input)
+		{
+			return Parse(input.ToString());
+		}
+
+		public static BigDecimal Parse(decimal input)
+		{
+			return Parse(input.ToString());
 		}
 
 		public static BigDecimal Parse(string input)
@@ -107,7 +144,7 @@ namespace AJRLibray.Mathematics
 			{
 				decimalPlace = localInput.IndexOf(BigDecimalNumberFormatInfo.NumberDecimalSeparator);
 
-				exponent = ((decimalPlace + 1) - localInput.Length);
+				exponent = ((decimalPlace + 1) - (localInput.Length));
 				localInput = localInput.Replace(BigDecimalNumberFormatInfo.NumberDecimalSeparator, string.Empty);
 			}
 
@@ -134,7 +171,7 @@ namespace AJRLibray.Mathematics
 				return;
 			}
 
-			int len = BigIntegerHelper.GetLength(Mantissa);
+			int len = GetLength(Mantissa);
 
 			if (len > 100)
 			{
@@ -192,20 +229,22 @@ namespace AJRLibray.Mathematics
 			Truncate(Precision);
 		}
 
-		private static int GetSign(BigDecimal value)
+		private int GetSign()
 		{
-			value.Normalize();
+			if (!CheckIsValidObject(this)) return 0;
 
-			if (value.Mantissa.IsZero)
+			this.Normalize();
+
+			if (this.Mantissa.IsZero)
 			{
 				return 0;
 			}
-			else if (value.Mantissa.Sign == -1)
+			else if (this.Mantissa.Sign == -1)
 			{
-				if (value.Exponent < 0)
+				if (this.Exponent < 0)
 				{
-					string mant = value.Mantissa.ToString();
-					int length = mant.Length + value.Exponent;
+					string mant = this.Mantissa.ToString();
+					int length = mant.Length + this.Exponent;
 					if (length == 0)
 					{
 						int tenthsPlace = 0;
@@ -223,14 +262,21 @@ namespace AJRLibray.Mathematics
 			return 1;
 		}
 
+
+
 		private int GetDecimalIndex()
 		{
-			int mantissaLength = BigIntegerHelper.GetLength(this.Mantissa);
-			if (this.IsNegative)
+			return GetDecimalIndex(this.Mantissa, this.Exponent);
+		}
+
+		private static int GetDecimalIndex(BigInteger mantissa, int exponent)
+		{
+			int mantissaLength = GetLength(mantissa);
+			if (mantissa.Sign < 0)
 			{
 				mantissaLength += 1;
 			}
-			return mantissaLength + this.Exponent;
+			return mantissaLength + exponent;
 		}
 
 		private static int GetSignifigantDigits(BigInteger value)
@@ -253,6 +299,16 @@ namespace AJRLibray.Mathematics
 
 			return valueString.Length;
 		}
+		private static int GetLength(BigInteger number)
+		{
+			if (number.IsZero)
+			{
+				return 0;
+			}
+			double log10 = BigInteger.Log10(BigInteger.Abs(number));
+			int result = (int)Math.Floor(log10) + 1;
+			return result;
+		}
 
 		public static BigDecimal Abs(BigDecimal value)
 		{
@@ -266,10 +322,17 @@ namespace AJRLibray.Mathematics
 			}
 		}
 
-		public static BigInteger GetWholeDigits(BigDecimal value)
+		public BigInteger GetWholeDigits()
 		{
+			if (this == null)
+			{
+				throw new TypeInitializationException(nameof(BigDecimal), new NullReferenceException());
+			}
+
+			if (Mantissa == null) return BigInteger.Zero;
+
 			string resultString = string.Empty;
-			string decimalString = value.ToString();
+			string decimalString = BigDecimal.ToString(Mantissa, Exponent, "R", BigDecimalNumberFormatInfo);
 			string[] valueSplit = decimalString.Split(new string[] { BigDecimalNumberFormatInfo.NumberDecimalSeparator }, StringSplitOptions.RemoveEmptyEntries);
 			if (valueSplit.Length > 0)
 			{
@@ -280,6 +343,13 @@ namespace AJRLibray.Mathematics
 
 		public BigDecimal GetFractionalPart()
 		{
+			if (this == null)
+			{
+				throw new TypeInitializationException(nameof(BigDecimal), new NullReferenceException());
+			}
+
+			if (Mantissa == null) return BigInteger.Zero;
+
 			string resultString = string.Empty;
 			string decimalString = this.ToString();
 			string[] valueSplit = decimalString.Split('.');
@@ -314,12 +384,12 @@ namespace AJRLibray.Mathematics
 
 		public static implicit operator BigDecimal(BigInteger value)
 		{
-			return new BigDecimal(value);
+			return new BigDecimal(value, 0);
 		}
 
 		public static implicit operator BigDecimal(int value)
 		{
-			return new BigDecimal(value, 0);
+			return new BigDecimal(new BigInteger(value), 0);
 		}
 
 		public static implicit operator BigDecimal(double value)
@@ -329,29 +399,34 @@ namespace AJRLibray.Mathematics
 				throw new OverflowException("BigDecimal cannot represent infinity");
 			}
 
-			BigInteger mantissa = (BigInteger)value;
+			if (double.IsNaN(value))
+			{
+				throw new NotFiniteNumberException("Value is not a number");
+			}
+
+			BigInteger mantissa = new BigInteger(value);
 			int exponent = 0;
 			double scaleFactor = 1;
 			double abs = 0;
-			while ((abs = Math.Abs(value * scaleFactor - (double)mantissa)) > 0)
+			while ((abs = Math.Abs(value * scaleFactor - double.Parse(mantissa.ToString()) )) > 0)
 			{
 				exponent -= 1;
 				scaleFactor *= 10;
-				mantissa = (BigInteger)(value * scaleFactor);
+				mantissa = new BigInteger(value * scaleFactor);
 			}
 			return new BigDecimal(mantissa, exponent);
 		}
 
 		public static implicit operator BigDecimal(decimal value)
 		{
-			BigInteger mantissa = (BigInteger)value;
+			BigInteger mantissa = new BigInteger(value);
 			int exponent = 0;
 			decimal scaleFactor = 1;
-			while ((decimal)mantissa != value * scaleFactor)
+			while ((decimal.Parse(mantissa.ToString()) != value * scaleFactor))
 			{
 				exponent -= 1;
 				scaleFactor *= 10;
-				mantissa = (BigInteger)(value * scaleFactor);
+				mantissa = new BigInteger(value * scaleFactor);
 			}
 			return new BigDecimal(mantissa, exponent);
 		}
@@ -389,27 +464,62 @@ namespace AJRLibray.Mathematics
 
 		public static explicit operator double(BigDecimal value)
 		{
-			return (double)value.Mantissa * Math.Pow(10, value.Exponent);
+			double mantissa = 0;
+
+			if (!double.TryParse(value.Mantissa.ToString(), out mantissa))
+			{
+				mantissa = Convert.ToDouble(value.Mantissa.ToString());
+			}
+
+			return mantissa * Math.Pow(10, value.Exponent);
 		}
 
 		public static explicit operator float(BigDecimal value)
 		{
-			return Convert.ToSingle((double)value);
+			float mantissa = 0;
+
+			if (!float.TryParse(value.Mantissa.ToString(), out mantissa))
+			{
+				mantissa = Convert.ToSingle(value.Mantissa.ToString());
+			}
+
+			return mantissa * (float)Math.Pow(10, value.Exponent);
 		}
 
 		public static explicit operator decimal(BigDecimal value)
 		{
-			return (decimal)value.Mantissa * (decimal)Math.Pow(10, value.Exponent);
+			decimal mantissa = 0;
+
+			if (!decimal.TryParse(value.Mantissa.ToString(), out mantissa))
+			{
+				mantissa = Convert.ToDecimal(value.Mantissa.ToString());
+			}
+
+			return mantissa * (decimal)Math.Pow(10, value.Exponent);
 		}
 
 		public static explicit operator int(BigDecimal value)
 		{
-			return (int)(value.Mantissa * BigInteger.Pow(TenInt, value.Exponent));
+			int mantissa = 0;
+
+			if (!int.TryParse(value.Mantissa.ToString(), out mantissa))
+			{
+				mantissa = Convert.ToInt32(value.Mantissa.ToString());
+			}
+
+			return (mantissa * (int)BigInteger.Pow(TenInt, value.Exponent));
 		}
 
 		public static explicit operator uint(BigDecimal value)
 		{
-			return (uint)(value.Mantissa * BigInteger.Pow(TenInt, value.Exponent));
+			uint mantissa = 0;
+
+			if (!uint.TryParse(value.Mantissa.ToString(), out mantissa))
+			{
+				mantissa = Convert.ToUInt32(value.Mantissa.ToString());
+			}
+
+			return (mantissa * (uint)BigInteger.Pow(TenInt, value.Exponent));
 		}
 
 		#endregion
@@ -514,11 +624,29 @@ namespace AJRLibray.Mathematics
 			return new BigDecimal(left.Mantissa * right.Mantissa, left.Exponent + right.Exponent);
 		}
 
+		public static BigDecimal Mod(BigDecimal value, BigDecimal mod)
+		{
+			// x – q * y            
+			BigDecimal q = BigDecimal.Floor(BigDecimal.Divide(value, mod));
+			return BigDecimal.Multiply(BigDecimal.Subtract(value, q), mod);
+		}
+
 		//Division operator
 		public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor)
 		{
+			if (divisor == BigDecimal.Zero) throw new DivideByZeroException();
+
 			dividend.Normalize();
 			divisor.Normalize();
+
+
+			if (BigDecimal.Abs(dividend) == 1)
+			{
+				double doubleDivisor = double.Parse(divisor.ToString());
+				doubleDivisor = (1d / doubleDivisor);
+
+				return BigDecimal.Parse(doubleDivisor.ToString());
+			}
 
 			BigDecimal result = 0;
 			BigInteger remainder = 0;
@@ -535,6 +663,35 @@ namespace AJRLibray.Mathematics
 			return result;
 		}
 
+		/*
+		public static BigDecimal Divide2(BigDecimal bd1, BigDecimal bd2)
+		{
+			var v1 = Normalize();
+			var v2 = TrimDecimals();
+
+			//
+			// Increase the values evenly until there are no decimals.
+			//
+			while (v1._decimalCount > 0 || v2._decimalCount > 0)
+			{
+				v1 = v1.MultiplyByTen();
+				v2 = v2.MultiplyByTen();
+			}
+
+			//
+			// Try to find the last decimal (will try up to 100 of them).
+			// 
+			int factor = 0;
+			var v1Value = v1._bigIntValue;
+			while (factor < 100 && v1Value % v2._bigIntValue != 0)
+			{
+				v1Value *= 10;
+				factor++;
+			}
+
+			return new BigDecimal(v1Value / v2._bigIntValue, factor);
+		}
+		*/
 		#endregion
 
 		#region Additional mathematical functions
@@ -697,53 +854,6 @@ namespace AJRLibray.Mathematics
 			}
 		}
 
-		public override string ToString()
-		{
-			bool isNegative = false;
-			string result = Mantissa.ToString();
-			if (Mantissa.Sign < 1)
-			{
-				isNegative = true;
-			}
-
-			if (Exponent == 0)
-			{
-				return result;
-			}
-
-			int decimalPosition = GetDecimalIndex();
-
-			if (decimalPosition == 0)
-			{
-				result = "0" + BigDecimalNumberFormatInfo.NumberDecimalSeparator + result;
-			}
-			else if (decimalPosition > 0)
-			{
-				if (decimalPosition > result.Length)
-				{
-					return result.PadRight(decimalPosition, '0');
-				}
-
-				if (decimalPosition < result.Length)
-				{
-					return result.Insert(decimalPosition, BigDecimalNumberFormatInfo.NumberDecimalSeparator);
-				}
-			}
-			else if (decimalPosition < 0)
-			{
-				decimalPosition = Math.Abs(decimalPosition);
-
-				result = "0" + BigDecimalNumberFormatInfo.NumberDecimalSeparator + result.PadLeft(Math.Max(result.Length, decimalPosition), '0');
-			}
-
-			if (isNegative)
-			{
-				result = result.Insert(0, BigDecimalNumberFormatInfo.NegativeSign);
-			}
-
-			return result;
-		}
-
 		public bool Equals(BigDecimal other)
 		{
 			this.Normalize();
@@ -776,6 +886,98 @@ namespace AJRLibray.Mathematics
 		{
 			return this < other ? -1 : (this > other ? 1 : 0);
 		}
+
+		public override string ToString()
+		{
+			return this.ToString(BigDecimalNumberFormatInfo);
+		}
+
+		public String ToString(IFormatProvider provider)
+		{
+			return this.ToString("R", provider);
+		}
+
+		private static readonly string NullString = "(null)";
+
+		public String ToString(String format, IFormatProvider provider)
+		{
+			return BigDecimal.ToString(Mantissa, Exponent, format, provider);
+		}
+		private static String ToString(BigInteger mantissa, int exponent, String format, IFormatProvider provider)
+		{
+			if (string.IsNullOrWhiteSpace(format) || provider == null) throw new ArgumentNullException();
+
+
+			if (mantissa == null || BigDecimalNumberFormatInfo == null)
+			{
+				return NullString;
+			}
+
+			string result = "";
+			try
+			{
+
+				NumberFormatInfo numberFormatProvider = (NumberFormatInfo)provider.GetFormat(typeof(NumberFormatInfo));
+
+				if (numberFormatProvider == null)
+				{
+					numberFormatProvider = BigDecimalNumberFormatInfo;
+				}
+
+				bool isNegative = false;
+				result = mantissa.ToString(format, numberFormatProvider);
+				if (mantissa.Sign < 0)
+				{
+					isNegative = true;
+				}
+
+				if (exponent == 0)
+				{
+					return result;
+				}
+
+				string zeroString = numberFormatProvider.NativeDigits[0];
+				char zeroChar = zeroString.First();
+
+				int decimalPosition = GetDecimalIndex(mantissa, exponent);
+
+				if (decimalPosition == 0)
+				{
+					result = string.Concat(zeroString, numberFormatProvider.NumberDecimalSeparator, result);
+				}
+				else if (decimalPosition > 0)
+				{
+					if (decimalPosition > result.Length)
+					{
+						return result.PadRight(decimalPosition, zeroChar);
+					}
+
+					if (decimalPosition < result.Length)
+					{
+						return result.Insert(decimalPosition, numberFormatProvider.NumberDecimalSeparator);
+					}
+				}
+				else if (decimalPosition < 0)
+				{
+					decimalPosition = result.Length + Math.Abs(decimalPosition);
+
+					result = string.Concat(zeroString, numberFormatProvider.NumberDecimalSeparator, result.PadLeft(Math.Max(result.Length, decimalPosition), zeroChar));
+				}
+
+				if (isNegative)
+				{
+					result = result.Insert(0, numberFormatProvider.NegativeSign);
+				}
+			}
+			catch
+			{
+				return NullString;
+			}
+
+			return result;
+		}
+
+
 
 		#endregion
 
