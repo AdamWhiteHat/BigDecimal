@@ -9,7 +9,7 @@ namespace AJRLibray.Mathematics
 	/// Arbitrary precision decimal.
 	/// All operations are exact, except for division. Division never determines more digits than the given precision.
 	/// Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at googlemail.com)
-	//  Modified and extended by Adam Rakaska http://www.csharpprogramming.tips
+	//  Modified and extended by Adam White https://csharpcodewhisperer.blogspot.com
 	/// </summary>
 	public struct BigDecimal
 		: IComparable
