@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Numerics;
-using AJRLibray.Mathematics;
+using ExtendedNumerics;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 

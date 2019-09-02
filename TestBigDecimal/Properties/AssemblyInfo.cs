@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("TestBigDecimal")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TestBigDecimal")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCompany("https://github.com/AdamWhiteHat")]
+[assembly: AssemblyCopyright("Made by Adam White")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

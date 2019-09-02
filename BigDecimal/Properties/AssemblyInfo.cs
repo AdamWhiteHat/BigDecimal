@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BigDecimal")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Arbitrary precision decimal class")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BigDecimal")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCompany("https://github.com/AdamWhiteHat")]
+[assembly: AssemblyCopyright("Made by Adam White")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

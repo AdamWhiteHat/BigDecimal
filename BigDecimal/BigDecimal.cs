@@ -3,7 +3,7 @@ using System.Linq;
 using System.Numerics;
 using System.Globalization;
 
-namespace AJRLibray.Mathematics
+namespace ExtendedNumerics
 {
 	/// <summary>
 	/// Arbitrary precision decimal.

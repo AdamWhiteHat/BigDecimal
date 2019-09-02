@@ -5,7 +5,7 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AJRLibray.Mathematics
+namespace ExtendedNumerics
 {
 	/// <summary>
 	/// Sqrt and NRoot acquired from http://mjs5.com/2016/01/20/c-biginteger-helper-constructors

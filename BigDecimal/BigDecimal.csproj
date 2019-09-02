@@ -7,7 +7,7 @@
     <ProjectGuid>{605269CA-1534-4362-81A2-725C4EB97BCC}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>BigDecimal</RootNamespace>
+    <RootNamespace>ExtendedNumerics</RootNamespace>
     <AssemblyName>BigDecimal</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
