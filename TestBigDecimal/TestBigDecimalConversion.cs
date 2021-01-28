@@ -8,6 +8,17 @@ namespace TestBigDecimal
 	[TestClass]
 	public class TestBigDecimalConversion
 	{
+		private TestContext m_testContext;
+		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
+
+		[ClassInitialize()]
+		public static void Initialize(TestContext context)
+		{
+			BigDecimal.Precision = 5000;
+			BigDecimal.AlwaysTruncate = false;
+		}
+
+		[TestProperty("Basic", "Conversion")]
 		[TestMethod]
 		public void TestConversionFromBigInteger()
 		{
@@ -18,6 +29,7 @@ namespace TestBigDecimal
 			Assert.AreEqual(expectedResult, result);
 		}
 
+		[TestProperty("Basic", "Conversion")]
 		[TestMethod]
 		public void TestConversionToBigInteger()
 		{

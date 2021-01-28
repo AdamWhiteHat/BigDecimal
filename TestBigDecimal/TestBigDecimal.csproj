@@ -70,12 +70,6 @@
     <Compile Include="TestBigDecimalConversion.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BigDecimal\BigDecimal.csproj">
-      <Project>{605269ca-1534-4362-81a2-725c4eb97bcc}</Project>
-      <Name>BigDecimal</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -86,6 +80,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BigDecimal\BigDecimal.csproj">
+      <Project>{605269ca-1534-4362-81a2-725c4eb97bcc}</Project>
+      <Name>BigDecimal</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

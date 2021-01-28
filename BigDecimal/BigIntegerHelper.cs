@@ -12,23 +12,38 @@ namespace ExtendedNumerics
 	/// </summary>
 	public static class BigIntegerHelper
 	{
+		public static IEnumerable<BigInteger> GetRange(BigInteger min, BigInteger max)
+		{
+			BigInteger counter = min;
+
+			while (counter < max)
+			{
+				yield return counter;
+				counter++;
+			}
+
+			yield break;
+		}
+
 		public static bool IsCoprime(BigInteger value1, BigInteger value2)
 		{
 			return GCD(value1, value2) == 1;
 		}
+
 		public static BigInteger GCD(IEnumerable<BigInteger> numbers)
 		{
 			return numbers.Aggregate(GCD);
 		}
+
 		public static BigInteger LCM(IEnumerable<BigInteger> numbers)
 		{
 			return numbers.Aggregate(LCM);
 		}
+
 		public static BigInteger LCM(BigInteger num1, BigInteger num2)
 		{
 			BigInteger absValue1 = BigInteger.Abs(num1);
 			BigInteger absValue2 = BigInteger.Abs(num2);
-
 			return (absValue1 * absValue2) / GCD(absValue1, absValue2);
 		}
 
@@ -51,29 +66,19 @@ namespace ExtendedNumerics
 			return BigInteger.Max(absValue1, absValue2);
 		}
 
-		public static BigInteger Pow(BigInteger value, BigInteger exponent)
+		public static BigInteger Clone(this BigInteger source)
 		{
-			int use = 1;
-			BigInteger result = new BigInteger();
-			BigInteger exponentLeft = new BigInteger();
+			return new BigInteger(source.ToByteArray());
+		}
 
-			result = BigInteger.Abs(value);
-			exponentLeft = BigInteger.Abs(exponent);
-
-			while (exponentLeft > 0)
+		public static int GetLength(this BigInteger source)
+		{
+			int result = 0;
+			BigInteger copy = source.Clone();
+			while (copy > 0)
 			{
-				if (exponentLeft > int.MaxValue - 2)
-				{
-					use = (int.MaxValue - 2);
-					exponentLeft = BigInteger.Subtract(exponentLeft, use);
-				}
-				else
-				{
-					exponentLeft = BigInteger.Zero;
-					use = (int)exponentLeft;
-				}
-
-				result = BigInteger.Multiply(result, BigInteger.Pow(result, use));
+				copy /= 10;
+				result++;
 			}
 			return result;
 		}

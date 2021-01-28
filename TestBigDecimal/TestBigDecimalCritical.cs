@@ -9,69 +9,138 @@ namespace TestBigDecimal
 	[TestClass]
 	public class TestBigDecimalCritical
 	{
+		private TestContext m_testContext;
+		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
+
+		[ClassInitialize()]
+		public static void Initialize(TestContext context)
+		{
+			BigDecimal.Precision = 5000;
+			BigDecimal.AlwaysTruncate = false;
+		}
+
+		[TestProperty("Basic", "Factory")]
 		[TestMethod]
-		public void TestConstructor()
+		public void TestConstructor001()
 		{
 			BigDecimal a = 0;
 			BigDecimal b = new BigDecimal(0, 0);
 			BigDecimal c = new BigDecimal(123456789);
 			BigDecimal d = new BigDecimal(3141592793238462, -15);
 			BigDecimal e = new BigDecimal(1000000000, -25);
-			BigDecimal f = new BigDecimal(-1, -2);
-			BigDecimal g = new BigDecimal(0, -1);
-			BigDecimal h = BigDecimal.Parse("-0.0012345");
 			BigDecimal i = BigDecimal.Parse("0.5");
 			BigDecimal j = BigDecimal.Parse("0.01");
 
-			Assert.IsInstanceOfType(a, typeof(BigDecimal), "Constructor parameters: '0'");
-			Assert.IsInstanceOfType(b, typeof(BigDecimal), "Constructor parameters: '0, 0'");
-			Assert.IsInstanceOfType(c, typeof(BigDecimal), "Constructor parameters: '123456789'");
-			Assert.IsInstanceOfType(d, typeof(BigDecimal), "Constructor parameters: '3141592793238462, -15'");
-			Assert.IsInstanceOfType(e, typeof(BigDecimal), "Constructor parameters: '1000000000, -25'");
-			Assert.IsInstanceOfType(f, typeof(BigDecimal), "Constructor parameters: '-1, -2'");
-			Assert.IsInstanceOfType(g, typeof(BigDecimal), "Constructor parameters: ' 0, -1'");
-			Assert.IsInstanceOfType(h, typeof(BigDecimal), "Constructor parameters: '-0.0012345'");
-			Assert.AreEqual(0, a);
-			Assert.AreEqual(0, b);
-			Assert.AreEqual(123456789, c);
-			Assert.AreEqual(-0.01d, f);
-			Assert.AreEqual("-0.0", g.ToString());
-			Assert.AreEqual(-0.0012345, h);
-			Assert.AreEqual(0.5d, i);
-			Assert.AreEqual(0.01d, j);
+			TestContext.WriteLine(d.ToString());
+			TestContext.WriteLine(e.ToString());
+
+			Assert.AreEqual("0", a.ToString());
+			Assert.AreEqual("0", b.ToString());
+			Assert.AreEqual("123456789", c.ToString());
+			Assert.AreEqual("0.5", i.ToString());
+			Assert.AreEqual("0.01", j.ToString());
 		}
 
+		[TestProperty("Basic", "Factory")]
 		[TestMethod]
-		public void TestParse()
+		public void TestConstructor002()
 		{
-			BigDecimal a = BigDecimal.Parse("");
-			BigDecimal b = BigDecimal.Parse("0");
-			BigDecimal c = BigDecimal.Parse("-0");
-			BigDecimal d = BigDecimal.Parse("-123456789");
-			BigDecimal e = BigDecimal.Parse("123456789");
-			BigDecimal f = BigDecimal.Parse("1234.56789");
-			BigDecimal g = BigDecimal.Parse("0.125");
-			BigDecimal h = BigDecimal.Parse("-0.0625");
-
-			Assert.IsInstanceOfType(a, typeof(BigDecimal), "Tried to parse: '(empty string)'");
-			Assert.IsInstanceOfType(b, typeof(BigDecimal), "Tried to parse: '0'");
-			Assert.IsInstanceOfType(c, typeof(BigDecimal), "Tried to parse: '-0'");
-			Assert.IsInstanceOfType(d, typeof(BigDecimal), "Tried to parse: '-123456789'");
-			Assert.IsInstanceOfType(e, typeof(BigDecimal), "Tried to parse: '123456789'");
-			Assert.IsInstanceOfType(f, typeof(BigDecimal), "Tried to parse: '1234.56789'");
-			Assert.IsInstanceOfType(g, typeof(BigDecimal), "Tried to parse: '0.125'");
-			Assert.IsInstanceOfType(h, typeof(BigDecimal), "Tried to parse: '-0.0625'");
+			BigDecimal f = new BigDecimal(-3, -2);
+			Assert.AreEqual("-0.03", f.ToString());
 		}
 
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestConstructor003()
+		{
+			BigDecimal g = new BigDecimal(0, -1);
+			Assert.AreEqual("0", g.ToString());
+		}
+
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestConstructor004()
+		{
+			BigDecimal h = BigDecimal.Parse("-0.0012345");
+			Assert.AreEqual("-0.0012345", h.ToString());
+		}
+
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestParse001()
+		{
+			string expected = "0.00501";
+			BigDecimal result = BigDecimal.Parse(expected);
+			string actual = result.ToString();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestParse002()
+		{
+			BigDecimal result1 = BigDecimal.Parse("");
+			BigDecimal result2 = BigDecimal.Parse("0");
+			BigDecimal result3 = BigDecimal.Parse("-0");
+
+			Assert.IsInstanceOfType(result1, typeof(BigDecimal), "Tried to parse: '(empty string)'");
+			Assert.IsInstanceOfType(result2, typeof(BigDecimal), "Tried to parse: '0'");
+			Assert.IsInstanceOfType(result3, typeof(BigDecimal), "Tried to parse: '-0'");
+		}
+
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestParse003()
+		{
+			string expected1 = "-123456789";
+			string expected2 = "123456789";
+			string expected3 = "1234.56789";
+
+			BigDecimal result1 = BigDecimal.Parse(expected1);
+			BigDecimal result2 = BigDecimal.Parse(expected2);
+			BigDecimal result3 = BigDecimal.Parse(expected3);
+
+			string actual1 = result1.ToString();
+			string actual2 = result2.ToString();
+			string actual3 = result3.ToString();
+
+			Assert.IsInstanceOfType(result1, typeof(BigDecimal), "Tried to parse: '-123456789'");
+			Assert.IsInstanceOfType(result2, typeof(BigDecimal), "Tried to parse: '123456789'");
+			Assert.IsInstanceOfType(result3, typeof(BigDecimal), "Tried to parse: '1234.56789'");
+
+			Assert.AreEqual(expected1, actual1);
+			Assert.AreEqual(expected2, actual2);
+			Assert.AreEqual(expected3, actual3);
+		}
+
+		[TestProperty("Basic", "Factory")]
+		[TestMethod]
+		public void TestParse004()
+		{
+			BigDecimal result1 = BigDecimal.Parse("0.125");
+			BigDecimal result2 = BigDecimal.Parse("-0.0625");
+
+			Assert.IsInstanceOfType(result1, typeof(BigDecimal), "Tried to parse: '0.125'");
+			Assert.IsInstanceOfType(result2, typeof(BigDecimal), "Tried to parse: '-0.0625'");
+		}
+
+		[TestProperty("Basic", "Conversion")]
 		[TestMethod]
 		public void TestNormalize()
 		{
 			BigDecimal expectedResult = BigDecimal.Parse("1000000");
 			BigDecimal result = new BigDecimal(1000000000, -3);
 
-			Assert.AreEqual(expectedResult, result);
+			result.Normalize();
+
+			string expected = expectedResult.ToString();
+			string actual = result.ToString();
+
+			Assert.AreEqual(expected, actual);
 		}
 
+		[TestProperty("Basic", "Conversion")]
 		[TestMethod]
 		public void TestTruncate()
 		{
