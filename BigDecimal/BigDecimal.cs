@@ -11,7 +11,7 @@ namespace ExtendedNumerics
 	/// Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at googlemail.com)
 	//  Modified and extended by Adam White https://csharpcodewhisperer.blogspot.com
 	/// </summary>
-	public struct BigDecimal : IComparable, IComparable<BigDecimal>
+	public struct BigDecimal : IComparable, IComparable<BigDecimal>, ICloneable<BigDecimal>
 	{
 
 		#region Public static values
@@ -81,6 +81,42 @@ namespace ExtendedNumerics
 			{
 				this.Mantissa = new BigInteger();
 				this.Exponent = 0;
+			}
+		}
+
+		public BigDecimal(double value)
+		{
+			if (double.IsInfinity(value))
+			{
+				throw new OverflowException("BigDecimal cannot represent infinity.");
+			}
+
+			if (double.IsNaN(value))
+			{
+				throw new NotFiniteNumberException($"{nameof(value)} is not a number (double.NaN).");
+			}
+
+			BigInteger mantissa = new BigInteger(value);
+			int exponent = 0;
+			double scaleFactor = 1;
+			double abs = 0;
+			while ((abs = Math.Abs(value * scaleFactor - double.Parse(mantissa.ToString()))) > 0)
+			{
+				exponent -= 1;
+				scaleFactor *= 10;
+				mantissa = new BigInteger(value * scaleFactor);
+			}
+
+			this.Mantissa = mantissa;
+			this.Exponent = exponent;
+
+			if (AlwaysTruncate)
+			{
+				Truncate();
+			}
+			else
+			{
+				Normalize();
 			}
 		}
 
@@ -398,27 +434,7 @@ namespace ExtendedNumerics
 
 		public static implicit operator BigDecimal(double value)
 		{
-			if (double.IsInfinity(value))
-			{
-				throw new OverflowException("BigDecimal cannot represent infinity");
-			}
-
-			if (double.IsNaN(value))
-			{
-				throw new NotFiniteNumberException("Value is not a number");
-			}
-
-			BigInteger mantissa = new BigInteger(value);
-			int exponent = 0;
-			double scaleFactor = 1;
-			double abs = 0;
-			while ((abs = Math.Abs(value * scaleFactor - double.Parse(mantissa.ToString()))) > 0)
-			{
-				exponent -= 1;
-				scaleFactor *= 10;
-				mantissa = new BigInteger(value * scaleFactor);
-			}
-			return new BigDecimal(mantissa, exponent);
+			return new BigDecimal(value);
 		}
 
 		public static implicit operator BigDecimal(decimal value)
@@ -651,8 +667,9 @@ namespace ExtendedNumerics
 		public static BigDecimal Mod(BigDecimal value, BigDecimal mod)
 		{
 			// x – q * y            
-			BigDecimal q = BigDecimal.Floor(BigDecimal.Divide(value, mod));
-			return BigDecimal.Multiply(BigDecimal.Subtract(value, q), mod);
+			var quotient = BigDecimal.Divide(value, mod);
+			BigDecimal floor = BigDecimal.Floor(quotient);
+			return BigDecimal.Subtract(value, BigDecimal.Multiply(floor, mod));
 		}
 
 		/// <summary>
@@ -683,8 +700,9 @@ namespace ExtendedNumerics
 
 			int dividendMantissaLength = dividend.DecimalPlaces;
 			int divisorMantissaLength = divisor.DecimalPlaces;
-			var exponentChange = (dividendMantissaLength - divisorMantissaLength);
+			var exponentChange = dividend.Exponent - divisor.Exponent; //(dividendMantissaLength - divisorMantissaLength);
 
+			int counter = 0;
 			BigDecimal result = 0;
 			BigInteger remainder = 0;
 			result.Mantissa = BigInteger.DivRem(dividend.Mantissa, divisor.Mantissa, out remainder);
@@ -694,7 +712,7 @@ namespace ExtendedNumerics
 				{
 					remainder *= 10;
 					result.Mantissa *= 10;
-
+					counter++;
 					remString = remainder.ToString();
 					mantissaString = result.Mantissa.ToString();
 				}
@@ -704,7 +722,7 @@ namespace ExtendedNumerics
 				mantissaString = result.Mantissa.ToString();
 			}
 
-			result.Exponent = exponentChange;
+			result.Exponent = exponentChange - counter;
 			return result;
 		}
 
@@ -852,7 +870,15 @@ namespace ExtendedNumerics
 		public static BigDecimal Ceiling(BigDecimal value)
 		{
 			value.Normalize();
-			return new BigDecimal(value.Mantissa);
+
+			BigDecimal result = value.WholeValue;
+
+			if (result != value.Mantissa && value >= 0)
+			{
+				result += 1;
+			}
+
+			return result;
 		}
 
 		/// <summary>
@@ -861,7 +887,15 @@ namespace ExtendedNumerics
 		public static BigDecimal Floor(BigDecimal value)
 		{
 			value.Normalize();
-			return new BigDecimal(value.Mantissa + 1);
+
+			BigDecimal result = value.WholeValue;
+
+			if (result != value.Mantissa && value <= 0)
+			{
+				result -= 1;
+			}
+
+			return result;
 		}
 
 		/// <summary>

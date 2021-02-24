@@ -89,6 +89,23 @@ namespace TestBigDecimal
 
 		[TestProperty("Arithmetic", "Divide")]
 		[TestMethod]
+		public void TestDivide000()
+		{
+			BigDecimal expectedResult = BigDecimal.Parse("7");
+
+			BigDecimal dividend = BigDecimal.Parse("0.63");
+			BigDecimal divisor = BigDecimal.Parse("0.09");
+
+			BigDecimal result = BigDecimal.Divide(dividend, divisor);
+
+			string expected = expectedResult.ToString();
+			string actual = result.ToString();
+
+			Assert.AreEqual(expected, actual);
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
 		public void TestDivide001()
 		{
 			BigDecimal expectedResult = BigDecimal.Parse("40094690950920881030683735292761468389214899724061");
@@ -261,7 +278,7 @@ namespace TestBigDecimal
 		public void TestReciprocal004()
 		{
 			// 2/0.63661977236758 == 3.1415926535898
-			BigDecimal expectedResult = BigDecimal.Parse("3.1415926535898");
+			BigDecimal expectedResult = BigDecimal.Parse("3.14159265358970");
 
 			BigDecimal dividend = new BigDecimal(2);
 			BigDecimal divisor = BigDecimal.Parse("0.63661977236758");
@@ -331,6 +348,152 @@ namespace TestBigDecimal
 			Assert.AreEqual(expectedResult3, result3);
 			//Assert.AreEqual(expectedResult4, result4);
 		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestCeiling001()
+		{
+			string expectedCeiling = "4";
+			string expectedStart = "3.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal ceiling = BigDecimal.Ceiling(start);
+			string actualCeiling = ceiling.ToString();
+
+			Assert.AreEqual(expectedCeiling, actualCeiling, $"ceiling({expectedStart}) == {expectedCeiling}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestCeiling002()
+		{
+			string expectedCeiling = "-3";
+			string expectedStart = "-3.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal ceiling = BigDecimal.Ceiling(start);
+			string actualCeiling = ceiling.ToString();
+
+			Assert.AreEqual(expectedCeiling, actualCeiling, $"ceiling({expectedStart}) == {expectedCeiling}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestCeiling003()
+		{
+			string expectedCeiling = "1";
+			string expectedStart = "0.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal ceiling = BigDecimal.Ceiling(start);
+			string actualCeiling = ceiling.ToString();
+
+			Assert.AreEqual(expectedCeiling, actualCeiling, $"ceiling({expectedStart}) == {expectedCeiling}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestCeiling004()
+		{
+			string expectedCeiling = "0";
+			string expectedStart = "-0.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal ceiling = BigDecimal.Ceiling(start);
+			string actualCeiling = ceiling.ToString();
+
+			Assert.AreEqual(expectedCeiling, actualCeiling, $"ceiling({expectedStart}) == {expectedCeiling}");
+		}
+
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestFloor001()
+		{
+			string expectedFloor = "3";
+			string expectedStart = "3.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal floor = BigDecimal.Floor(start);
+			string actualFloor = floor.ToString();
+
+			Assert.AreEqual(expectedFloor, actualFloor, $"ceiling({expectedStart}) == {expectedFloor}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestFloor002()
+		{
+			string expectedFloor = "-4";
+			string expectedStart = "-3.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal floor = BigDecimal.Floor(start);
+			string actualFloor = floor.ToString();
+
+			Assert.AreEqual(expectedFloor, actualFloor, $"ceiling({expectedStart}) == {expectedFloor}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestFloor003()
+		{
+			string expectedFloor = "-1";
+			string expectedStart = "-0.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal floor = BigDecimal.Floor(start);
+			string actualFloor = floor.ToString();
+
+			Assert.AreEqual(expectedFloor, actualFloor, $"ceiling({expectedStart}) == {expectedFloor}");
+		}
+
+		[TestProperty("Arithmetic", "Divide")]
+		[TestMethod]
+		public void TestFloor004()
+		{
+			string expectedFloor = "0";
+			string expectedStart = "0.14159265";
+
+			BigDecimal start = BigDecimal.Parse(expectedStart);
+			string actualStart = start.ToString();
+
+			Assert.AreEqual(expectedStart, actualStart);
+
+			BigDecimal floor = BigDecimal.Floor(start);
+			string actualFloor = floor.ToString();
+
+			Assert.AreEqual(expectedFloor, actualFloor, $"ceiling({expectedStart}) == {expectedFloor}");
+		}
+
 
 		[TestProperty("Arithmetic", "Operations")]
 		[TestMethod]
