@@ -5,7 +5,13 @@ VisualStudioVersion = 17.0.31717.71
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BigDecimal", "BigDecimal\BigDecimal.csproj", "{605269CA-1534-4362-81A2-725C4EB97BCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestBigDecimal", "TestBigDecimal\TestBigDecimal.csproj", "{45B2A2DE-FD1D-4AC2-920A-2FCC4574950F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestBigDecimal", "TestBigDecimal\TestBigDecimal.csproj", "{45B2A2DE-FD1D-4AC2-920A-2FCC4574950F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{14B967DD-43D9-4797-A0B2-CD989241D463}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE.txt = LICENSE.txt
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
