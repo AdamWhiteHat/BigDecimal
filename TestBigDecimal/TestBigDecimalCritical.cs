@@ -10,8 +10,8 @@
 
 		[SetUp]
 		public static void Initialize() {
-			//BigDecimal.Precision = 5000;
-			//BigDecimal.AlwaysTruncate = false;
+			BigDecimal.Precision = 5000;
+			BigDecimal.AlwaysTruncate = false;
 		}
 
 		public TestContext? TestContext { get; set; }
@@ -111,7 +111,7 @@
 			var expectedResult = BigDecimal.Parse( "1000000" );
 			var result = new BigDecimal( 1000000000, -3 );
 
-			//result.Normalize();
+			result.Normalize();
 
 			var expected = expectedResult.ToString();
 			var actual = result.ToString();
@@ -127,7 +127,7 @@
 
 			var expectedResult = BigDecimal.Parse( inputTruncated );
 			var result = BigDecimal.Parse( String.Concat( inputTruncated, inputOverflow ) );
-			//result.Truncate();
+			result.Truncate();
 			var success = expectedResult.Equals( result );
 
 			Assert.IsTrue( success );
