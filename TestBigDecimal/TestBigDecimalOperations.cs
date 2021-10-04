@@ -8,13 +8,6 @@
 	[TestFixture]
 	public class TestBigDecimalOperations {
 
-
-		[SetUp]
-		public static void Initialize() {
-			BigDecimal.Precision = 5000;
-			BigDecimal.AlwaysTruncate = false;
-		}
-
 		[Test]
 		public void TestNegate() {
 			const String expected = "-1.375";

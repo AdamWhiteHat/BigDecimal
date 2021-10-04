@@ -7,12 +7,11 @@
 	[TestFixture]
 	public class TestBigDecimalConversion {
 
-
 		[Test]
 		public void TestConversionFromBigInteger() {
 			var expectedResult = BigDecimal.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" );
 
-			var result = ( BigDecimal )BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" ); ;
+			var result = ( BigDecimal )BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" );
 
 			Assert.AreEqual( expectedResult, result );
 		}
@@ -25,5 +24,7 @@
 
 			Assert.AreEqual( expectedResult, result );
 		}
+
 	}
+
 }

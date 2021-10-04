@@ -8,12 +8,6 @@
 	[TestFixture]
 	public class TestBigDecimalFunctions {
 
-		[SetUp]
-		public static void Initialize( TestContext context ) {
-			//BigDecimal.Precision = 5000;
-			//BigDecimal.AlwaysTruncate = false;
-		}
-
 		[Test]
 		public void TestGetLength() {
 			var expectedResult = BigDecimal.Parse( "2268507702394854741827137539360680923314" );

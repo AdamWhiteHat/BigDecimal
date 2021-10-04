@@ -8,14 +8,6 @@
 	[TestFixture]
 	public class TestBigDecimalCritical {
 
-		[SetUp]
-		public static void Initialize() {
-			BigDecimal.Precision = 5000;
-			BigDecimal.AlwaysTruncate = false;
-		}
-
-		public TestContext? TestContext { get; set; }
-
 		[Test]
 		public void TestConstructor001() {
 			BigDecimal a = 0;
