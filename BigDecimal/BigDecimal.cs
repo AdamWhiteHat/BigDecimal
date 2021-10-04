@@ -15,7 +15,7 @@ namespace ExtendedNumerics {
 	///     Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at googlemail.com)
 	///     Modified and extended by Adam White https://csharpcodewhisperer.blogspot.com
 	/// </summary>
-	public sealed record BigDecimal : IComparable<BigDecimal> {
+	public sealed record BigDecimal : IComparable<BigDecimal>, IComparable<Int32>, IComparable {
 
 		private const String NumericCharacters = "-0.1234567890";
 
@@ -137,25 +137,12 @@ namespace ExtendedNumerics {
 		/// </summary>
 		public Boolean IsNegative => this.Mantissa.Sign < 0;
 
-		/*
-		/// <summary>
-		///  Compares two BigDecimal values, returning an integer that indicates their relationship.
-		/// </summary>
-		public Int32 CompareTo( Object obj ) {
-			if ( ReferenceEquals( obj, null ) || !( obj is BigDecimal ) ) {
-				throw new ArgumentException();
-			}
-
-			return this.CompareTo( ( BigDecimal )obj );
-		}
-		*/
-
 		/// <summary>
 		///     Compares two BigDecimal values, returning an integer that indicates their relationship.
 		/// </summary>
 		public Int32 CompareTo( BigDecimal? other ) {
 			if ( other is null ) {
-				return -1;
+				return 1;
 			}
 
 			if ( this < other ) {
@@ -168,6 +155,23 @@ namespace ExtendedNumerics {
 
 			return 0;
 		}
+
+		public Int32 CompareTo( Int32? other ) {
+			if ( other is null ) {
+				return 1;
+			}
+
+			if ( this < other ) {
+				return -1;
+			}
+
+			if ( this > other ) {
+				return 1;
+			}
+
+			return 0;
+		}
+
 
 		public Boolean Equals( BigDecimal? other ) {
 			if ( other is null ) {
@@ -198,8 +202,18 @@ namespace ExtendedNumerics {
 		///     Converts the string representation of a decimal to the BigDecimal equivalent.
 		/// </summary>
 		public static BigDecimal Parse( String input ) {
+			input = input.Trim();
+
 			if ( String.IsNullOrWhiteSpace( input ) ) {
 				return BigInteger.Zero;
+			}
+
+			if ( Decimal.TryParse( input, out var decimalResult ) ) {
+				return decimalResult;
+			}
+
+			if ( Double.TryParse( input, out var doubleResult ) ) {
+				return doubleResult;
 			}
 
 			var exponent = 0;
@@ -377,6 +391,10 @@ namespace ExtendedNumerics {
 		public static implicit operator BigDecimal( UInt32 value ) => new( new BigInteger( value ), 0 );
 
 		public static implicit operator BigDecimal( Int32 value ) => new( new BigInteger( value ), 0 );
+
+		public static implicit operator BigDecimal( UInt16 value ) => new( new BigInteger( value ), 0 );
+
+		public static implicit operator BigDecimal( Int16 value ) => new( new BigInteger( value ), 0 );
 
 		public static implicit operator BigDecimal( UInt64 value ) => new( new BigInteger( value ), 0 );
 
@@ -747,10 +765,39 @@ namespace ExtendedNumerics {
 			return result;
 		}
 
+		public Int32 CompareTo( Int32 other ) {
+
+			if ( this < other ) {
+				return -1;
+			}
+
+			if ( this > other ) {
+				return 1;
+			}
+
+			return 0;
+		}
+
 		[SuppressMessage( "ReSharper", "NonReadonlyMemberInGetHashCode" )]
 		public override Int32 GetHashCode() => HashCode.Combine( this.Mantissa, this.Exponent );
 
 		public override String ToString() => this.ToString( BigDecimalNumberFormatInfo );
+
+		public Int32 CompareTo( Object? obj ) {
+			if ( obj is not Int32 other ) {
+				return 1;
+			}
+
+			if ( this < other ) {
+				return -1;
+			}
+
+			if ( this > other ) {
+				return 1;
+			}
+
+			return 0;
+		}
 
 		public String ToString( IFormatProvider provider ) => ToString( this.Mantissa, this.Exponent, provider );
 
@@ -803,6 +850,7 @@ namespace ExtendedNumerics {
 
 			return result;
 		}
+
 
 	}
 
