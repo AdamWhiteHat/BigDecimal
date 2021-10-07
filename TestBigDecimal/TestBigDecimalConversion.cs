@@ -1,5 +1,6 @@
 ﻿namespace TestBigDecimal {
 
+	using System;
 	using System.Numerics;
 	using ExtendedNumerics;
 	using NUnit.Framework;
@@ -7,22 +8,28 @@
 	[TestFixture]
 	public class TestBigDecimalConversion {
 
+		private const String longNumbers =
+			"22685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853" +
+			"22685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853" +
+			"22685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853";
+
 		[Test]
 		public void TestConversionFromBigInteger() {
-			var expectedResult = BigDecimal.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" );
+			var expected = BigInteger.Parse( longNumbers );
 
-			var result = ( BigDecimal )BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" );
+			var bigDecimal = BigDecimal.Parse( longNumbers );
+			var actual = bigDecimal.WholeValue;
 
-			Assert.AreEqual( expectedResult, result );
+			Assert.AreEqual( expected, actual );
 		}
 
 		[Test]
 		public void TestConversionToBigInteger() {
-			var expectedResult = BigInteger.Parse( "213212221322233233332232232223" );
+			var expected = BigInteger.Parse( longNumbers );
 
-			var result = ( BigInteger )BigDecimal.Parse( "213212221322233233332232232223" );
+			var actual = ( BigInteger )BigDecimal.Parse( longNumbers );
 
-			Assert.AreEqual( expectedResult, result );
+			Assert.AreEqual( expected, actual );
 		}
 
 	}

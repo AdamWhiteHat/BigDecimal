@@ -137,6 +137,22 @@ namespace ExtendedNumerics {
 		/// </summary>
 		public Boolean IsNegative => this.Mantissa.Sign < 0;
 
+		public Int32 CompareTo( Object? obj ) {
+			if ( obj is not Int32 other ) {
+				return 1;
+			}
+
+			if ( this < other ) {
+				return -1;
+			}
+
+			if ( this > other ) {
+				return 1;
+			}
+
+			return 0;
+		}
+
 		/// <summary>
 		///     Compares two BigDecimal values, returning an integer that indicates their relationship.
 		/// </summary>
@@ -156,11 +172,7 @@ namespace ExtendedNumerics {
 			return 0;
 		}
 
-		public Int32 CompareTo( Int32? other ) {
-			if ( other is null ) {
-				return 1;
-			}
-
+		public Int32 CompareTo( Int32 other ) {
 			if ( this < other ) {
 				return -1;
 			}
@@ -171,7 +183,6 @@ namespace ExtendedNumerics {
 
 			return 0;
 		}
-
 
 		public Boolean Equals( BigDecimal? other ) {
 			if ( other is null ) {
@@ -186,6 +197,22 @@ namespace ExtendedNumerics {
 			var matchSign = this.Sign.Equals( other.Sign );
 
 			return matchMantissa && matchExponent && matchSign;
+		}
+
+		public Int32 CompareTo( Int32? other ) {
+			if ( other is null ) {
+				return 1;
+			}
+
+			if ( this < other ) {
+				return -1;
+			}
+
+			if ( this > other ) {
+				return 1;
+			}
+
+			return 0;
 		}
 
 		/// <summary>
@@ -206,6 +233,10 @@ namespace ExtendedNumerics {
 
 			if ( String.IsNullOrWhiteSpace( input ) ) {
 				return BigInteger.Zero;
+			}
+
+			if ( BigInteger.TryParse( input, out var bigInteger ) ) {
+				return bigInteger;
 			}
 
 			if ( Decimal.TryParse( input, out var decimalResult ) ) {
@@ -765,39 +796,10 @@ namespace ExtendedNumerics {
 			return result;
 		}
 
-		public Int32 CompareTo( Int32 other ) {
-
-			if ( this < other ) {
-				return -1;
-			}
-
-			if ( this > other ) {
-				return 1;
-			}
-
-			return 0;
-		}
-
 		[SuppressMessage( "ReSharper", "NonReadonlyMemberInGetHashCode" )]
 		public override Int32 GetHashCode() => HashCode.Combine( this.Mantissa, this.Exponent );
 
 		public override String ToString() => this.ToString( BigDecimalNumberFormatInfo );
-
-		public Int32 CompareTo( Object? obj ) {
-			if ( obj is not Int32 other ) {
-				return 1;
-			}
-
-			if ( this < other ) {
-				return -1;
-			}
-
-			if ( this > other ) {
-				return 1;
-			}
-
-			return 0;
-		}
 
 		public String ToString( IFormatProvider provider ) => ToString( this.Mantissa, this.Exponent, provider );
 
@@ -850,7 +852,6 @@ namespace ExtendedNumerics {
 
 			return result;
 		}
-
 
 	}
 
