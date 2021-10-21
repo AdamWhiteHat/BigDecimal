@@ -9,21 +9,59 @@
 	public class TestBigDecimalCritical {
 
 		[Test]
-		public void TestConstructor001() {
-			BigDecimal a = 0;
-			var b = new BigDecimal( 0, 0 );
-			var c = new BigDecimal( 123456789 );
+		public void TestConstructorToString0() {
+			BigDecimal expected = 0;
+			var actual = new BigDecimal( 0 );
+
+			Assert.AreEqual( expected, actual );
+		}
+
+		[Test]
+		public void TestConstructorToString00() {
+			BigDecimal expected = 0;
+			var actual = new BigDecimal( 0, 0 );
+
+			Assert.AreEqual( expected, actual );
+		}
+
+		[Test]
+		public void TestConstructorToString123456789() {
+			const Int32 numbers = 123456789;
+			var expected = numbers.ToString();
+			var actual = new BigDecimal( numbers ).ToString();
+
+			Assert.AreEqual( expected, actual );
+		}
+
+		[Test]
+		public void TestConstructor001WriteLineA() {
+			var p = 3.141592793238462m;
 			var d = new BigDecimal( 3141592793238462, -15 );
+			TestContext.WriteLine( d.ToString() );
+			var g = ( BigDecimal )p;
+
+			Assert.AreEqual( g, d );
+		}
+
+		[Test]
+		public void TestConstructor001WriteLineB() {
+			const Decimal m = 0.0000000000000001m;
+
 			var e = new BigDecimal( 1000000000, -25 );
+			var h = ( BigDecimal )m;
+
+			TestContext.WriteLine( m );
+			TestContext.WriteLine( e );
+			TestContext.WriteLine( h );
+
+			Assert.AreEqual( h.ToString(), e.ToString() );
+		}
+
+		[Test]
+		public void TestConstructor001D() {
 			var i = BigDecimal.Parse( "0.5" );
 			var j = BigDecimal.Parse( "0.01" );
 
-			TestContext.WriteLine( d.ToString() );
-			TestContext.WriteLine( e.ToString() );
-
-			Assert.AreEqual( "0", a.ToString() );
-			Assert.AreEqual( "0", b.ToString() );
-			Assert.AreEqual( "123456789", c.ToString() );
 			Assert.AreEqual( "0.5", i.ToString() );
 			Assert.AreEqual( "0.01", j.ToString() );
 		}
@@ -61,9 +99,13 @@
 			var result2 = BigDecimal.Parse( "0" );
 			var result3 = BigDecimal.Parse( "-0" );
 
-			result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '(empty string)'" );
-			result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0'" );
-			result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0'" );
+			//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '(empty string)'" );
+			//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0'" );
+			//result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0'" );
+
+			Assert.AreEqual( result1, BigDecimal.Zero );
+			Assert.AreEqual( result2, BigDecimal.Zero );
+			Assert.AreEqual( result3, BigDecimal.Zero );
 		}
 
 		[Test]
@@ -76,37 +118,47 @@
 			var result2 = BigDecimal.Parse( expected2 );
 			var result3 = BigDecimal.Parse( expected3 );
 
-			result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-123456789'" );
-			result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '123456789'" );
-			result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '1234.56789'" );
+			var dec1 = Decimal.Parse( expected1 );
+			dec1.Should()?.Be( ( Decimal )result1 );
+
+			var dec2 = Decimal.Parse( expected2 );
+			dec2.Should()?.Be( ( Decimal )result2 );
+
+			var dec3 = Decimal.Parse( expected3 );
+			dec3.Should()?.Be( ( Decimal )result3 );
+
+			//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-123456789'" );
+			//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '123456789'" );
+			//result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '1234.56789'" );
 
 			var actual1 = result1.ToString();
-			var actual2 = result2.ToString();
-			var actual3 = result3.ToString();
-
 			Assert.AreEqual( expected1, actual1 );
+
+			var actual2 = result2.ToString();
 			Assert.AreEqual( expected2, actual2 );
+
+			var actual3 = result3.ToString();
 			Assert.AreEqual( expected3, actual3 );
 		}
 
 		[Test]
 		public void TestParse004() {
-			var result1 = BigDecimal.Parse( "0.125" );
-			var result2 = BigDecimal.Parse( "-0.0625" );
+			var result1 = ( Decimal )BigDecimal.Parse( "0.125" );
+			var dec1 = Decimal.Parse( "0.125" );
+			dec1.Should()?.Be( result1 );
 
-			result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0.125'" );
-			result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0.0625'" );
+			var result2 = ( Decimal )BigDecimal.Parse( "-0.0625" );
+			var dec2 = Decimal.Parse( "-0.0625" );
+			dec2.Should()?.Be( result2 );
+
+			//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0.125'" );
+			//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0.0625'" );
 		}
 
 		[Test]
-		public void TestNormalize() {
-			var expectedResult = BigDecimal.Parse( "1000000" );
-			var result = new BigDecimal( 1000000000, -3 );
-
-			result.Normalize();
-
-			var expected = expectedResult.ToString();
-			var actual = result.ToString();
+		public void TestNormalizeB() {
+			var expected = BigDecimal.Parse( "1000000" );
+			var actual = new BigDecimal( 1000000000, -3 );
 
 			Assert.AreEqual( expected, actual );
 		}
@@ -119,7 +171,7 @@
 
 			var expectedResult = BigDecimal.Parse( inputTruncated );
 			var result = BigDecimal.Parse( String.Concat( inputTruncated, inputOverflow ) );
-			result.Truncate();
+			result = BigDecimal.Truncate( result, 5000 );
 			var success = expectedResult.Equals( result );
 
 			Assert.IsTrue( success );
