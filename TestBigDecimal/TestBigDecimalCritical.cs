@@ -9,7 +9,7 @@
 	public class TestBigDecimalCritical {
 
 		[Test]
-		public void TestConstructorToString0() {
+		public void TestConstructor0() {
 			BigDecimal expected = 0;
 			var actual = new BigDecimal( 0 );
 
@@ -17,7 +17,7 @@
 		}
 
 		[Test]
-		public void TestConstructorToString00() {
+		public void TestConstructor00() {
 			BigDecimal expected = 0;
 			var actual = new BigDecimal( 0, 0 );
 
@@ -35,12 +35,12 @@
 
 		[Test]
 		public void TestConstructor001WriteLineA() {
-			var p = 3.141592793238462m;
+			var π = ( BigDecimal )3.141592793238462m;
 			var d = new BigDecimal( 3141592793238462, -15 );
-			TestContext.WriteLine( d.ToString() );
-			var g = ( BigDecimal )p;
+			TestContext.WriteLine( "π = " + π );
+			TestContext.WriteLine( "d = " + d );
 
-			Assert.AreEqual( g, d );
+			Assert.AreEqual( π, d );
 		}
 
 		[Test]
@@ -96,15 +96,12 @@
 		[Test]
 		public void TestParse002() {
 			var result1 = BigDecimal.Parse( "" );
-			var result2 = BigDecimal.Parse( "0" );
-			var result3 = BigDecimal.Parse( "-0" );
-
-			//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '(empty string)'" );
-			//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0'" );
-			//result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0'" );
-
 			Assert.AreEqual( result1, BigDecimal.Zero );
+
+			var result2 = BigDecimal.Parse( "0" );
 			Assert.AreEqual( result2, BigDecimal.Zero );
+
+			var result3 = BigDecimal.Parse( "-0" );
 			Assert.AreEqual( result3, BigDecimal.Zero );
 		}
 
@@ -175,6 +172,18 @@
 			var success = expectedResult.Equals( result );
 
 			Assert.IsTrue( success );
+		}
+
+		[Test]
+		public void Test47() {
+			var π1 = 1 * BigDecimal.π;
+			var π2 = 2 * BigDecimal.π;
+			var π4 = 4 * BigDecimal.π;
+			var π8 = 8 * BigDecimal.π;
+			var sum = π1 + π2 + π4 + π8;
+			var t = ( Int32 ) sum.WholeValue;
+
+			Assert.AreEqual( 47, t );
 		}
 
 	}
