@@ -5,6 +5,7 @@
 	using ExtendedNumerics;
 	using NUnit.Framework;
 
+	[Parallelizable( ParallelScope.All )]
 	[TestFixture]
 	public class TestBigDecimalConversion {
 

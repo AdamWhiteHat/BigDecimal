@@ -204,7 +204,7 @@ namespace ExtendedNumerics {
 		/// <exception cref="ArgumentOutOfRangeException"></exception>
 		/// <exception cref="InvalidOperationException"></exception>
 		public static BigDecimal GetPiDigits( Int32 digits = 512 ) {
-			if ( digits is <= 0 or > 1_000_000) {
+			if ( digits is <= 0 or > 1_000_000 ) {
 				throw new ArgumentOutOfRangeException( nameof( digits ) );
 			}
 
@@ -287,10 +287,21 @@ namespace ExtendedNumerics {
 				input = input.Replace( BigDecimalNumberFormatInfo.NegativeSign, String.Empty );
 			}
 
+			var posE = input.LastIndexOf( 'E' ) + 1;
+
+			if ( posE > 0 ) {
+				var sE = input[ posE.. ];
+
+				if ( Int32.TryParse( sE, out exponent ) ) {
+					//Trim off the exponent
+					input = input[ ..( posE - 1 ) ] ?? String.Empty;
+				}
+			}
+
 			if ( input.Contains( BigDecimalNumberFormatInfo.NumberDecimalSeparator ) ) {
 				var decimalPlace = input.IndexOf( BigDecimalNumberFormatInfo.NumberDecimalSeparator, StringComparison.Ordinal );
 
-				exponent = decimalPlace + 1 - input.Length;
+				exponent += decimalPlace + 1 - input.Length;
 				input = input.Replace( BigDecimalNumberFormatInfo.NumberDecimalSeparator, String.Empty );
 			}
 
@@ -348,7 +359,7 @@ namespace ExtendedNumerics {
 				var c = s[ pos ];
 
 				while ( pos > 0 && c == '0' ) {
-					c = s[ --pos ]; //scan backwards to find the not-last 0.
+					c = s[ --pos ]; //scan backwards to find the last not-0.
 				}
 
 				var mant = s.Substring( 0, pos + 1 );
@@ -375,14 +386,27 @@ namespace ExtendedNumerics {
 		///     behaves like Math.Truncate(). For example, GetWholePart() would return 3 for Math.PI.
 		/// </summary>
 		public BigInteger GetWholePart() {
+
 			var resultString = String.Empty;
 			var decimalString = ToString( this.Mantissa, this.Exponent, BigDecimalNumberFormatInfo );
+
 			var valueSplit = decimalString.Split( '.', StringSplitOptions.RemoveEmptyEntries );
 			if ( valueSplit.Length > 0 ) {
 				resultString = valueSplit[ 0 ];
 			}
 
+			valueSplit = resultString.Split( 'E', StringSplitOptions.RemoveEmptyEntries );
+
+			if ( valueSplit.Length == 1 ) {
+				resultString = valueSplit[ 0 ];
+			}
+			else if ( valueSplit.Length == 2 ) {
+				resultString = valueSplit[ 0 ];
+			}
+
+
 			return BigInteger.Parse( resultString );
+
 		}
 
 		/// <summary>
@@ -683,6 +707,9 @@ namespace ExtendedNumerics {
 			//	if (dividend > divisor) { return Divide_Positive(dividend, divisor); }
 
 			if ( Abs( dividend ) == 1 ) {
+				
+				//TODO This just shortcuts with System.Double doing the division. Not really accurate..
+
 				var doubleDivisor = Double.Parse( divisor.ToString() );
 				doubleDivisor = 1d / doubleDivisor;
 
@@ -870,7 +897,10 @@ namespace ExtendedNumerics {
 
 		public String ToString( IFormatProvider provider ) => ToString( this.Mantissa, this.Exponent, provider );
 
-		private static String ToString( BigInteger mantissa, Int32 exponent, IFormatProvider provider ) {
+		public static String ToString( BigInteger mantissa, Int32 exponent, IFormatProvider provider ) => UnNormalize( mantissa, exponent, provider );
+
+		public static String UnNormalize( BigInteger mantissa, Int32 exponent, IFormatProvider provider ) {
+
 			if ( provider is null ) {
 				throw new ArgumentNullException( nameof( provider ) );
 			}
@@ -886,7 +916,8 @@ namespace ExtendedNumerics {
 			if ( negativeExponent ) {
 				if ( absExp > result.Length ) {
 					var zerosToAdd = Math.Abs( absExp - result.Length );
-					var zeroString = String.Join( String.Empty, Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
+					//var zeroString = String.Join( String.Empty, Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
+					var zeroString = String.Empty.PadRight( zerosToAdd, formatProvider.NativeDigits[ 0 ][ 0 ] );
 					result = zeroString + result;
 					result = result.Insert( 0, formatProvider.NumberDecimalSeparator );
 					result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
@@ -907,10 +938,6 @@ namespace ExtendedNumerics {
 			else {
 				var zeroString = String.Join( String.Empty, Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], absExp ) );
 				result += zeroString;
-			}
-
-			if ( negativeExponent ) {
-				//TODO Prefix "0."
 			}
 
 			if ( negativeValue ) {

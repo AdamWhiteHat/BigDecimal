@@ -1,10 +1,12 @@
 ﻿namespace TestBigDecimal {
 
 	using System;
+	using System.Globalization;
 	using ExtendedNumerics;
 	using FluentAssertions;
 	using NUnit.Framework;
 
+	[Parallelizable( ParallelScope.All )]
 	[TestFixture]
 	public class TestBigDecimalCritical {
 
@@ -50,9 +52,9 @@
 			var e = new BigDecimal( 1000000000, -25 );
 			var h = ( BigDecimal )m;
 
-			TestContext.WriteLine( m );
-			TestContext.WriteLine( e );
-			TestContext.WriteLine( h );
+			TestContext.WriteLine( "m = " + m );
+			TestContext.WriteLine( "e = " + e );
+			TestContext.WriteLine( "h = " + h );
 
 			Assert.AreEqual( h.ToString(), e.ToString() );
 		}
@@ -106,33 +108,58 @@
 		}
 
 		[Test]
-		public void TestParse003() {
-			const String expected1 = "-123456789";
-			const String expected2 = "123456789";
+		public void TestParse0031() {
+			const String expected = "-123456789";
+			var bigDecimal = BigDecimal.Parse( expected );
+			Decimal.Parse( expected ).Should()?.Be( ( Decimal )bigDecimal );
+			var actual = bigDecimal.ToString();
+			Assert.AreEqual( expected, actual );
+		}
+
+		[Theory()]
+		[Test]
+		public void TestParse0032() {
+			const String expected = "123456789";
+			var bigDecimal = BigDecimal.Parse( expected );
+			Decimal.Parse( expected ).Should()?.Be( ( Decimal )bigDecimal );
+			var actual = bigDecimal.ToString();
+			Assert.AreEqual( expected, actual );
+
+		}
+
+		[Test]
+		public void TestSubtractions(
+			[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 10 )] Double b,
+			[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 10 )] Double d ) {
+
+			var strB = $"{b:R}";
+			var strD = $"{d:R}";
+
+			TestContext.WriteLine( $"{b:R} = {strB}" );
+			TestContext.WriteLine( $"{d:R} = {strD}" );
+
+			var bigB = BigDecimal.Parse( strB );
+			var bigD = BigDecimal.Parse( strD );
+
+			TestContext.WriteLine( Environment.NewLine );
+			TestContext.WriteLine( $"bigB = {bigB}" );
+			TestContext.WriteLine( $"bigD = {bigD}" );
+
+			var result1 = BigDecimal.Subtract( bigB, bigD );
+			var result2 = bigB - bigD;
+
+			result1.Should()?.Be( result2 );
+		}
+
+		[Test]
+		public void TestParse0033() {
 			const String expected3 = "1234.56789";
 
-			var result1 = BigDecimal.Parse( expected1 );
-			var result2 = BigDecimal.Parse( expected2 );
 			var result3 = BigDecimal.Parse( expected3 );
-
-			var dec1 = Decimal.Parse( expected1 );
-			dec1.Should()?.Be( ( Decimal )result1 );
-
-			var dec2 = Decimal.Parse( expected2 );
-			dec2.Should()?.Be( ( Decimal )result2 );
 
 			var dec3 = Decimal.Parse( expected3 );
 			dec3.Should()?.Be( ( Decimal )result3 );
 
-			//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-123456789'" );
-			//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '123456789'" );
-			//result3.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '1234.56789'" );
-
-			var actual1 = result1.ToString();
-			Assert.AreEqual( expected1, actual1 );
-
-			var actual2 = result2.ToString();
-			Assert.AreEqual( expected2, actual2 );
 
 			var actual3 = result3.ToString();
 			Assert.AreEqual( expected3, actual3 );
@@ -181,7 +208,7 @@
 			var π4 = 4 * BigDecimal.π;
 			var π8 = 8 * BigDecimal.π;
 			var sum = π1 + π2 + π4 + π8;
-			var t = ( Int32 ) sum.WholeValue;
+			var t = ( Int32 )sum.WholeValue;
 
 			Assert.AreEqual( 47, t );
 		}
