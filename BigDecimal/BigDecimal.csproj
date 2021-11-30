@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows7.0</TargetFramework>
+		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
 		<LangVersion>preview</LangVersion>
 		<AnalysisLevel>preview</AnalysisLevel>
@@ -13,7 +13,7 @@
 		<OutputType>Library</OutputType>
 		<Nullable>enable</Nullable>
 		<RootNamespace>ExtendedNumerics</RootNamespace>
-		<SupportedOSPlatformVersion>7.0</SupportedOSPlatformVersion>
+		<SupportedOSPlatformVersion>10.0.22000.0</SupportedOSPlatformVersion>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
