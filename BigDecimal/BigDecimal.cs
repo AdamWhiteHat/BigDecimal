@@ -133,9 +133,9 @@ namespace ExtendedNumerics {
 		/// </summary>
 		public static Boolean AlwaysNormalize { get; set; } = true;
 
-		public BigInteger Mantissa { get; private set; }
+		public BigInteger Mantissa { get; init; }
 
-		public Int32 Exponent { get; private set; }
+		public Int32 Exponent { get; init; }
 
 		public Int32 Sign => this.GetSign();
 
@@ -252,8 +252,6 @@ namespace ExtendedNumerics {
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		/// <exception cref=""></exception>
-		/// <exception cref=""></exception>
 		public static BigDecimal Parse( String input ) {
 			if ( String.IsNullOrEmpty( input ) || !Char.IsDigit( input[ 0 ] ) || !Char.IsDigit( input[ ^1 ] ) ) {
 				input = input.Trim();
@@ -294,7 +292,7 @@ namespace ExtendedNumerics {
 
 				if ( Int32.TryParse( sE, out exponent ) ) {
 					//Trim off the exponent
-					input = input[ ..( posE - 1 ) ] ?? String.Empty;
+					input = input[ ..( posE - 1 ) ];
 				}
 			}
 
@@ -317,16 +315,20 @@ namespace ExtendedNumerics {
 		///     Truncates the BigDecimal to the given precision by removing the least significant digits.
 		/// </summary>
 		public static BigDecimal Truncate( BigDecimal value, Int32 precision ) {
-			var sign = Math.Sign( value.Exponent );
-			var difference = ( precision - GetSignifigantDigits( value.Mantissa ) ) * -1;
+
+			var mantissa = value.Mantissa;
+			var exponent = value.Exponent;
+
+			var sign = Math.Sign( exponent );
+			var difference = ( precision - GetSignifigantDigits( mantissa ) ) * -1;
 			if ( difference >= 1 ) {
-				value.Mantissa = BigInteger.Divide( value.Mantissa, BigInteger.Pow( TenInt, difference ) );
+				mantissa = BigInteger.Divide( mantissa, BigInteger.Pow( TenInt, difference ) );
 				if ( sign != 0 ) {
-					value.Exponent += sign * difference;
+					exponent += sign * difference;
 				}
 			}
 
-			return Normalize( value );
+			return new BigDecimal( mantissa, exponent );
 		}
 
 		/*
@@ -541,16 +543,12 @@ namespace ExtendedNumerics {
 				throw new ArgumentNullException( nameof( value ) );
 			}
 
-			//Normalize( value );
 			if ( value.Exponent < 0 ) {
 				var mant = value.Mantissa.ToString();
 
 				var length = value.GetDecimalIndex();
 				if ( length > 0 ) {
-					var s = mant[ ..length ];
-					if ( s != null ) {
-						return BigInteger.Parse( s );
-					}
+					return BigInteger.Parse( mant[ ..length ] );
 				}
 
 				if ( length == 0 ) {
@@ -701,13 +699,10 @@ namespace ExtendedNumerics {
 				throw new DivideByZeroException( nameof( divisor ) );
 			}
 
-			//Normalize( dividend );
-			//Normalize( divisor );
-
 			//	if (dividend > divisor) { return Divide_Positive(dividend, divisor); }
 
 			if ( Abs( dividend ) == 1 ) {
-				
+
 				//TODO This just shortcuts with System.Double doing the division. Not really accurate..
 
 				var doubleDivisor = Double.Parse( divisor.ToString() );
@@ -716,35 +711,23 @@ namespace ExtendedNumerics {
 				return Parse( doubleDivisor.ToString( CultureInfo.CurrentCulture ) );
 			}
 
-			//var remString = "";
-			//var mantissaString = "";
-			//var dividendMantissaString = dividend.Mantissa.ToString();
-			//var divisorMantissaString = divisor.Mantissa.ToString();
-
-			//var dividendMantissaLength = dividend.DecimalPlaces;
-			//var divisorMantissaLength = divisor.DecimalPlaces;
-			var exponentChange = dividend.Exponent - divisor.Exponent; //(dividendMantissaLength - divisorMantissaLength);
+			var exponentChange = dividend.Exponent - divisor.Exponent;
 
 			var counter = 0;
-			BigDecimal result = 0;
-			result.Mantissa = BigInteger.DivRem( dividend.Mantissa, divisor.Mantissa, out var remainder );
-			while ( remainder != 0 && result.SignifigantDigits < divisor.SignifigantDigits ) {
+
+			var mantissa = BigInteger.DivRem( dividend.Mantissa, divisor.Mantissa, out var remainder );
+
+			while ( remainder != 0 && GetSignifigantDigits( mantissa ) < divisor.SignifigantDigits ) {
 				while ( BigInteger.Abs( remainder ) < BigInteger.Abs( divisor.Mantissa ) ) {
 					remainder *= 10;
-					result.Mantissa *= 10;
+					mantissa *= 10;
 					counter++;
-					//remString = remainder.ToString();
-					//mantissaString = result.Mantissa.ToString();
 				}
 
-				result.Mantissa += BigInteger.DivRem( remainder, divisor.Mantissa, out remainder );
-
-				//remString = remainder.ToString();
-				//mantissaString = result.Mantissa.ToString();
+				mantissa += BigInteger.DivRem( remainder, divisor.Mantissa, out remainder );
 			}
 
-			result.Exponent = exponentChange - counter;
-			return result;
+			return new BigDecimal( mantissa, exponentChange - counter );
 		}
 
 		/// <summary>
@@ -942,10 +925,10 @@ namespace ExtendedNumerics {
 
 			if ( negativeValue ) {
 				// Prefix "-"
-				return result?.Insert( 0, formatProvider.NegativeSign ) ?? String.Empty;
+				return result.Insert( 0, formatProvider.NegativeSign );
 			}
 
-			return result ?? String.Empty;
+			return result;
 		}
 
 	}
