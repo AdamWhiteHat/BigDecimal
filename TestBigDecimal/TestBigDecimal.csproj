@@ -13,6 +13,8 @@
 		<OutputType>Library</OutputType>
 		<Nullable>enable</Nullable>
 		<RootNamespace>TestBigDecimal</RootNamespace>
+		<StartupObject></StartupObject>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>

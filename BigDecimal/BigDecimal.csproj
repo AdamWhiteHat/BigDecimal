@@ -26,6 +26,7 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<WarningLevel>1</WarningLevel>
 		<WarningsAsErrors>NU1605</WarningsAsErrors>
+		<DefineConstants>$(DefineConstants);</DefineConstants>
 	</PropertyGroup>
 	<Choose>
 		<When Condition="'$(Configuration)'=='Debug'">
@@ -33,7 +34,7 @@
 				<DebugSymbols>true</DebugSymbols>
 				<DebugType>full</DebugType>
 				<Optimize>false</Optimize>
-				<DefineConstants>TRACE;DEBUG;VERBOSE;</DefineConstants>
+				<DefineConstants>$(DefineConstants);DEBUG;VERBOSE;</DefineConstants>
 			</PropertyGroup>
 		</When>
 		<When Condition="'$(Configuration)'=='Release'">
