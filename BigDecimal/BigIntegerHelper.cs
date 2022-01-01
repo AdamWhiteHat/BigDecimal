@@ -138,5 +138,4 @@ public static class BigIntegerHelper {
 
 		return input == p ? n : low;
 	}
-
 }
