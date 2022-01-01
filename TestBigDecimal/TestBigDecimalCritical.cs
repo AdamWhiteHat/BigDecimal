@@ -130,7 +130,9 @@ public class TestBigDecimalCritical {
 	public void TestParse0031() {
 		const String expected = "-123456789";
 		var bigDecimal = BigDecimal.Parse( expected );
-		Decimal.Parse( expected ).Should()?.Be( ( Decimal ) bigDecimal );
+
+		Decimal.Parse( expected ).Should()?.Be( ( Decimal? )bigDecimal );
+
 		var actual = bigDecimal.ToString();
 		Assert.AreEqual( expected, actual );
 	}
@@ -140,7 +142,7 @@ public class TestBigDecimalCritical {
 	public void TestParse0032() {
 		const String expected = "123456789";
 		var bigDecimal = BigDecimal.Parse( expected );
-		Decimal.Parse( expected ).Should()?.Be( ( Decimal ) bigDecimal );
+		Decimal.Parse( expected ).Should()?.Be( ( Decimal? ) bigDecimal );
 		var actual = bigDecimal.ToString();
 		Assert.AreEqual( expected, actual );
 	}
@@ -152,7 +154,7 @@ public class TestBigDecimalCritical {
 		var result3 = BigDecimal.Parse( expected3 );
 
 		var dec3 = Decimal.Parse( expected3 );
-		dec3.Should()?.Be( ( Decimal ) result3 );
+		dec3.Should()?.Be( ( Decimal? ) result3 );
 
 		var actual3 = result3.ToString();
 		Assert.AreEqual( expected3, actual3 );
@@ -160,11 +162,11 @@ public class TestBigDecimalCritical {
 
 	[Test]
 	public void TestParse004() {
-		var result1 = ( Decimal ) BigDecimal.Parse( "0.125" );
+		var result1 = ( Decimal? ) BigDecimal.Parse( "0.125" );
 		var dec1 = Decimal.Parse( "0.125" );
 		dec1.Should()?.Be( result1 );
 
-		var result2 = ( Decimal ) BigDecimal.Parse( "-0.0625" );
+		var result2 = ( Decimal? ) BigDecimal.Parse( "-0.0625" );
 		var dec2 = Decimal.Parse( "-0.0625" );
 		dec2.Should()?.Be( result2 );
 
