@@ -1,13 +1,13 @@
-﻿#nullable enable
+﻿namespace ExtendedNumerics;
 
-namespace ExtendedNumerics;
-
+#nullable enable
 using System;
 using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Windows.Forms;
 using Exceptions;
 using Properties;
 using Reflection;
@@ -16,25 +16,30 @@ using Reflection;
 ///     <para>Arbitrary precision decimal. All operations are exact, except for division.</para>
 ///     <para>Division never determines more digits than the given precision.</para>
 ///     <para>Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at gmail.com)</para>
-///     <para>Modified and extended by Adam White (https://csharpcodewhisperer.blogspot.com/)</para>
+///     <para>Modified and extended by Adam White (http://csharpcodewhisperer.blogspot.com/)</para>
 ///     <para>Further modified by Rick Harker, Rick.Rick.Harker@gmail.com</para>
 /// </summary>
 [Immutable]
-public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<Int32> {
+public readonly record struct BigDecimal : /*INumberTyped,*/ IComparable, IComparable<BigDecimal>, IComparable<Int32> {
 
 	private const String NumericCharacters = "-0.1234567890";
 
 	private const String NullString = "(null)";
 
-	public static BigDecimal Ten => 10;
+	/// <summary>
+	///     Sets the maximum precision of division operations. If AlwaysTruncate is set to true all operations are affected.
+	/// </summary>
+	public const Int32 DefaultPrecision = 5000;
 
-	public static BigDecimal One => 1;
+	public static BigDecimal Ten { get; }
 
-	public static BigDecimal Zero => 0;
+	public static BigDecimal One { get; }
 
-	public static BigDecimal OneHalf => 0.5d;
+	public static BigDecimal Zero { get; }
 
-	public static BigDecimal MinusOne => -1;
+	public static BigDecimal OneHalf { get; }
+
+	public static BigDecimal MinusOne { get; }
 
 	public static BigDecimal E { get; }
 
@@ -42,11 +47,32 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 	public static BigDecimal π { get; }
 
-	private static BigInteger TenInt { get; } = new( 10 );
+	private static BigInteger TenInt { get; }
 
-	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.InvariantCulture.NumberFormat;
+	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; }
 
 	static BigDecimal() {
+		AlwaysTruncate = false;
+		AlwaysNormalize = true;
+		BigDecimalNumberFormatInfo = CultureInfo.InvariantCulture.NumberFormat;
+
+		try {
+			Ten = new( 10, 0 );
+			One = new( 1 );
+			Zero = new( 0 );
+			OneHalf = 0.5d;
+			TenInt = new( 10 );
+		}
+		catch ( Exception exception ) {
+			Debug.WriteLine( exception );
+		}
+
+		try {
+			MinusOne = new BigDecimal( BigInteger.MinusOne, 0 );
+		}
+		catch ( Exception exception ) {
+			Debug.WriteLine( exception );
+		}
 
 		try {
 			Pi = Parse(
@@ -63,6 +89,10 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 			Debug.WriteLine( exception );
 		}
 
+		Debug.WriteLine( Pi );
+		Debug.WriteLine( String.Empty );
+		Debug.WriteLine( π );
+
 		try {
 			E = Parse(
 				"2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383" );
@@ -70,17 +100,24 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		catch ( Exception exception ) {
 			Debug.WriteLine( exception );
 		}
+
 	}
 
 	public BigDecimal( Int32 value ) : this( new BigInteger( value ), 0 ) { }
 
+	/// <summary>
+	/// <para>The mantissa is the part of a number written in scientific notation that shows the "pattern" of the number (as opposed to the scale of the number).</para>
+	/// <para>The exponent is always the number of times the mantissa pattern needs to be multiplied by 10 to obtain a value equal to the "regular number".</para>
+	/// </summary>
+	/// <param name="mantissa"></param>
+	/// <param name="exponent"></param>
 	public BigDecimal( BigInteger mantissa, Int32 exponent = 0 ) {
 		this.Mantissa = mantissa;
 		this.Exponent = exponent;
 
 		BigDecimal result;
 		if ( AlwaysTruncate ) {
-			result = Truncate( this, Precision );
+			result = Truncate( this );
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
@@ -105,6 +142,8 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var mantissa = new BigInteger( value );
 		var exponent = 0;
 		Double scaleFactor = 1;
+
+		//BUG Potential .ToString() overflow here on extremely large numbers.
 		while ( Math.Abs( value * scaleFactor - Double.Parse( mantissa.ToString() ) ) > 0 ) {
 			exponent--;
 			scaleFactor *= 10;
@@ -116,7 +155,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		BigDecimal result;
 		if ( AlwaysTruncate ) {
-			result = Truncate( this, Precision );
+			result = Truncate( this );
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
@@ -130,15 +169,14 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 
 	/// <summary>
-	///     Sets the maximum precision of division operations. If AlwaysTruncate is set to true all operations are affected.
+	///     Specifies whether the significant digits should be truncated to the given precision after each operation.
 	/// </summary>
-	public static Int32 Precision { get; set; } = 5000;
+	public static Boolean AlwaysTruncate { get; set; }
 
-	/// <summary>Specifies whether the significant digits should be truncated to the given precision after each operation.</summary>
-	public static Boolean AlwaysTruncate { get; set; } = false;
-
-	/// <summary>TODO Describe this.</summary>
-	public static Boolean AlwaysNormalize { get; set; } = true;
+	/// <summary>
+	///     TODO Describe this.
+	/// </summary>
+	public static Boolean AlwaysNormalize { get; set; }
 
 	public BigInteger Mantissa { get; init; }
 
@@ -146,21 +184,27 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 	public Int32 Sign => this.GetSign();
 
-	public Int32 SignifigantDigits => GetSignifigantDigits( this.Mantissa );
+	public Int32 SignifigantDigits => this.Mantissa.GetSignifigantDigits();
 
 	public Int32 DecimalPlaces => this.SignifigantDigits + this.Exponent;
 
 	public BigInteger WholeValue => this.GetWholePart();
 
-	public Int32 Length => GetSignifigantDigits( this.Mantissa ) + this.Exponent;
+	public Int32 Length => this.Mantissa.GetSignifigantDigits() + this.Exponent;
 
-	/// <summary>This method returns true if the BigDecimal is equal to zero, false otherwise.</summary>
+	/// <summary>
+	///     This method returns true if the BigDecimal is equal to zero, false otherwise.
+	/// </summary>
 	public Boolean IsZero => this.Mantissa.IsZero;
 
-	/// <summary>This method returns true if the BigDecimal is greater than zero, false otherwise.</summary>
+	/// <summary>
+	///     This method returns true if the BigDecimal is greater than zero, false otherwise.
+	/// </summary>
 	public Boolean IsPositve => !this.IsZero && !this.IsNegative;
 
-	/// <summary>This method returns true if the BigDecimal is less than zero, false otherwise.</summary>
+	/// <summary>
+	///     This method returns true if the BigDecimal is less than zero, false otherwise.
+	/// </summary>
 	public Boolean IsNegative => this.Mantissa.Sign < 0;
 
 	/*
@@ -183,8 +227,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 	private static Lazy<BigDecimal> MaxBigDemicalForUInt32 => new( () => UInt32.MaxValue );
 
-	/*
-	/// <summary>For the old <see cref="IComparable" /> interface.</summary>
+	/// <summary>
+	///     For <see cref="IComparable" />.
+	/// </summary>
 	/// <param name="obj"></param>
 	/// <returns></returns>
 	/// <exception cref="InvalidOperationException"></exception>
@@ -195,9 +240,10 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		throw new InvalidOperationException( $"Could not convert object {obj} to a {nameof( BigDecimal )}." );
 	}
-	*/
 
-	/// <summary>Compares two BigDecimal values, returning an integer that indicates their relationship.</summary>
+	/// <summary>
+	///     Compares two BigDecimal values, returning an integer that indicates their relationship.
+	/// </summary>
 	/// <remarks>For IComparable&lt;BigDecimal&gt;</remarks>
 	public Int32 CompareTo( BigDecimal other ) =>
 		this > other ? SortingOrder.After :
@@ -217,7 +263,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <returns></returns>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
 	/// <exception cref="InvalidOperationException"></exception>
-	public static BigDecimal GetPiDigits( Int32 digits = 512 ) {
+	public static BigDecimal GetPiDigits( Int32 digits = 8192 ) {
 		if ( digits is <= 0 or > 999998 ) {
 			throw new ArgumentOutOfRangeException( nameof( digits ) );
 		}
@@ -231,7 +277,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return Parse( s );
 	}
 
-	/// <summary>Static equality test.</summary>
+	/// <summary>
+	///     Static equality test.
+	/// </summary>
 	/// <param name="left"></param>
 	/// <param name="right"></param>
 	/// <returns></returns>
@@ -247,19 +295,24 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		other is null || this > other ? SortingOrder.After :
 		this < other ? SortingOrder.Before : SortingOrder.Same;
 
-	/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
+	/// <summary>
+	///     Converts the string representation of a decimal to the BigDecimal equivalent.
+	/// </summary>
 	public static BigDecimal Parse( Double input ) => Parse( input.ToString( CultureInfo.CurrentCulture ) );
 
-	/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
+	/// <summary>
+	///     Converts the string representation of a decimal to the BigDecimal equivalent.
+	/// </summary>
 	public static BigDecimal Parse( Decimal input ) => Parse( input.ToString( CultureInfo.CurrentCulture ) );
 
-	/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
+	/// <summary>
+	///     Converts the string representation of a decimal to the BigDecimal equivalent.
+	/// </summary>
 	/// <param name="input"></param>
 	/// <returns></returns>
 	public static BigDecimal Parse( String input ) {
-		if ( String.IsNullOrEmpty( input ) || !Char.IsDigit( input[ 0 ] ) || !Char.IsDigit( input[ ^1 ] ) ) {
-			input = input.Trim();
-		}
+
+		input = input.Trim();
 
 		if ( String.IsNullOrEmpty( input ) ) {
 			return BigInteger.Zero;
@@ -302,12 +355,17 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 			}
 		}
 
-		if ( input.Contains( BigDecimalNumberFormatInfo.NumberDecimalSeparator ) ) {
-			var decimalPlace = input.IndexOf( BigDecimalNumberFormatInfo.NumberDecimalSeparator, StringComparison.Ordinal );
+		var decimalPlace = input.IndexOf( BigDecimalNumberFormatInfo.NumberDecimalSeparator, StringComparison.Ordinal );
 
-			exponent += decimalPlace + 1 - input.Length;
+		if ( decimalPlace > 0 ) {
+			exponent = input.Length - decimalPlace;
 			input = input.Replace( BigDecimalNumberFormatInfo.NumberDecimalSeparator, String.Empty );
 		}
+
+		//if ( input.Contains( BigDecimalNumberFormatInfo.NumberDecimalSeparator ) ) {
+		//	exponent += decimalPlace;// + 1;// - input.Length;
+		//	input = input.Replace( BigDecimalNumberFormatInfo.NumberDecimalSeparator, String.Empty );
+		//}
 
 		var mantessa = BigInteger.Parse( input );
 		if ( isNegative ) {
@@ -317,26 +375,53 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return new BigDecimal( mantessa, exponent );
 	}
 
-	/// <summary>Truncates the BigDecimal to the given precision by removing the least significant digits.</summary>
-	public static BigDecimal Truncate( BigDecimal value, Int32 precision ) {
+	/// <summary>
+	///     Truncates the BigDecimal to the given precision by removing the least significant digits.
+	/// </summary>
+	public static BigDecimal Truncate( BigDecimal value, Int32 precision = DefaultPrecision ) {
 		var mantissa = value.Mantissa;
 		var exponent = value.Exponent;
 
 		var sign = Math.Sign( exponent );
-		var difference = ( precision - GetSignifigantDigits( mantissa ) ) * -1;
-		if ( difference >= 1 ) {
-			mantissa = BigInteger.Divide( mantissa, BigInteger.Pow( TenInt, difference ) );
-			if ( sign != 0 ) {
-				exponent += sign * difference;
-			}
+
+		var difference = ( precision - mantissa.GetSignifigantDigits() ) * -1;
+
+		if ( difference < 1 ) {
+			return new BigDecimal( mantissa, exponent );
+		}
+
+		mantissa = BigInteger.Divide( mantissa, BigInteger.Pow( TenInt, difference ) );
+		if ( sign != 0 ) {
+			exponent += sign * difference;
 		}
 
 		return new BigDecimal( mantissa, exponent );
 	}
 
-	/// <summary>Truncate the number to the given precision by removing the least significant digits.</summary>
+	/// <summary>
+	///     Truncate the number to the given precision by removing the least significant digits.
+	/// </summary>
 	/// <returns>The truncated number</returns>
-	public BigDecimal TruncateAlt( Int32 precision ) {
+	public BigDecimal Truncate( Int32 precision = DefaultPrecision ) {
+
+		var shortened = Normalize( this );
+
+		// remove the least significant digits, as long as the number of digits is higher than the given Precision
+		var digits = NumberOfDigits( shortened.Mantissa );
+		var digitsToRemove = Math.Max( digits - precision, 0 );
+
+		var mantissa = shortened.Mantissa / BigInteger.Pow( 10, digitsToRemove );
+		var exponent = shortened.Exponent + digitsToRemove;
+
+		return new BigDecimal( mantissa, exponent );
+	}
+
+	/// <summary>
+	///     Truncate the number to the given precision by removing the least significant digits.
+	/// </summary>
+	/// <returns>The truncated number</returns>
+	/// <remarks>The other <see cref="Truncate(ExtendedNumerics.BigDecimal,Int32)"/> might be faster.</remarks>
+	public BigDecimal TruncateAlt( Int32 precision = DefaultPrecision ) {
 		// save some time because the number of digits is not needed to remove trailing zeros
 		var shortened = Normalize( this );
 
@@ -352,20 +437,23 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return new BigDecimal( mantissa, exponent );
 	}
 
-	public static Int32 NumberOfDigits( BigInteger value ) =>
+	public static Int32 NumberOfDigits( BigInteger value ) {
+		if ( value.IsZero ) {
+			return 1;
+		}
+		var numberOfDigits = BigInteger.Log10( value * value.Sign );
+		if ( numberOfDigits % 1 == 0 ) {
+			return ( Int32 )numberOfDigits + 1;
+		}
 
-		// do not count the sign
-		//return (value * value.Sign).ToString().Length;
-		// faster version
-		( Int32 )Math.Ceiling( BigInteger.Log10( value * value.Sign ) );
-
-	/// <summary>Truncates the BigDecimal to the current precision by removing the least significant digits.</summary>
-	public BigDecimal Truncate() => this.TruncateAlt( Precision );
+		return ( Int32 )Math.Ceiling( numberOfDigits );
+	}
 
 	/// <summary>
 	///     Removes any trailing zeros on the mantissa, adjusts the exponent, and returns a new <see cref="BigDecimal" />.
 	/// </summary>
 	/// <param name="value"></param>
+	/// <remarks>For extremely large numbers that are actually longer than a 2GB ToString, this will fail.</remarks>
 	[Pure]
 	public static BigDecimal Normalize( BigDecimal value ) {
 		if ( value.IsZero ) {
@@ -373,6 +461,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		var s = value.Mantissa.ToString();
+
 		var pos = s.LastIndexOf( '0', s.Length - 1 );
 
 		if ( pos < s.Length - 1 ) {
@@ -389,7 +478,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var zeros = s[ ( pos + 1 ).. ];
 
 		if ( BigInteger.TryParse( mant, out var mantissa ) ) {
-			value = value with {
+			return value with {
 				Mantissa = mantissa,
 				Exponent = value.Exponent + zeros.Length
 			};
@@ -398,29 +487,39 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return value;
 	}
 
-	/// <summary>Returns the zero-based index of the decimal point, if the BigDecimal were rendered as a string.</summary>
+	/// <summary>
+	///     Returns the zero-based index of the decimal point, if the BigDecimal were rendered as a string.
+	/// </summary>
 	public Int32 GetDecimalIndex() => GetDecimalIndex( this.Mantissa, this.Exponent );
 
 	/// <summary>
 	///     Returns the whole number integer part of the BigDecimal, dropping anything right of the decimal point. Essentially
 	///     behaves like Math.Truncate(). For example, GetWholePart() would return 3 for Math.PI.
 	/// </summary>
-	[ThisNeedsTesting]
 	public BigInteger GetWholePart() {
 		var resultString = String.Empty;
-		var decimalString = this.ToString( BigDecimalNumberFormatInfo );
+		var decimalString = this.ToString();
 
 		var valueSplit = decimalString.Split( '.', StringSplitOptions.RemoveEmptyEntries );
 		if ( valueSplit.Length > 0 ) {
 			resultString = valueSplit[ 0 ];
 		}
 
-		//resultString = resultString.Split( 'E', StringSplitOptions.RemoveEmptyEntries )[0];
+		valueSplit = resultString.Split( 'E', StringSplitOptions.RemoveEmptyEntries );
+
+		if ( valueSplit.Length == 1 ) {
+			resultString = valueSplit[ 0 ];
+		}
+		else if ( valueSplit.Length == 2 ) {
+			resultString = valueSplit[ 0 ];
+		}
 
 		return BigInteger.Parse( resultString );
 	}
 
-	/// <summary>Gets the fractional part of the BigDecimal, setting everything left of the decimal point to zero.</summary>
+	/// <summary>
+	///     Gets the fractional part of the BigDecimal, setting everything left of the decimal point to zero.
+	/// </summary>
 	public BigDecimal GetFractionalPart() {
 		var resultString = String.Empty;
 		var decimalString = this.ToString();
@@ -435,6 +534,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		var newMantessa = BigInteger.Parse( resultString.TrimStart( '0' ) );
+
 		var result = new BigDecimal( newMantessa, 0 - resultString.Length );
 		return result;
 	}
@@ -477,31 +577,6 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		return mantissaLength + exponent;
-	}
-
-	private static Int32 GetSignifigantDigits( BigInteger value ) {
-		if ( value.IsZero ) {
-			return 0;
-		}
-
-		var valueString = value.ToString();
-		if ( String.IsNullOrWhiteSpace( valueString ) ) {
-			return 0;
-		}
-
-		//TODO Why Trim? Why the Where?
-		valueString = new String( valueString.Trim().Where( c => NumericCharacters.Contains( c ) ).ToArray() );
-
-		valueString = valueString.Replace( BigDecimalNumberFormatInfo.NegativeSign, String.Empty );
-
-		//TODO Why "+"?
-		valueString = valueString.Replace( BigDecimalNumberFormatInfo.PositiveSign, String.Empty );
-		valueString = valueString.TrimEnd( '0' );
-
-		//TODO Can BigInteger ever have a "." to replace?
-		valueString = valueString.Replace( BigDecimalNumberFormatInfo.NumberDecimalSeparator, String.Empty );
-
-		return valueString.Length;
 	}
 
 	/// <summary>
@@ -558,10 +633,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return new BigDecimal( mantissa, exponent );
 	}
 
-	public static explicit operator BigInteger( BigDecimal value ) {
-		var floored = Floor( value );
-		return floored.Mantissa * BigInteger.Pow( 10, floored.Exponent );
-	}
+	public static explicit operator BigInteger( BigDecimal value ) => value.Mantissa * BigInteger.Pow( 10, value.Exponent );
 
 	/*
 	public static explicit operator BigInteger( BigDecimal value ) {
@@ -585,15 +657,27 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 	*/
 
-	/*
-	public static explicit operator Double( BigDecimal value ) {
-		if ( !Double.TryParse( value.Mantissa.ToString(), out var mantissa ) ) {
-			mantissa = Convert.ToDouble( value.Mantissa.ToString() );
+	//public static explicit operator Int32( BigDecimal value ) => ( Int32 )( value.Mantissa * BigInteger.Pow( 10, value.Exponent ) );
+
+	public static explicit operator Int32( BigDecimal value ) {
+		var t = ( BigDecimal )value.Mantissa * Math.Pow( 10, value.Exponent );
+		if ( t > MaxBigDemicalForInt32.Value ) {
+			throw new OutOfRangeException( $"{nameof( BigDecimal )} is too large to convert to a {nameof( Int32 )}." );
 		}
 
-		return mantissa * Math.Pow( 10, value.Exponent );
+		return ( Int32 )t;
 	}
-	*/
+
+	//public static explicit operator UInt32( BigDecimal value ) => ( UInt32 )( value.Mantissa * BigInteger.Pow( 10, value.Exponent ) );
+
+	public static explicit operator UInt32( BigDecimal value ) {
+		var t = ( BigDecimal )value.Mantissa * Math.Pow( 10, value.Exponent );
+		if ( t > MaxBigDemicalForUInt32.Value ) {
+			throw new OutOfRangeException( $"{nameof( BigDecimal )} is too large to convert to a {nameof( UInt32 )}." );
+		}
+
+		return ( UInt32 )t;
+	}
 
 	public static explicit operator Double( BigDecimal value ) {
 		var t = ( BigDecimal )value.Mantissa * Math.Pow( 10, value.Exponent );
@@ -621,9 +705,6 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		return ( Decimal )t;
 	}
-	public static explicit operator Int32( BigDecimal value ) => ( Int32 )( value.Mantissa * BigInteger.Pow( 10, value.Exponent ) );
-
-	public static explicit operator UInt32( BigDecimal value ) => ( UInt32 )( value.Mantissa * BigInteger.Pow( 10, value.Exponent ) );
 
 	/*
 	public static explicit operator UInt32( BigDecimal value ) {
@@ -666,13 +747,17 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public static Boolean operator >=( BigDecimal left, BigDecimal right ) =>
 		left.Exponent > right.Exponent ? AlignExponent( left, right ) >= right.Mantissa : left.Mantissa >= AlignExponent( right, left );
 
-	/// <summary>Returns the result of multiplying a BigDecimal by negative one.</summary>
+	/// <summary>
+	///     Returns the result of multiplying a BigDecimal by negative one.
+	/// </summary>
 	public static BigDecimal Negate( BigDecimal value ) =>
 		value with {
 			Mantissa = BigInteger.Negate( value.Mantissa )
 		};
 
-	/// <summary>Adds two BigDecimal values.</summary>
+	/// <summary>
+	///     Adds two BigDecimal values.
+	/// </summary>
 	public static BigDecimal Add( BigDecimal left, BigDecimal right ) {
 		if ( left.Exponent > right.Exponent ) {
 			return new BigDecimal( AlignExponent( left, right ) + right.Mantissa, right.Exponent );
@@ -681,13 +766,19 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return new BigDecimal( AlignExponent( right, left ) + left.Mantissa, left.Exponent );
 	}
 
-	/// <summary>Subtracts two BigDecimal values.</summary>
+	/// <summary>
+	///     Subtracts two BigDecimal values.
+	/// </summary>
 	public static BigDecimal Subtract( BigDecimal left, BigDecimal right ) => Add( left, Negate( right ) );
 
-	/// <summary>Multiplies two BigDecimal values.</summary>
+	/// <summary>
+	///     Multiplies two BigDecimal values.
+	/// </summary>
 	public static BigDecimal Multiply( BigDecimal left, BigDecimal right ) => new( left.Mantissa * right.Mantissa, left.Exponent + right.Exponent );
 
-	/// <summary>Divides two BigDecimal values, returning the remainder and discarding the quotient.</summary>
+	/// <summary>
+	///     Divides two BigDecimal values, returning the remainder and discarding the quotient.
+	/// </summary>
 	public static BigDecimal Mod( BigDecimal value, BigDecimal mod ) {
 		// x – q * y
 		var quotient = Divide( value, mod );
@@ -695,7 +786,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return Subtract( value, Multiply( floor, mod ) );
 	}
 
-	/// <summary>Divides two BigDecimal values.</summary>
+	/// <summary>
+	///     Divides two BigDecimal values.
+	/// </summary>
 	public static BigDecimal Divide( BigDecimal dividend, BigDecimal divisor ) {
 		if ( divisor == Zero ) {
 			throw new DivideByZeroException( nameof( divisor ) );
@@ -718,7 +811,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		var mantissa = BigInteger.DivRem( dividend.Mantissa, divisor.Mantissa, out var remainder );
 
-		while ( remainder != 0 && GetSignifigantDigits( mantissa ) < divisor.SignifigantDigits ) {
+		while ( remainder != 0 && mantissa.GetSignifigantDigits() < divisor.SignifigantDigits ) {
 			while ( BigInteger.Abs( remainder ) < BigInteger.Abs( divisor.Mantissa ) ) {
 				remainder *= 10;
 				mantissa *= 10;
@@ -743,7 +836,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 	*/
 
-	/// <summary>Returns e raised to the specified power</summary>
+	/// <summary>
+	///     Returns e raised to the specified power
+	/// </summary>
 	public static BigDecimal Exp( Double exponent ) {
 		var tmp = One;
 		while ( Math.Abs( exponent ) > 100 ) {
@@ -755,7 +850,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return tmp * Math.Exp( exponent );
 	}
 
-	/// <summary>Returns e raised to the specified power</summary>
+	/// <summary>
+	///     Returns e raised to the specified power
+	/// </summary>
 	public static BigDecimal Exp( BigInteger exponent ) {
 		var tmp = One;
 		while ( BigInteger.Abs( exponent ) > 100 ) {
@@ -768,7 +865,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return tmp * Math.Exp( exp );
 	}
 
-	/// <summary>Returns a specified number raised to the specified power.</summary>
+	/// <summary>
+	///     Returns a specified number raised to the specified power.
+	/// </summary>
 	public static BigDecimal Pow( BigDecimal baseValue, BigInteger exponent ) {
 		if ( exponent.IsZero ) {
 			return One;
@@ -793,7 +892,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return result;
 	}
 
-	/// <summary>Returns a specified number raised to the specified power.</summary>
+	/// <summary>
+	///     Returns a specified number raised to the specified power.
+	/// </summary>
 	public static BigDecimal Pow( Double basis, Double exponent ) {
 		var tmp = One;
 		while ( Math.Abs( exponent ) > 100 ) {
@@ -805,7 +906,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return tmp * Math.Pow( basis, exponent );
 	}
 
-	/// <summary>Returns the absolute value of the BigDecimal</summary>
+	/// <summary>
+	///     Returns the absolute value of the BigDecimal
+	/// </summary>
 	public static BigDecimal Abs( BigDecimal value ) {
 		if ( value.IsNegative ) {
 			return value * -1;
@@ -814,7 +917,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return value;
 	}
 
-	/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
+	/// <summary>
+	///     Rounds a BigDecimal value to the nearest integral value.
+	/// </summary>
 	public static BigInteger Round( BigDecimal value ) => Round( value, MidpointRounding.AwayFromZero );
 
 	/// <summary>
@@ -851,13 +956,12 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <summary>
 	///     Rounds a BigDecimal to an integer value. The BigDecimal argument is rounded towards positive infinity.
 	/// </summary>
-	[ThisNeedsTesting]
 	public static BigDecimal Ceiling( BigDecimal value ) {
 		BigDecimal result = value.WholeValue;
 
-		if ( result != value.Mantissa && value >= 0 ) {
-			result += 1;
-		}
+		//if ( result != value.Mantissa && value >= 0 ) {
+		result += One;
+		//}
 
 		return result;
 	}
@@ -868,71 +972,48 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public static BigDecimal Floor( BigDecimal value ) {
 		BigDecimal result = value.WholeValue;
 
-		if ( result != value.Mantissa && value <= 0 ) {
-			result -= 1;
-		}
+		//if ( result != value.Mantissa && value <= 0 ) {
+		result -= One;
+		//}
 
 		return result;
 	}
 
 	public override Int32 GetHashCode() => HashCode.Combine( this.Mantissa, this.Exponent );
 
-	public override String ToString() {
-		var result = this.ToString( BigDecimalNumberFormatInfo );
-		return result;
-	}
+	/// <summary>
+	///     <seealso cref="UnNormalize"/>, <seealso cref="Normalize"/>
+	/// </summary>
+	/// <returns></returns>
+	public override String ToString() => ToScientificENotation( this );
 
-	public String ToString( IFormatProvider provider ) => ToString( this.Mantissa, this.Exponent, provider );
+	public static String ToString( BigDecimal value ) => UnNormalize( value.Mantissa, value.Exponent, BigDecimalNumberFormatInfo );
 
-	private static String ToString( BigInteger mantissa, Int32 exponent, IFormatProvider provider ) {
-		if ( provider is null ) {
-			throw new ArgumentNullException( nameof( provider ) );
+	public static String ToString( BigInteger mantissa, Int32 exponent ) => UnNormalize( mantissa, exponent, BigDecimalNumberFormatInfo );
+
+	private static String ToScientificENotation( BigDecimal bigDecimal ) {
+
+		//   1.238E456
+		//   1.238E-456
+		//  -1.238E456
+		//  -1.238E-456
+		//   1E456
+		//   1E-456
+		//  -1E456
+		//  -1E-456
+		//  -3E-2
+
+		var decimalIndex = GetDecimalIndex( bigDecimal.Mantissa, bigDecimal.Exponent );
+
+		var manString = bigDecimal.Mantissa.ToString(); //will be prefixed with "-" if negative.
+
+		var period = manString.Length - bigDecimal.Exponent + 1;
+		if ( bigDecimal.Mantissa.Sign == -1 ) {
+			++period;
 		}
 
-		var formatProvider = NumberFormatInfo.GetInstance( provider );
-
-		var negativeValue = mantissa.Sign == -1;
-		var negativeExponent = Math.Sign( exponent ) == -1;
-
-		var result = BigInteger.Abs( mantissa ).ToString();
-		var absExp = Math.Abs( exponent );
-
-		if ( negativeExponent ) {
-			if ( absExp > result.Length ) {
-				var zerosToAdd = Math.Abs( absExp - result.Length );
-				var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
-				result = zeroString + result;
-				result = result.Insert( 0, formatProvider.NumberDecimalSeparator );
-				result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
-			}
-			else {
-				var indexOfRadixPoint = Math.Abs( absExp - result.Length );
-				result = result.Insert( indexOfRadixPoint, formatProvider.NumberDecimalSeparator );
-				if ( indexOfRadixPoint == 0 ) {
-					result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
-				}
-			}
-
-			result = result.TrimEnd( '0' );
-			if ( result.Last().ToString() == formatProvider.NumberDecimalSeparator ) {
-				result = result[ ..^1 ];
-			}
-		}
-		else {
-			var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], absExp ) );
-			result += zeroString;
-		}
-
-		if ( negativeExponent ) {
-			//TODO // Prefix "0."?
-		}
-
-		if ( negativeValue ) {
-			// Prefix "-"
-			result = result.Insert( 0, formatProvider.NegativeSign );
-		}
-
-		return result;
+		var result2 = $"{manString.Insert( period, "." )}E{bigDecimal.Exponent:D}";
+		return result2;
 	}
 
 	public static String UnNormalize( BigInteger mantissa, Int32 exponent, IFormatProvider provider ) {
@@ -952,7 +1033,8 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 				var zerosToAdd = Math.Abs( absExp - result.Length );
 
 				//var zeroString = String.Join( String.Empty, Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
-				var zeroString = String.Empty.PadRight( zerosToAdd, formatProvider.NativeDigits[ 0 ][ 0 ] );
+				var paddingChar = formatProvider.NativeDigits[ 0 ][ 0 ];
+				var zeroString = String.Empty.PadRight( zerosToAdd, paddingChar );
 				result = zeroString + result;
 				result = result.Insert( 0, formatProvider.NumberDecimalSeparator );
 				result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
@@ -982,34 +1064,4 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return result;
 	}
 
-	/// <summary>
-	/// Allow the BigDecimal to be formatted with the E notation.
-	/// </summary>
-	/// <param name="bigDecimal"></param>
-	/// <returns></returns>
-	[ThisNeedsTesting]
-	private static String ToScientificENotation( BigDecimal bigDecimal ) {
-
-		//   1.238E456
-		//   1.238E-456
-		//  -1.238E456
-		//  -1.238E-456
-		//   1E456
-		//   1E-456
-		//  -1E456
-		//  -1E-456
-		//  -3E-2
-
-		var manString = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
-
-		var period = manString.Length - bigDecimal.Exponent + 1;
-		if ( bigDecimal.Mantissa.Sign == -1 ) {
-			++period;
-		}
-
-		//TODO none of this is tested or guaranteed to work yet. Like negatives, or small numbers need the correct logic.
-
-		var result2 = $"{manString.Insert( period, "." )}E{bigDecimal.Exponent:D}";
-		return result2;
-	}
 }

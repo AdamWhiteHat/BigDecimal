@@ -13,9 +13,9 @@ public class TestBigDecimalFunctions {
 	public void TestGCD() {
 		var expected = BigDecimal.Parse( "10" );
 
-		BigDecimal result = BigIntegerHelper.GCD( new BigInteger[] {
+		BigDecimal result = new BigInteger[] {
 			20, 30, 210, 310, 360, 5040, 720720
-		} );
+		}.GCD();
 
 		Assert.AreEqual( expected, result );
 	}
@@ -194,8 +194,12 @@ public class TestBigDecimalFunctions {
 	) {
 		var top = new BigDecimal( a, b );
 		var bottom = new BigDecimal( c, d );
-		var result = top / bottom;
-		TestContext.WriteLine( result );
+		var expected = BigDecimal.Divide( top, bottom );
+		var actual = top / bottom;
+
+		Assert.AreEqual( expected, actual );
+
+		//TestContext.WriteLine( actual );
 	}
 
 }

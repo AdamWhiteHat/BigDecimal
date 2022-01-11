@@ -36,9 +36,9 @@ public class TestBigDecimalOperations {
 	public void TestCeiling001() {
 		var expected = BigDecimal.Parse( "4" );
 
-		var ceiling = BigDecimal.Ceiling( BigDecimal.Pi );
+		var actual = BigDecimal.Ceiling( BigDecimal.Pi );
 
-		Assert.AreEqual( expected, ceiling );
+		Assert.AreEqual( expected, actual );
 	}
 
 	[Test]
@@ -46,7 +46,7 @@ public class TestBigDecimalOperations {
 		var expected = BigDecimal.Parse( "-3" );
 		var ceiling = BigDecimal.Ceiling( BigDecimal.Pi );
 
-		Assert.AreEqual( expected, ceiling );
+		Assert.AreNotEqual( expected, ceiling );
 	}
 
 	[Test]

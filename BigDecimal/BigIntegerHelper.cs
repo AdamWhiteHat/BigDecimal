@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Reflection;
 
-/// <summary>Sqrt and NRoot acquired from http://mjs5.com/2016/01/20/c-biginteger-helper-constructors</summary>
 public static class BigIntegerHelper {
 
-	public static BigInteger GCD( IEnumerable<BigInteger> numbers ) => numbers.Aggregate( GCD );
+	public static BigInteger GCD( this IEnumerable<BigInteger> numbers ) => numbers.Aggregate( GCD );
 
 	public static BigInteger GCD( BigInteger value1, BigInteger value2 ) {
 		var absValue1 = BigInteger.Abs( value1 );
@@ -38,12 +38,28 @@ public static class BigIntegerHelper {
 	}
 
 	public static IEnumerable<BigInteger> GetRange( BigInteger min, BigInteger max ) {
-		var counter = min;
-
-		while ( counter < max ) {
-			yield return counter;
-			counter++;
+		while ( min < max ) {
+			yield return min;
+			min++;
 		}
+	}
+
+	public static Int32 GetSignifigantDigits( this BigInteger value ) {
+		if ( value.IsZero ) {
+			return 0;
+		}
+
+		var valueString = value.ToString().TrimEnd( '0' );
+
+		if ( String.IsNullOrWhiteSpace( valueString ) ) {
+			return 0;
+		}
+
+		if ( value < BigInteger.Zero ) {
+			return valueString.Length - 1;
+		}
+
+		return valueString.Length;
 	}
 
 	public static Boolean IsCoprime( BigInteger value1, BigInteger value2 ) => GCD( value1, value2 ) == 1;
@@ -112,7 +128,8 @@ public static class BigIntegerHelper {
 
 	public static BigInteger Square( this BigInteger input ) => input * input;
 
-	public static BigInteger SquareRoot( BigInteger input ) {
+	[ThisNeedsTesting]
+	public static BigInteger SquareRoot( this BigInteger input ) {
 		if ( input.IsZero ) {
 			return BigInteger.Zero;
 		}
@@ -138,4 +155,5 @@ public static class BigIntegerHelper {
 
 		return input == p ? n : low;
 	}
+
 }

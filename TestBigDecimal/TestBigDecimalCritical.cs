@@ -1,6 +1,8 @@
 ﻿namespace TestBigDecimal;
 
 using System;
+using System.Diagnostics;
+using System.Numerics;
 using ExtendedNumerics;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,9 +18,10 @@ public class TestBigDecimalCritical {
 		var π4 = 4 * BigDecimal.π;
 		var π8 = 8 * BigDecimal.π;
 		var sum = π1 + π2 + π4 + π8;
-		var t = ( Int32 ) sum.WholeValue;
+		var actual = sum.WholeValue;
+		var expected = ( BigInteger ) 47;
 
-		Assert.AreEqual( 47, t );
+		Assert.AreEqual( expected, actual );
 	}
 
 	[Test]
@@ -129,55 +132,32 @@ public class TestBigDecimalCritical {
 	[Test]
 	public void TestParse0031() {
 		const String expected = "-123456789";
-		var bigDecimal = BigDecimal.Parse( expected );
-
-		Decimal.Parse( expected ).Should()?.Be( ( Decimal? )bigDecimal );
-
-		var actual = bigDecimal.ToString();
+		var actual = BigDecimal.Parse( expected ).ToString();
+		
 		Assert.AreEqual( expected, actual );
 	}
 
-	[Theory]
+	
 	[Test]
 	public void TestParse0032() {
 		const String expected = "123456789";
 		var bigDecimal = BigDecimal.Parse( expected );
-		Decimal.Parse( expected ).Should()?.Be( ( Decimal? ) bigDecimal );
 		var actual = bigDecimal.ToString();
 		Assert.AreEqual( expected, actual );
 	}
 
 	[Test]
 	public void TestParse0033() {
-		const String expected3 = "1234.56789";
-
-		var result3 = BigDecimal.Parse( expected3 );
-
-		var dec3 = Decimal.Parse( expected3 );
-		dec3.Should()?.Be( ( Decimal? ) result3 );
-
-		var actual3 = result3.ToString();
-		Assert.AreEqual( expected3, actual3 );
+		const String expected = "1234.56789";
+		var actual = BigDecimal.Parse( expected ).ToString();
+		Assert.AreEqual( expected, actual );
 	}
 
-	[Test]
-	public void TestParse004() {
-		var result1 = ( Decimal? ) BigDecimal.Parse( "0.125" );
-		var dec1 = Decimal.Parse( "0.125" );
-		dec1.Should()?.Be( result1 );
-
-		var result2 = ( Decimal? ) BigDecimal.Parse( "-0.0625" );
-		var dec2 = Decimal.Parse( "-0.0625" );
-		dec2.Should()?.Be( result2 );
-
-		//result1.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '0.125'" );
-		//result2.Should().BeAssignableTo<BigDecimal>( "Tried to parse: '-0.0625'" );
-	}
 
 	[Test]
 	public void TestSubtractions(
-		[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 10 )] Double b,
-		[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 10 )] Double d
+		[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 3 )] Double b,
+		[Random( -8.98846567431158E+300D, 8.98846567431158E+300D, 3 )] Double d
 	) {
 		var strB = $"{b:R}";
 		var strD = $"{d:R}";
@@ -211,5 +191,6 @@ public class TestBigDecimalCritical {
 
 		Assert.IsTrue( success );
 	}
+
 
 }
