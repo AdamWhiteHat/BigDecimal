@@ -159,13 +159,13 @@ public readonly record struct BigDecimal : /*INumberTyped,*/ IComparable, ICompa
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
-		else {
-			if ( AlwaysNormalize ) {
-				result = Normalize( this );
-				this.Mantissa = result.Mantissa;
-				this.Exponent = result.Exponent;
-			}
+
+		if ( AlwaysNormalize ) {
+			result = Normalize( this );
+			this.Mantissa = result.Mantissa;
+			this.Exponent = result.Exponent;
 		}
+
 	}
 
 	/// <summary>

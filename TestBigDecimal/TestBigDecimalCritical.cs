@@ -130,6 +130,13 @@ public class TestBigDecimalCritical {
 	}
 
 	[Test]
+	public void TestParseEpsilon() {
+		var actual = BigDecimal.Parse( "4.9406564584124654E-324" );
+		var expected = (BigDecimal)Double.Epsilon;
+		Assert.AreEqual( expected, actual );
+	}
+
+	[Test]
 	public void TestParse0031() {
 		const String expected = "-123456789";
 		var actual = BigDecimal.Parse( expected ).ToString();

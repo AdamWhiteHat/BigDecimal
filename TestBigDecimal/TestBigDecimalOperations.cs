@@ -1,6 +1,32 @@
-﻿namespace TestBigDecimal;
+﻿// Copyright © Protiguous. All Rights Reserved.
+// 
+// This entire copyright notice and license must be retained and must be kept visible in any binaries, libraries, repositories, or source code (directly or derived) from our binaries, libraries, projects, solutions, or applications.
+// 
+// All source code belongs to Protiguous@Protiguous.com unless otherwise specified or the original license has been overwritten by formatting. (We try to avoid it from happening, but it does accidentally happen.)
+// 
+// Any unmodified portions of source code gleaned from other sources still retain their original license and our thanks goes to those Authors.
+// If you find your code unattributed in this source code, please let us know so we can properly attribute you and include the proper license and/or copyright(s).
+// If you want to use any of our code in a commercial project, you must contact Protiguous@Protiguous.com for permission, license, and a quote.
+// 
+// Donations, payments, and royalties are accepted via bitcoin: 1Mad8TxTqxKnMiHuZxArFvX8BuFEB9nqX2 and PayPal: Protiguous@Protiguous.com
+// 
+// ====================================================================
+// Disclaimer:  Usage of the source code or binaries is AS-IS.
+// No warranties are expressed, implied, or given.
+// We are NOT responsible for Anything You Do With Our Code.
+// We are NOT responsible for Anything You Do With Our Executables.
+// We are NOT responsible for Anything You Do With Your Computer.
+// ====================================================================
+// 
+// Contact us by email if you have any questions, helpful criticism, or if you would like to use our code in your project(s).
+// For business inquiries, please contact me at Protiguous@Protiguous.com.
+// Our software can be found at "https://Protiguous.com/Software/"
+// Our GitHub address is "https://github.com/Protiguous".
+// 
+// File "TestBigDecimalOperations.cs" last formatted on 2022-01-11 at 1:59 AM by Protiguous.
 
-using System;
+namespace TestBigDecimal;
+
 using System.Numerics;
 using ExtendedNumerics;
 using FluentAssertions;
@@ -178,69 +204,86 @@ public class TestBigDecimalOperations {
 	}
 
 	[Test]
-	public void TestMod() {
-		BigDecimal expectedResult1 = 12;
-		BigDecimal expectedResult2 = 0;
-		BigDecimal expectedResult3 = 1;
-		BigDecimal expectedResult4 = 1.66672;
-
+	public void TestMod1() {
 		// 31 % 19 = 12
-		BigDecimal dividend1 = 31;
-		BigDecimal divisor1 = 19;
+		BigDecimal dividend = 31;
+		BigDecimal divisor = 19;
+		BigDecimal expected = 12;
 
-		// 1891 %31 = 0
-		BigDecimal dividend2 = 1891;
-		BigDecimal divisor2 = 31;
+		var actual = BigDecimal.Mod( dividend, divisor );
 
+		Assert.AreEqual( expected, actual );
+	}
+
+	[Test]
+	public void TestMod2() {
+		// 1891 % 31 = 0
+		BigDecimal dividend = 1891;
+		BigDecimal divisor = 31;
+		BigDecimal expected = 0;
+
+		var actual = BigDecimal.Mod( dividend, divisor );
+
+		Assert.AreEqual( expected, actual );
+	}
+
+	[Test]
+	public void TestMod3() {
 		// 6661 % 60 = 1
-		BigDecimal dividend3 = 6661;
-		BigDecimal divisor3 = 60;
+		BigDecimal dividend = 6661;
+		BigDecimal divisor = 60;
+		BigDecimal expected = 1;
+
+		var actual = BigDecimal.Mod( dividend, divisor );
+
+		Assert.AreEqual( expected, actual );
+	}
+
+	[Test]
+	public void TestMod4() {
+		//NOTE This test fails if the values are Doubles instead of Decimals.
 
 		// 31 % 3.66666 = 1.66672
-		BigDecimal dividend4 = 31;
-		BigDecimal divisor4 = 3.66666;
+		BigDecimal dividend = 31m;
+		BigDecimal divisor = 3.66666m;
+		BigDecimal expected = 1.66672m;
 
-		var result1 = BigDecimal.Mod( dividend1, divisor1 );
-		var result2 = BigDecimal.Mod( dividend2, divisor2 );
-		var result3 = BigDecimal.Mod( dividend3, divisor3 );
-		var result4 = BigDecimal.Mod( dividend4, divisor4 );
+		var actual = BigDecimal.Mod( dividend, divisor );
 
-		Assert.AreEqual( expectedResult1, result1 );
-		Assert.AreEqual( expectedResult2, result2 );
-		Assert.AreEqual( expectedResult3, result3 );
-		Assert.AreEqual( expectedResult4, result4 );
+		Assert.AreEqual( expected, actual );
 	}
 
 	[Test]
 	public void TestMultiply() {
-		var expectedResult1 = BigDecimal.Parse( "35794234179725868774991807832568455403003778024228226193532908190484670252364677411513516111204504060317568667" );
-		var expectedResult2 = BigDecimal.Parse( "37484040009320200288159018961010536937973891182532366282540247408867702983313960194873589374267102044942786001" );
-		var expectedResult3 =
-			new BigDecimal( BigInteger.Negate(
-				BigInteger.Parse( "61199804023616162130466158636504166524066189692091806226423722790866248079929810268920239053350152436663869784" ) ) );
+		var p = BigDecimal.Parse( "-6122421090493547576937037317561418841225758554253106999" );
+		var actual = p * new BigDecimal( BigInteger.Parse( "9996013524558575221488141657137307396757453940901242216" ), -34 );
+		var expected = new BigDecimal( BigInteger.Parse( "-61199804023616162130466158636504166524066189692091806226423722790866248079929810268920239053350152436663869784" ) );
 
-		//"6119980402361616213046615863650416652406618969209180622642372279086624807992.9810268920239053350152436663869784"
+		var matches = expected.ToString().Equals( actual.ToString().Replace( ".", "" ), StringComparison.Ordinal );
 
-		//expectedResult3.Truncate();
-		//BigDecimal.Normalize( expectedResult3 );
+		Assert.IsTrue( matches );
+	}
 
+
+	[Test]
+	public void TestMultiply1() {
 		var p = BigDecimal.Parse( "6122421090493547576937037317561418841225758554253106999" );
 		var q = BigDecimal.Parse( "5846418214406154678836553182979162384198610505601062333" );
+		var expected = BigDecimal.Parse( "35794234179725868774991807832568455403003778024228226193532908190484670252364677411513516111204504060317568667" );
 
-		var result1 = BigDecimal.Multiply( p, q );
-		var result2 = p * p;
-		var result3 = -1 * p * new BigDecimal( BigInteger.Parse( "9996013524558575221488141657137307396757453940901242216" ), -34 );
+		var actual = BigDecimal.Multiply( p, q );
 
-		// -1 * 6122421090493547576937037317561418841225758554253106999 * 999601352455857522148.8141657137307396757453940901242216
-		// = -6119980402361616213046615863650416652406618969209180622642372279086624807992.9810268920239053350152436663869784 9996013524558575221488141657137307396757453940901242216
+		Assert.AreEqual( expected, actual );
+	}
 
-		var matches1 = expectedResult1.Equals( result1 );
-		var matches2 = expectedResult2.Equals( result2 );
-		var matches3 = expectedResult3.ToString().Equals( result3.ToString().Replace( ".", "" ), StringComparison.Ordinal );
 
-		Assert.IsTrue( matches1 );
-		Assert.IsTrue( matches2 );
-		Assert.IsTrue( matches3 );
+	[Test]
+	public void TestMultiply2() {
+		var p = BigDecimal.Parse( "6122421090493547576937037317561418841225758554253106999" );
+		var actual = p * p;
+		var expected = BigDecimal.Parse( "37484040009320200288159018961010536937973891182532366282540247408867702983313960194873589374267102044942786001" );
+
+		Assert.AreEqual( expected, actual);
 	}
 
 	[Test]

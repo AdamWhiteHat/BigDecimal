@@ -41,13 +41,13 @@ public class OutOfRangeException : Exception {
 	protected OutOfRangeException( SerializationInfo serializationInfo, StreamingContext streamingContext ) => throw new NotImplementedException();
 
 	public OutOfRangeException( String? message ) : base( message ) {
-		if ( String.IsNullOrWhiteSpace( message ) ) {
+		if ( String.IsNullOrEmpty( message ) ) {
 			throw new NullException( "A message must be provided." );
 		}
 	}
 
 	public OutOfRangeException( String? message, Exception? inner ) : base( message, inner ) {
-		if ( String.IsNullOrWhiteSpace( message ) ) {
+		if ( String.IsNullOrEmpty( message ) ) {
 			throw new NullException( "A message must be provided." );
 		}
 	}
