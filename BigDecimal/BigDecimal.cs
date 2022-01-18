@@ -108,6 +108,41 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 	}
 
+	public BigDecimal( Single value ) {
+		if ( Single.IsInfinity( value ) ) {
+			throw new OverflowException( "BigDecimal cannot represent infinity." );
+		}
+
+		if ( Single.IsNaN( value ) ) {
+			throw new NotFiniteNumberException( $"{nameof( value )} is not a number (Single.NaN)." );
+		}
+
+		var mantissa = new BigInteger( value );
+		var exponent = 0;
+		Single scaleFactor = 1;
+		while ( Math.Abs( value * scaleFactor - Single.Parse( mantissa.ToString() ) ) > 0 ) {
+			exponent--;
+			scaleFactor *= 10;
+			mantissa = new BigInteger( value * scaleFactor );
+		}
+
+		this.Mantissa = mantissa;
+		this.Exponent = exponent;
+
+		BigDecimal result;
+		if ( AlwaysTruncate ) {
+			result = Truncate( this, Precision );
+			this.Mantissa = result.Mantissa;
+			this.Exponent = result.Exponent;
+		}
+
+		if ( AlwaysNormalize ) {
+			result = Normalize( this );
+			this.Mantissa = result.Mantissa;
+			this.Exponent = result.Exponent;
+		}
+	}
+
 	public static BigDecimal Ten => 10;
 
 	public static BigDecimal One => 1;
@@ -546,8 +581,6 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public static implicit operator BigDecimal( Int64 value ) => new( new BigInteger( value ), 0 );
 
 	public static implicit operator BigDecimal( Single value ) => new( value );
-
-	//public static implicit operator BigDecimal( Double value ) => new(value);
 
 	public static implicit operator BigDecimal( Decimal value ) {
 		var mantissa = new BigInteger( value );

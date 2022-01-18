@@ -1,6 +1,5 @@
 ﻿namespace TestBigDecimal;
 
-using System;
 using System.Numerics;
 using ExtendedNumerics;
 using NUnit.Framework;
@@ -129,9 +128,40 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestRounding() {
-		//var bd = BigDecimal.Parse( "10000000000000000000000000000000000000000000000000001" );
+	public void TestRandomDivision(
+		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 a,
+		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 b,
+		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 c,
+		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 d
+	) {
+		var top = new BigDecimal( a, b );
+		var bottom = new BigDecimal( c, d );
+		var expected = BigDecimal.Divide( top, bottom );
+		var actual = top / bottom;
 
+		Assert.AreEqual( expected, actual );
+
+		//TestContext.WriteLine( actual );
+	}
+
+	[Test]
+	public void TestRandomEquals( [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 a, [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 b ) {
+		BigDecimal x = a;
+		BigDecimal y = b;
+
+		if ( x == y ) {
+			Assert.AreEqual( y, x );
+		}
+		else if ( x != y ) {
+			Assert.AreNotEqual( x, y );
+		}
+		else {
+			Assert.Fail( "Equals failed." );
+		}
+	}
+
+	[Test]
+	public void TestRounding() {
 		var up = BigDecimal.Parse( 0.50001 );
 		var down = BigDecimal.Parse( 0.49 );
 		var oneAndAhalf = BigDecimal.Parse( "1.5" );
@@ -184,22 +214,4 @@ public class TestBigDecimalFunctions {
 		var result2 = number2.SignifigantDigits;
 		Assert.AreEqual( expected2, result2 );
 	}
-
-	[Test]
-	public void TestRandomDivision(
-		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 a,
-		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 b,
-		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 c,
-		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 d
-	) {
-		var top = new BigDecimal( a, b );
-		var bottom = new BigDecimal( c, d );
-		var expected = BigDecimal.Divide( top, bottom );
-		var actual = top / bottom;
-
-		Assert.AreEqual( expected, actual );
-
-		//TestContext.WriteLine( actual );
-	}
-
 }
