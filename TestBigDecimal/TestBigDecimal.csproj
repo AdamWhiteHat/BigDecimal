@@ -2,8 +2,8 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
 		<UseWindowsForms>true</UseWindowsForms>
-		<LangVersion>preview</LangVersion>
-		<AnalysisLevel>preview</AnalysisLevel>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest</AnalysisLevel>
 		<Platforms>x64</Platforms>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RepositoryType>git</RepositoryType>
@@ -13,7 +13,6 @@
 		<OutputType>Library</OutputType>
 		<Nullable>enable</Nullable>
 		<RootNamespace>TestBigDecimal</RootNamespace>
-		<StartupObject></StartupObject>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
