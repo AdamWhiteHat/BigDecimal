@@ -1,5 +1,3 @@
-#nullable enable
-
 namespace ExtendedNumerics.Exceptions;
 
 using System;

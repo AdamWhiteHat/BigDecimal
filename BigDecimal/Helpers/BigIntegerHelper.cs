@@ -1,10 +1,9 @@
-﻿namespace ExtendedNumerics;
+﻿namespace ExtendedNumerics.Helpers;
 
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Reflection;
 
 public static class BigIntegerHelper {
 
@@ -128,7 +127,7 @@ public static class BigIntegerHelper {
 
 	public static BigInteger Square( this BigInteger input ) => input * input;
 
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	public static BigInteger SquareRoot( this BigInteger input ) {
 		if ( input.IsZero ) {
 			return BigInteger.Zero;
@@ -155,5 +154,4 @@ public static class BigIntegerHelper {
 
 		return input == p ? n : low;
 	}
-
 }

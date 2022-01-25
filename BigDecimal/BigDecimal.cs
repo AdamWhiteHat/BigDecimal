@@ -10,6 +10,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Exceptions;
+using Helpers;
 using Properties;
 using Reflection;
 
@@ -462,7 +463,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// Returns the whole number integer part of the BigDecimal, dropping anything right of the decimal point. Essentially behaves like Math.Truncate(). For
 	/// example, GetWholePart() would return 3 for Math.PI.
 	/// </summary>
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	public BigInteger GetWholePart() {
 		var resultString = String.Empty;
 		var decimalString = this.ToString( BigDecimalNumberFormatInfo );
@@ -481,7 +482,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 
 	/// <summary>Gets the fractional part of the BigDecimal, setting everything left of the decimal point to zero.</summary>
-	[ThisNeedsTesting] //TODO Needs tests on E notation, negative numbers, and extra small or large numbers.
+	[NeedsTesting] //TODO Needs tests on E notation, negative numbers, and extra small or large numbers.
 	public BigDecimal GetFractionalPart() {
 		var resultString = String.Empty;
 		var decimalString = this.ToString();
@@ -700,7 +701,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return Convert.ToUInt32( t.ToString() );
 	}
 
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	public static BigDecimal operator %( BigDecimal left, BigDecimal right ) => left - Floor( right * ( left / right ) );
 
 	public static BigDecimal operator +( BigDecimal value ) => value;
@@ -904,7 +905,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 
 	/// <summary>Rounds a BigDecimal to an integer value. The BigDecimal argument is rounded towards positive infinity.</summary>
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	public static BigDecimal Ceiling( BigDecimal value ) {
 		BigDecimal result = value.WholeValue;
 
@@ -915,7 +916,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return result;
 	}
 
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	public BigDecimal FloorAlt() => Truncate( NumberOfDigits( this.Mantissa ), this.Exponent );
 
 	public static BigDecimal Floor( BigDecimal value ) {
@@ -1039,7 +1040,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <summary>Allow the BigDecimal to be formatted with the E notation.</summary>
 	/// <param name="bigDecimal"></param>
 	/// <returns></returns>
-	[ThisNeedsTesting]
+	[NeedsTesting]
 	private static String ToScientificENotation( BigDecimal bigDecimal ) {
 
 		// 1.238E456 1.238E-456

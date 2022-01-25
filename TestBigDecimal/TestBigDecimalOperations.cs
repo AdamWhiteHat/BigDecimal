@@ -29,6 +29,7 @@ namespace TestBigDecimal;
 
 using System.Numerics;
 using ExtendedNumerics;
+using ExtendedNumerics.Helpers;
 using FluentAssertions;
 using NUnit.Framework;
 

@@ -2,6 +2,7 @@
 
 using System.Numerics;
 using ExtendedNumerics;
+using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 
 [Parallelizable( ParallelScope.All )]

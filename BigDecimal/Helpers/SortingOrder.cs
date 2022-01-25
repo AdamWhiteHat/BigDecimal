@@ -1,4 +1,4 @@
-namespace ExtendedNumerics;
+namespace ExtendedNumerics.Helpers;
 
 using System;
 

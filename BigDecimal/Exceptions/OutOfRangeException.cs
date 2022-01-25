@@ -1,6 +1,4 @@
-﻿#nullable enable
-
-namespace ExtendedNumerics.Exceptions;
+﻿namespace ExtendedNumerics.Exceptions;
 
 using System;
 using System.Runtime.Serialization;
