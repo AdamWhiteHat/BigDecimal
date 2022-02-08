@@ -5,23 +5,8 @@ using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 
-[Parallelizable( ParallelScope.All )]
 [TestFixture]
 public class TestBigDecimalFunctions {
-
-	[Test]
-	public void TestFractional1() {
-		const String test = " 12.1 / 36.3 ";
-		var expected = BigDecimal.Parse( "0.333" );
-
-		var parsed = test.TryParseFraction( out var result );
-		if ( parsed ) {
-			Assert.AreEqual( expected, result );
-		}
-		else {
-			Assert.Fail( "Only 3 3s." );
-		}
-	}
 
 	[Test]
 	public void TestGCD() {
@@ -132,14 +117,6 @@ public class TestBigDecimalFunctions {
 		// 15015, lcm(3, 5, 7, 11, 13, 101, 307, 311, 313) = 45319990731015 lcm(4973, 4292, 4978, 4968, 4297, 4287) = 2822891742340306560
 
 		Assert.AreEqual( expected, actual );
-	}
-
-	[Test]
-	public void TestNormalize123450000UInt16() {
-		var expected = new BigDecimal( 123450000, UInt16.MaxValue );
-		var bd = BigDecimal.Parse( "123450000" + new String( '0', UInt16.MaxValue ) );
-
-		Assert.AreEqual( expected, bd );
 	}
 
 	[Test]

@@ -24,8 +24,6 @@ using Reflection;
 [DebuggerDisplay( "{" + nameof( ToString ) + "(),nq}" )]
 [Immutable]
 public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single> {
-	private const String NumericCharacters = "-0.1234567890";
-
 	private const String NullString = "(null)";
 
 	static BigDecimal() {
@@ -188,13 +186,16 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public Int32 Length => GetSignifigantDigits( this.Mantissa ) + this.Exponent;
 
 	/// <summary>This method returns true if the BigDecimal is equal to zero, false otherwise.</summary>
-	public Boolean IsZero => this.Mantissa.IsZero;
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	public Boolean IsZero() => this.Mantissa.IsZero;
 
 	/// <summary>This method returns true if the BigDecimal is greater than zero, false otherwise.</summary>
-	public Boolean IsPositve => !this.IsZero && !this.IsNegative;
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	public Boolean IsPositve() => !this.IsZero() && !this.IsNegative();
 
 	/// <summary>This method returns true if the BigDecimal is less than zero, false otherwise.</summary>
-	public Boolean IsNegative => this.Mantissa.Sign < 0;
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	public Boolean IsNegative() => this.Mantissa.Sign < 0;
 
 	/*
 	public static explicit operator Single( BigDecimal value ) {
@@ -426,7 +427,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <param name="value"></param>
 	[Pure]
 	public static BigDecimal Normalize( BigDecimal value ) {
-		if ( value.IsZero ) {
+		if ( value.IsZero() ) {
 			return value;
 		}
 
@@ -516,20 +517,11 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		var mant = this.Mantissa.ToString();
 		var length = mant.Length + this.Exponent;
-		if ( length == 0 ) {
-			Int32.TryParse( mant[ 0 ].ToString(), out var tenthsPlace );
-			if ( tenthsPlace >= 5 ) {
-				return 1;
-			}
-
-			return 0;
-		}
-
-		if ( length > 0 ) {
-			return 1;
-		}
-
-		return 0;
+		return length switch {
+			0 when Int32.TryParse( mant[ 0 ].ToString(), out var tenthsPlace ) => tenthsPlace >= 5 ? 1 : 0,
+			> 0 => 1,
+			var _ => 0
+		};
 	}
 
 	private static Int32 GetDecimalIndex( BigInteger mantissa, Int32 exponent ) {
@@ -541,24 +533,28 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return mantissaLength + exponent;
 	}
 
-	private static Int32 GetSignifigantDigits( BigInteger value ) {
+	private static Int32 GetSignifigantDigits( BigInteger value ) =>
+		/*
 		if ( value.IsZero ) {
 			return 0;
 		}
+		*/
+		value.GetSignifigantDigits();
 
-		var s = value.ToString();
+	/*
 		if ( String.IsNullOrWhiteSpace( s ) ) {
 			return 0;
 		}
-
-		s = new String( s.Trim().Where( c => NumericCharacters.Contains( c ) ).ToArray() ); //TODO Why Trim? Why the Where?
+		*/
+	/*
 		s = s.TrimEnd( '0' )
 			 .Replace( BigDecimalNumberFormatInfo.NegativeSign, String.Empty )
 			 .Replace( BigDecimalNumberFormatInfo.PositiveSign, String.Empty )
 			 .Replace( BigDecimalNumberFormatInfo.NumberDecimalSeparator, String.Empty );
-
-		return s.Length;
-	}
+		*/
+	/*
+	return s.Count( c => "123456789".Contains( c ) );
+	*/
 
 	/// <summary>Returns the mantissa of value, aligned to the exponent of reference. Assumes the exponent of value is larger than of reference.</summary>
 	private static BigInteger AlignExponent( BigDecimal value, BigDecimal reference ) => value.Mantissa * BigInteger.Pow( TenInt, value.Exponent - reference.Exponent );
@@ -770,6 +766,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 		// if (dividend > divisor) { return Divide_Positive(dividend, divisor); }
 
+		/*
 		if ( Abs( dividend ) == 1 ) {
 
 			//TODO This just shortcuts with System.Double doing the division. Not really accurate..
@@ -779,6 +776,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 
 			return Parse( doubleDivisor.ToString( CultureInfo.CurrentCulture ) );
 		}
+		*/
 
 		var exponentChange = dividend.Exponent - divisor.Exponent;
 
@@ -874,7 +872,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	}
 
 	/// <summary>Returns the absolute value of the BigDecimal</summary>
-	public static BigDecimal Abs( BigDecimal value ) => value.IsNegative ? value * -1 : value;
+	public static BigDecimal Abs( BigDecimal value ) => value.IsNegative() ? value * -1 : value;
 
 	/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
 	public static BigInteger Round( BigDecimal value ) => Round( value, MidpointRounding.AwayFromZero );
@@ -884,7 +882,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var wholePart = value.WholeValue;
 		var decimalPart = value.GetFractionalPart();
 
-		BigInteger addOne = value.IsNegative ? -1 : 1;
+		BigInteger addOne = value.IsNegative() ? -1 : 1;
 
 		if ( decimalPart > OneHalf ) {
 			wholePart += addOne;

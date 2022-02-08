@@ -54,7 +54,7 @@ public static class BigIntegerHelper {
 
 		var valueString = value.ToString().TrimEnd( '0' );
 
-		if ( String.IsNullOrWhiteSpace( valueString ) ) {
+		if ( String.IsNullOrEmpty( valueString ) ) {
 			return 0;
 		}
 
@@ -178,7 +178,7 @@ public static class BigIntegerHelper {
 			return false;
 		}
 
-		var parts = numberString.Split( '/' ).Select( s => s.Trim() ).ToImmutableList();
+		var parts = numberString.Split( '/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries )/*.Select( s => s.Trim() )*/.ToImmutableList();
 
 		if ( parts.Count != 2 ) {
 			return false;
