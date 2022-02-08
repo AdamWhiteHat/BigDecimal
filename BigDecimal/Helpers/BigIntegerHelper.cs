@@ -2,8 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+using Exceptions;
 
 public static class BigIntegerHelper {
 
@@ -63,6 +67,8 @@ public static class BigIntegerHelper {
 
 	public static Boolean IsCoprime( BigInteger value1, BigInteger value2 ) => GCD( value1, value2 ) == 1;
 
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	[Pure]
 	public static BigInteger LCM( IEnumerable<BigInteger> numbers ) => numbers.Aggregate( LCM );
 
 	public static BigInteger LCM( BigInteger num1, BigInteger num2 ) {
@@ -125,6 +131,8 @@ public static class BigIntegerHelper {
 		return lowerbound;
 	}
 
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	[Pure]
 	public static BigInteger Square( this BigInteger input ) => input * input;
 
 	[NeedsTesting]
@@ -153,5 +161,40 @@ public static class BigIntegerHelper {
 		}
 
 		return input == p ? n : low;
+	}
+
+	/// <summary>
+	///     <para>Attempt to parse a fraction from a String.</para>
+	/// </summary>
+	/// <example>" 1234.45 / 346.456 "</example>
+	/// <param name="numberString"></param>
+	/// <param name="result"></param>
+	/// <exception cref="OutOfRangeException">Uncomment this if you want an exception instead of a Boolean.</exception>
+	[NeedsTesting]
+	public static Boolean TryParseFraction( this String numberString, out BigDecimal? result ) {
+		result = default( BigDecimal? );
+
+		if ( String.IsNullOrWhiteSpace( numberString ) ) {
+			return false;
+		}
+
+		var parts = numberString.Split( '/' ).Select( s => s.Trim() ).ToImmutableList();
+
+		if ( parts.Count != 2 ) {
+			return false;
+		}
+
+		try {
+			var numerator = BigDecimal.Parse( parts[ 0 ] );
+			var denominator = BigDecimal.Parse( parts[ 1 ] );
+
+			result = BigDecimal.Divide( numerator, denominator );
+			return true;
+		}
+		catch ( Exception ) {
+
+			//throw new OutOfRangeException( "Couldn't parse numerator or denominator." );
+			return false;
+		}
 	}
 }

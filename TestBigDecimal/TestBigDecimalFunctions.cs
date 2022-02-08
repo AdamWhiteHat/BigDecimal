@@ -10,6 +10,20 @@ using NUnit.Framework;
 public class TestBigDecimalFunctions {
 
 	[Test]
+	public void TestFractional1() {
+		const String test = " 12.1 / 36.3 ";
+		var expected = BigDecimal.Parse( "0.333" );
+
+		var parsed = test.TryParseFraction( out var result );
+		if ( parsed ) {
+			Assert.AreEqual( expected, result );
+		}
+		else {
+			Assert.Fail( "Only 3 3s." );
+		}
+	}
+
+	[Test]
 	public void TestGCD() {
 		var expected = BigDecimal.Parse( "10" );
 
@@ -108,7 +122,7 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestLCD() {
+	public void TestLeastCommonDivisor() {
 		var expected = BigDecimal.Parse( "45319990731015" );
 
 		BigDecimal actual = BigIntegerHelper.LCM( new BigInteger[] {
