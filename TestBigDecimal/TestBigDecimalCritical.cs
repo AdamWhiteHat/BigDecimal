@@ -1,11 +1,10 @@
 ﻿namespace TestBigDecimal;
 
-using System;
-using System.Diagnostics;
-using System.Numerics;
 using ExtendedNumerics;
 using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Numerics;
 
 [Parallelizable( ParallelScope.All )]
 [TestFixture]
@@ -19,7 +18,7 @@ public class TestBigDecimalCritical {
 		var π8 = 8 * BigDecimal.π;
 		var sum = π1 + π2 + π4 + π8;
 		var actual = sum.WholeValue;
-		var expected = ( BigInteger ) 47;
+		var expected = ( BigInteger )47;
 
 		Assert.AreEqual( expected, actual );
 	}
@@ -51,7 +50,7 @@ public class TestBigDecimalCritical {
 
 	[Test]
 	public void TestConstructor001WriteLineA() {
-		var π = ( BigDecimal ) 3.141592793238462m;
+		var π = ( BigDecimal )3.141592793238462m;
 		var d = new BigDecimal( 3141592793238462, -15 );
 		TestContext.WriteLine( "π = " + π );
 		TestContext.WriteLine( "d = " + d );
@@ -64,7 +63,7 @@ public class TestBigDecimalCritical {
 		const Decimal m = 0.0000000000000001m;
 
 		var e = new BigDecimal( 1000000000, -25 );
-		var h = ( BigDecimal ) m;
+		var h = ( BigDecimal )m;
 
 		TestContext.WriteLine( "m = " + m );
 		TestContext.WriteLine( "e = " + e );
@@ -130,21 +129,13 @@ public class TestBigDecimalCritical {
 	}
 
 	[Test]
-	public void TestParseEpsilon() {
-		var actual = BigDecimal.Parse( "4.9406564584124654E-324" );
-		var expected = (BigDecimal)Double.Epsilon;
-		Assert.AreEqual( expected, actual );
-	}
-
-	[Test]
 	public void TestParse0031() {
 		const String expected = "-123456789";
 		var actual = BigDecimal.Parse( expected ).ToString();
-		
+
 		Assert.AreEqual( expected, actual );
 	}
 
-	
 	[Test]
 	public void TestParse0032() {
 		const String expected = "123456789";
@@ -160,6 +151,12 @@ public class TestBigDecimalCritical {
 		Assert.AreEqual( expected, actual );
 	}
 
+	[Test]
+	public void TestParseEpsilon() {
+		var actual = BigDecimal.Parse( "4.9406564584124654E-324" );
+		var expected = ( BigDecimal )Double.Epsilon;
+		Assert.AreEqual( expected, actual );
+	}
 
 	[Test]
 	public void TestSubtractions(
@@ -198,6 +195,4 @@ public class TestBigDecimalCritical {
 
 		Assert.IsTrue( success );
 	}
-
-
 }

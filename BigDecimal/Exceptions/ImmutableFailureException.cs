@@ -12,7 +12,7 @@ public class ImmutableFailureException : Exception {
 
 	public ImmutableFailureException( String? message, Exception? innerException ) : base( message, innerException ) { }
 
-	public ImmutableFailureException( SerializationInfo serializationInfo, StreamingContext streamingContext ) : base( serializationInfo, streamingContext ) {
+	protected ImmutableFailureException( SerializationInfo serializationInfo, StreamingContext streamingContext ) : base( serializationInfo, streamingContext ) {
 		if ( serializationInfo is null ) {
 			throw new ArgumentNullException( nameof( serializationInfo ) );
 		}

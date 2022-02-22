@@ -166,7 +166,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public static Int32 Precision { get; set; } = 5000;
 
 	/// <summary>Specifies whether the significant digits should be truncated to the given precision after each operation.</summary>
-	public static Boolean AlwaysTruncate { get; set; } = false;
+	public static Boolean AlwaysTruncate { get; set; }
 
 	/// <summary>TODO Describe this.</summary>
 	public static Boolean AlwaysNormalize { get; set; } = true;
