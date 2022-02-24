@@ -1,43 +1,27 @@
-﻿using System;
+﻿namespace TestBigDecimal;
+
+using System;
 using System.Numerics;
 using ExtendedNumerics;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
-namespace TestBigDecimal
-{
-	[TestClass]
-	public class TestBigDecimalConversion
-	{
-		private TestContext m_testContext;
-		public TestContext TestContext { get { return m_testContext; } set { m_testContext = value; } }
+[Parallelizable( ParallelScope.All )]
+[TestFixture]
+public class TestBigDecimalConversion {
 
-		[ClassInitialize()]
-		public static void Initialize(TestContext context)
-		{
-			BigDecimal.Precision = 5000;
-			BigDecimal.AlwaysTruncate = false;
-		}
+	private const String LongNumbers =
+		"122685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853" +
+		"222685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853" +
+		"322685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853";
 
-		[TestProperty("Basic", "Conversion")]
-		[TestMethod]
-		public void TestConversionFromBigInteger()
-		{
-			BigDecimal expectedResult = BigDecimal.Parse("22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853");
+	[Test]
+	public void TestConversionFromBigInteger() {
+		var expected = BigInteger.Parse( LongNumbers );
 
-			BigDecimal result = (BigDecimal)BigInteger.Parse("22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853"); ;
+		var bigDecimal = BigDecimal.Parse( LongNumbers );
+		var actual = bigDecimal.WholeValue;
 
-			Assert.AreEqual(expectedResult, result);
-		}
-
-		[TestProperty("Basic", "Conversion")]
-		[TestMethod]
-		public void TestConversionToBigInteger()
-		{
-			BigInteger expectedResult = BigInteger.Parse("213212221322233233332232232223");
-
-			BigInteger result = (BigInteger)BigDecimal.Parse("213212221322233233332232232223");
-
-			Assert.AreEqual(expectedResult, result);
-		}
+		Assert.AreEqual( expected, actual );
 	}
+
 }
