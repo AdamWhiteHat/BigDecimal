@@ -10,190 +10,190 @@ using Exceptions;
 
 public static class BigIntegerHelper {
 
-    public static BigInteger GCD(this IEnumerable<BigInteger> numbers) => numbers.Aggregate(GCD);
+	public static BigInteger GCD( this IEnumerable<BigInteger> numbers ) => numbers.Aggregate( GCD );
 
-    public static BigInteger GCD(BigInteger value1, BigInteger value2) {
-        var absValue1 = BigInteger.Abs(value1);
-        var absValue2 = BigInteger.Abs(value2);
+	public static BigInteger GCD( BigInteger value1, BigInteger value2 ) {
+		var absValue1 = BigInteger.Abs( value1 );
+		var absValue2 = BigInteger.Abs( value2 );
 
-        while (absValue1 != 0 && absValue2 != 0) {
-            if (absValue1 > absValue2) {
-                absValue1 %= absValue2;
-            }
-            else {
-                absValue2 %= absValue1;
-            }
-        }
+		while ( absValue1 != 0 && absValue2 != 0 ) {
+			if ( absValue1 > absValue2 ) {
+				absValue1 %= absValue2;
+			}
+			else {
+				absValue2 %= absValue1;
+			}
+		}
 
-        return BigInteger.Max(absValue1, absValue2);
-    }
+		return BigInteger.Max( absValue1, absValue2 );
+	}
 
-    public static Int32 GetLength(this BigInteger source) {
-        var result = 0;
-        var copy = source;
-        while (copy > 0) {
-            copy /= 10;
-            result++;
-        }
+	public static Int32 GetLength( this BigInteger source ) {
+		var result = 0;
+		var copy = source;
+		while ( copy > 0 ) {
+			copy /= 10;
+			result++;
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    public static IEnumerable<BigInteger> GetRange(BigInteger min, BigInteger max) {
-        while (min < max) {
-            yield return min;
-            min++;
-        }
-    }
+	public static IEnumerable<BigInteger> GetRange( BigInteger min, BigInteger max ) {
+		while ( min < max ) {
+			yield return min;
+			min++;
+		}
+	}
 
-    public static Int32 GetSignifigantDigits(this BigInteger value) {
-        if (value.IsZero) {
-            return 0;
-        }
+	public static Int32 GetSignifigantDigits( this BigInteger value ) {
+		if ( value.IsZero ) {
+			return 0;
+		}
 
-        var valueString = value.ToString().TrimEnd('0');
+		var valueString = value.ToString().TrimEnd( '0' );
 
-        if (String.IsNullOrEmpty(valueString)) {
-            return 0;
-        }
+		if ( String.IsNullOrEmpty( valueString ) ) {
+			return 0;
+		}
 
-        if (value < BigInteger.Zero) {
-            return valueString.Length - 1;
-        }
+		if ( value < BigInteger.Zero ) {
+			return valueString.Length - 1;
+		}
 
-        return valueString.Length;
-    }
+		return valueString.Length;
+	}
 
-    public static Boolean IsCoprime(BigInteger value1, BigInteger value2) => GCD(value1, value2) == 1;
+	public static Boolean IsCoprime( BigInteger value1, BigInteger value2 ) => GCD( value1, value2 ) == 1;
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Pure]
-    public static BigInteger LCM(IEnumerable<BigInteger> numbers) => numbers.Aggregate(LCM);
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	[Pure]
+	public static BigInteger LCM( IEnumerable<BigInteger> numbers ) => numbers.Aggregate( LCM );
 
-    public static BigInteger LCM(BigInteger num1, BigInteger num2) {
-        var absValue1 = BigInteger.Abs(num1);
-        var absValue2 = BigInteger.Abs(num2);
-        return absValue1 * absValue2 / GCD(absValue1, absValue2);
-    }
+	public static BigInteger LCM( BigInteger num1, BigInteger num2 ) {
+		var absValue1 = BigInteger.Abs( num1 );
+		var absValue2 = BigInteger.Abs( num2 );
+		return absValue1 * absValue2 / GCD( absValue1, absValue2 );
+	}
 
-    // Returns the NTHs root of a BigInteger with Remainder. The root must be greater than or equal to 1 or value must be a
-    // positive integer.
-    public static BigInteger NthRoot(this BigInteger value, Int32 root, out BigInteger remainder) {
-        if (root < 1) {
-            throw new ArgumentException("root must be greater than or equal to 1", nameof(root));
-        }
+	// Returns the NTHs root of a BigInteger with Remainder. The root must be greater than or equal to 1 or value must be a
+	// positive integer.
+	public static BigInteger NthRoot( this BigInteger value, Int32 root, out BigInteger remainder ) {
+		if ( root < 1 ) {
+			throw new ArgumentException( "root must be greater than or equal to 1", nameof( root ) );
+		}
 
-        if (value.Sign == -1) {
-            throw new ArgumentException("value must be a positive integer", nameof(value));
-        }
+		if ( value.Sign == -1 ) {
+			throw new ArgumentException( "value must be a positive integer", nameof( value ) );
+		}
 
-        if (value == BigInteger.One) {
-            remainder = 0;
-            return BigInteger.One;
-        }
+		if ( value == BigInteger.One ) {
+			remainder = 0;
+			return BigInteger.One;
+		}
 
-        if (value == BigInteger.Zero) {
-            remainder = 0;
-            return BigInteger.Zero;
-        }
+		if ( value == BigInteger.Zero ) {
+			remainder = 0;
+			return BigInteger.Zero;
+		}
 
-        if (root == 1) {
-            remainder = 0;
-            return value;
-        }
+		if ( root == 1 ) {
+			remainder = 0;
+			return value;
+		}
 
-        var upperbound = value;
-        var lowerbound = BigInteger.Zero;
+		var upperbound = value;
+		var lowerbound = BigInteger.Zero;
 
-        while (true) {
-            var nval = (upperbound + lowerbound) >> 1;
-            var tstsq = BigInteger.Pow(nval, root);
-            if (tstsq > value) {
-                upperbound = nval;
-            }
+		while ( true ) {
+			var nval = ( upperbound + lowerbound ) >> 1;
+			var tstsq = BigInteger.Pow( nval, root );
+			if ( tstsq > value ) {
+				upperbound = nval;
+			}
 
-            if (tstsq < value) {
-                lowerbound = nval;
-            }
+			if ( tstsq < value ) {
+				lowerbound = nval;
+			}
 
-            if (tstsq == value) {
-                lowerbound = nval;
-                break;
-            }
+			if ( tstsq == value ) {
+				lowerbound = nval;
+				break;
+			}
 
-            if (lowerbound == upperbound - 1) {
-                break;
-            }
-        }
+			if ( lowerbound == upperbound - 1 ) {
+				break;
+			}
+		}
 
-        remainder = value - BigInteger.Pow(lowerbound, root);
-        return lowerbound;
-    }
+		remainder = value - BigInteger.Pow( lowerbound, root );
+		return lowerbound;
+	}
 
-    [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    [Pure]
-    public static BigInteger Square(this BigInteger input) => input * input;
+	[MethodImpl( MethodImplOptions.AggressiveInlining )]
+	[Pure]
+	public static BigInteger Square( this BigInteger input ) => input * input;
 
-    [NeedsTesting]
-    public static BigInteger SquareRoot(this BigInteger input) {
-        if (input.IsZero) {
-            return BigInteger.Zero;
-        }
+	[NeedsTesting]
+	public static BigInteger SquareRoot( this BigInteger input ) {
+		if ( input.IsZero ) {
+			return BigInteger.Zero;
+		}
 
-        var n = BigInteger.Zero;
-        var p = BigInteger.Zero;
-        var low = BigInteger.Zero;
-        var high = BigInteger.Abs(input);
+		var n = BigInteger.Zero;
+		var p = BigInteger.Zero;
+		var low = BigInteger.Zero;
+		var high = BigInteger.Abs( input );
 
-        while (high > low + 1) {
-            n = (high + low) >> 1;
-            p = n * n;
-            if (input < p) {
-                high = n;
-            }
-            else if (input > p) {
-                low = n;
-            }
-            else {
-                break;
-            }
-        }
+		while ( high > low + 1 ) {
+			n = ( high + low ) >> 1;
+			p = n * n;
+			if ( input < p ) {
+				high = n;
+			}
+			else if ( input > p ) {
+				low = n;
+			}
+			else {
+				break;
+			}
+		}
 
-        return input == p ? n : low;
-    }
+		return input == p ? n : low;
+	}
 
-    /// <summary>
-    ///     <para>Attempt to parse a fraction from a String.</para>
-    /// </summary>
-    /// <example>" 1234.45 / 346.456 "</example>
-    /// <param name="numberString"></param>
-    /// <param name="result"></param>
-    /// <exception cref="OutOfRangeException">Uncomment this if you want an exception instead of a Boolean.</exception>
-    [NeedsTesting]
-    public static Boolean TryParseFraction(this String numberString, out BigDecimal? result) {
-        result = default(BigDecimal?);
+	/// <summary>
+	///     <para>Attempt to parse a fraction from a String.</para>
+	/// </summary>
+	/// <example>" 1234.45 / 346.456 "</example>
+	/// <param name="numberString"></param>
+	/// <param name="result"></param>
+	/// <exception cref="OutOfRangeException">Uncomment this if you want an exception instead of a Boolean.</exception>
+	[NeedsTesting]
+	public static Boolean TryParseFraction( this String numberString, out BigDecimal? result ) {
+		result = default( BigDecimal? );
 
-        if (String.IsNullOrWhiteSpace(numberString)) {
-            return false;
-        }
+		if ( String.IsNullOrWhiteSpace( numberString ) ) {
+			return false;
+		}
 
-        var parts = numberString.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
+		var parts = numberString.Split( new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries ).Select( s => s.Trim() ).ToList();
 
-        if (parts.Count != 2) {
-            return false;
-        }
+		if ( parts.Count != 2 ) {
+			return false;
+		}
 
-        try {
-            var numerator = BigDecimal.Parse(parts[0]);
-            var denominator = BigDecimal.Parse(parts[1]);
+		try {
+			var numerator = BigDecimal.Parse( parts[0] );
+			var denominator = BigDecimal.Parse( parts[1] );
 
-            result = BigDecimal.Divide(numerator, denominator);
-            return true;
-        }
-        catch (Exception) {
+			result = BigDecimal.Divide( numerator, denominator );
+			return true;
+		}
+		catch ( Exception ) {
 
-            //throw new OutOfRangeException( "Couldn't parse numerator or denominator." );
-            return false;
-        }
-    }
+			//throw new OutOfRangeException( "Couldn't parse numerator or denominator." );
+			return false;
+		}
+	}
 }
