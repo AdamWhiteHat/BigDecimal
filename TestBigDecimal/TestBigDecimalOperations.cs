@@ -519,4 +519,56 @@ public class TestBigDecimalOperations
 
 		Assert.AreEqual( expected, actual, $"0.100001 - 0.101 should equal -0.000999.\nHigh: {TestBigDecimalHelper.GetInternalValues( high )}\nLow: {TestBigDecimalHelper.GetInternalValues( low )}\nResult: {TestBigDecimalHelper.GetInternalValues( actual )}" );
 	}
+
+	[Test]
+	public void TestSquareRoot()
+	{
+		BigDecimal value = BigDecimal.Parse( "5" );
+		Int32 root = 2;
+		Int32 precision = 30;
+
+		BigDecimal expected = BigDecimal.Parse( "2.236067977499789696409173668731" );
+		BigDecimal actual = BigDecimal.NthRoot( value, root, precision );
+
+		Assert.AreEqual( expected, actual, $"{root}th root of {value} did not return {expected}." );
+	}
+
+	[Test]
+	public void TestSquareRootOfDecimal()
+	{
+		BigDecimal value = BigDecimal.Parse( "0.5" );
+		Int32 root = 2;
+		Int32 precision = 30;
+
+		BigDecimal expected = BigDecimal.Parse( "0.707106781186547524400844362104" );
+		BigDecimal actual = BigDecimal.NthRoot( value, root, precision );
+
+		Assert.AreEqual( expected, actual, $"{root}th root of {value} did not return {expected}." );
+	}
+
+	[Test]
+	public void TestNthRoot()
+	{
+		BigDecimal value = BigDecimal.Parse( "3" );
+		Int32 root = 3;
+		Int32 precision = 50;
+
+		BigDecimal expected = BigDecimal.Parse( "1.44224957030740838232163831078010958839186925349935" );
+		BigDecimal actual = BigDecimal.NthRoot( value, root, precision );
+
+		Assert.AreEqual( expected, actual, $"{root}th root of {value} did not return {expected}." );
+	}
+
+	[Test]
+	public void TestNthRootOfDecimal()
+	{
+		BigDecimal value = BigDecimal.Parse( "0.03" );
+		Int32 root = 3;
+		Int32 precision = 50;
+
+		BigDecimal expected = BigDecimal.Parse( "0.31072325059538588668776624275223863628549068290674" );
+		BigDecimal actual = BigDecimal.NthRoot( value, root, precision );
+
+		Assert.AreEqual( expected, actual, $"{root}th root of {value} did not return {expected}." );
+	}
 }

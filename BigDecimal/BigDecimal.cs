@@ -217,7 +217,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	///Essentially tells you the number of digits in the mantisa.</summary>
 	public Int32 SignifigantDigits => GetSignifigantDigits( this.Mantissa );
 
-	public Int32 DecimalPlaces => this.SignifigantDigits + this.Exponent;
+	public Int32 DecimalPlaces => PlacesRightOfDecimal( this );
 
 	/// <summary>
 	/// Gets the whole-number integer (positive or negative) value of this BigDecimal, so everything to the left of the decimal place.
@@ -974,6 +974,39 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		return tmp * Math.Pow( basis, exponent );
+	}
+
+	/// <summary> Returns the Nth root of the supplied input decimal to the given number of places. </summary>
+	/// <returns></returns>
+	public static BigDecimal NthRoot( BigDecimal input, Int32 root, Int32 decimalPlaces )
+	{
+		BigInteger mantissa = input.Mantissa;
+		Int32 exponent = input.Exponent;
+
+		Int32 placesNeeded = ( decimalPlaces * root ) - PlacesRightOfDecimal( input );
+		if ( placesNeeded > 0 )
+		{
+			mantissa *= BigInteger.Pow( 10, placesNeeded );
+			exponent -= placesNeeded;
+		}
+
+		while ( exponent % root != 0 )
+		{
+			mantissa *= 10;
+			exponent += 1;
+		}
+
+		BigInteger rem;
+		BigInteger newMantissa = BigIntegerHelper.NthRoot( mantissa, root, out rem );
+		Int32 newExponent = exponent /= root;
+
+		return new BigDecimal( newMantissa, newExponent );
+	}
+
+	/// <summary> Returns the number of digits or place values to the right of the decimal point. </summary>
+	private static Int32 PlacesRightOfDecimal( BigDecimal input )
+	{
+		return Math.Max( 0, input.GetFractionalPart().ToString().Length - 2 );
 	}
 
 	/// <summary>Returns the absolute value of the BigDecimal</summary>
