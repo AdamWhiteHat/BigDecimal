@@ -1,7 +1,6 @@
 ﻿namespace TestBigDecimal;
 
 using ExtendedNumerics;
-using FluentAssertions;
 using NUnit.Framework;
 using System;
 using System.Numerics;
@@ -179,7 +178,7 @@ public class TestBigDecimalCritical {
 		var result1 = BigDecimal.Subtract( bigB, bigD );
 		var result2 = bigB - bigD;
 
-		result1.Should()?.Be( result2 );
+		Assert.Equals( result1, result2 );
 	}
 
 	[Test]

@@ -32,6 +32,7 @@ namespace TestBigDecimal;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
+using System;
 
 [TestFixture]
 public class TestBigDecimalParsingFractions {

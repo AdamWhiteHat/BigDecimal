@@ -142,20 +142,28 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 	}
 
+	/// <summary>Gets a value that represents the number 0 (zero).</summary>
 	public static BigDecimal Ten => 10;
 
+	/// <summary>Gets a value that represents the number 1 ().</summary>
 	public static BigDecimal One => 1;
 
+	/// <summary>Gets a value that represents the number 0 (zero).</summary>
 	public static BigDecimal Zero => 0;
 
-	public static BigDecimal OneHalf => 0.5d;
+	/// <summary>Gets a value that represents the number 0.5.</summary>
+	public static BigDecimal OneHalf => new BigDecimal( 0.5d );
 
-	public static BigDecimal MinusOne => -1;
+	/// <summary>Gets a value that represents the number -1 .</summary>
+	public static BigDecimal MinusOne => new BigDecimal( -1 );
 
+	/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
 	public static BigDecimal E { get; }
 
+	/// <summary>Gets a value that represents the number Pi.</summary>
 	public static BigDecimal Pi { get; }
 
+	/// <summary>Gets a value that represents the number Pi.</summary>
 	public static BigDecimal π { get; }
 
 	private static BigInteger TenInt { get; } = new( 10 );
@@ -171,16 +179,26 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <summary>TODO Describe this.</summary>
 	public static Boolean AlwaysNormalize { get; set; } = true;
 
-	public BigInteger Mantissa { get; init; }
+	/// <summary>The mantissa of the internal floating point number representation of this BigDecimal.</summary>
+	public readonly BigInteger Mantissa;
 
-	public Int32 Exponent { get; init; }
+	/// <summary>The exponent of the internal floating point number representation of this BigDecimal.</summary>
+	public readonly Int32 Exponent;
 
+	/// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="BigDecimal" /> object. </summary>
+	/// <returns>-1 if the value of this object is negative, 0 if the value of this object is zero or 1 if the value of this object is positive.</returns
 	public Int32 Sign => this.GetSign();
 
+	/// <summary>Gets the number of signifigant digits in <see cref="BigDecimal"/>.
+	///Essentially tells you the number of digits in the mantisa.</summary>
 	public Int32 SignifigantDigits => GetSignifigantDigits( this.Mantissa );
 
 	public Int32 DecimalPlaces => this.SignifigantDigits + this.Exponent;
 
+	/// <summary>
+	/// Gets the whole-number integer (positive or negative) value of this BigDecimal, so everything to the left of the decimal place.
+	/// Equivalent to the Truncate function for a float.
+	/// </summary>
 	public BigInteger WholeValue => this.GetWholePart();
 
 	public Int32 Length => GetSignifigantDigits( this.Mantissa ) + this.Exponent;
@@ -286,7 +304,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 			throw new ArgumentOutOfRangeException( nameof( digits ) );
 		}
 
-		var s = Resources.PiString?[ ..( 2 + digits ) ];
+		var s = Resources.PiString.Substring( 0, 2 + digits );
 
 		if ( String.IsNullOrWhiteSpace( s ) ) {
 			throw new InvalidOperationException( $"Unable to load the value of π.[{digits}] from resources." );
@@ -348,12 +366,12 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var posE = input.LastIndexOf( 'E' ) + 1;
 
 		if ( posE > 0 ) {
-			var sE = input[ posE.. ];
+			var sE = input.Substring( posE );
 
 			if ( Int32.TryParse( sE, out exponent ) ) {
 
 				//Trim off the exponent
-				input = input[ ..( posE - 1 ) ];
+				input = input.Substring( 0, posE - 1 );
 			}
 		}
 
@@ -438,20 +456,17 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 			return value;
 		}
 
-		var c = s[ pos ];
+		var c = s[pos];
 
 		while ( pos > 0 && c == '0' ) {
-			c = s[ --pos ]; //scan backwards to find the last not-0.
+			c = s[--pos]; //scan backwards to find the last not-0.
 		}
 
-		var mant = s[ ..( pos + 1 ) ];
-		var zeros = s[ ( pos + 1 ).. ];
+		var mant = s.Substring( 0, pos + 1 );
+		var zeros = s.Substring( pos + 1 );
 
 		if ( BigInteger.TryParse( mant, out var mantissa ) ) {
-			return value with {
-				Mantissa = mantissa,
-				Exponent = value.Exponent + zeros.Length
-			};
+			return new BigDecimal( mantissa, value.Exponent + zeros.Length );
 		}
 
 		return value;
@@ -469,14 +484,14 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var resultString = String.Empty;
 		var decimalString = this.ToString( BigDecimalNumberFormatInfo );
 
-		var valueSplit = decimalString.Split( '.', StringSplitOptions.RemoveEmptyEntries );
+		var valueSplit = decimalString.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries );
 		if ( valueSplit.Length > 0 ) {
-			resultString = valueSplit[ 0 ];
+			resultString = valueSplit[0];
 		}
 
-		var posE = resultString.IndexOf( 'E', StringComparison.Ordinal );
+		var posE = resultString.IndexOf( "E", StringComparison.Ordinal );
 		if ( posE > 0 ) {
-			resultString = resultString.Split( 'E', StringSplitOptions.RemoveEmptyEntries )[ 0 ];
+			resultString = resultString.Split( new char[] { 'E' }, StringSplitOptions.RemoveEmptyEntries )[0];
 		}
 
 		return BigInteger.Parse( resultString );
@@ -494,7 +509,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		if ( valueSplit.Length == 2 ) {
-			resultString = valueSplit[ 1 ];
+			resultString = valueSplit[1];
 		}
 
 		var newmantissa = BigInteger.Parse( resultString.TrimStart( '0' ) );
@@ -518,7 +533,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var mant = this.Mantissa.ToString();
 		var length = mant.Length + this.Exponent;
 		return length switch {
-			0 when Int32.TryParse( mant[ 0 ].ToString(), out var tenthsPlace ) => tenthsPlace >= 5 ? 1 : 0,
+			0 when Int32.TryParse( mant[0].ToString(), out var tenthsPlace ) => tenthsPlace >= 5 ? 1 : 0,
 			> 0 => 1,
 			var _ => 0
 		};
@@ -729,10 +744,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		left.Exponent > right.Exponent ? AlignExponent( left, right ) >= right.Mantissa : left.Mantissa >= AlignExponent( right, left );
 
 	/// <summary>Returns the result of multiplying a BigDecimal by negative one.</summary>
-	public static BigDecimal Negate( BigDecimal value ) =>
-		value with {
-			Mantissa = BigInteger.Negate( value.Mantissa )
-		};
+	public static BigDecimal Negate( BigDecimal value ) => new BigDecimal( BigInteger.Negate( value.Mantissa ) );
 
 	/// <summary>Adds two BigDecimal values.</summary>
 	public static BigDecimal Add( BigDecimal left, BigDecimal right ) {
@@ -927,7 +939,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return result;
 	}
 
-	public override Int32 GetHashCode() => HashCode.Combine( this.Mantissa, this.Exponent );
+	public override Int32 GetHashCode() => (this.Mantissa, this.Exponent).GetHashCode();
 
 	[MethodImpl( MethodImplOptions.AggressiveInlining )]
 	public override String ToString() => this.ToString( BigDecimalNumberFormatInfo );
@@ -951,26 +963,26 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		if ( negativeExponent ) {
 			if ( absExp > result.Length ) {
 				var zerosToAdd = Math.Abs( absExp - result.Length );
-				var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
+				var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[0], zerosToAdd ) );
 				result = zeroString + result;
 				result = result.Insert( 0, formatProvider.NumberDecimalSeparator );
-				result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
+				result = result.Insert( 0, formatProvider.NativeDigits[0] );
 			}
 			else {
 				var indexOfRadixPoint = Math.Abs( absExp - result.Length );
 				result = result.Insert( indexOfRadixPoint, formatProvider.NumberDecimalSeparator );
 				if ( indexOfRadixPoint == 0 ) {
-					result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
+					result = result.Insert( 0, formatProvider.NativeDigits[0] );
 				}
 			}
 
 			result = result.TrimEnd( '0' );
 			if ( result.Last().ToString() == formatProvider.NumberDecimalSeparator ) {
-				result = result[ ..^1 ];
+				result = result.Substring( 0, result.Length - 1 );
 			}
 		}
 		else {
-			var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], absExp ) );
+			var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[0], absExp ) );
 			result += zeroString;
 		}
 
@@ -1005,26 +1017,26 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 				var zerosToAdd = Math.Abs( absExp - result.Length );
 
 				//var zeroString = String.Join( String.Empty, Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], zerosToAdd ) );
-				var zeroString = String.Empty.PadRight( zerosToAdd, formatProvider.NativeDigits[ 0 ][ 0 ] );
+				var zeroString = String.Empty.PadRight( zerosToAdd, formatProvider.NativeDigits[0][0] );
 				result = zeroString + result;
 				result = result.Insert( 0, formatProvider.NumberDecimalSeparator );
-				result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
+				result = result.Insert( 0, formatProvider.NativeDigits[0] );
 			}
 			else {
 				var indexOfRadixPoint = Math.Abs( absExp - result.Length );
 				result = result.Insert( indexOfRadixPoint, formatProvider.NumberDecimalSeparator );
 				if ( indexOfRadixPoint == 0 ) {
-					result = result.Insert( 0, formatProvider.NativeDigits[ 0 ] );
+					result = result.Insert( 0, formatProvider.NativeDigits[0] );
 				}
 			}
 
 			result = result.TrimEnd( '0' );
 			if ( result.Last().ToString() == formatProvider.NumberDecimalSeparator ) {
-				result = result[ ..^1 ];
+				result = result.Substring( 0, result.Length - 1 );
 			}
 		}
 		else {
-			var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[ 0 ], absExp ) );
+			var zeroString = String.Concat( Enumerable.Repeat( formatProvider.NativeDigits[0], absExp ) );
 			result += zeroString;
 		}
 

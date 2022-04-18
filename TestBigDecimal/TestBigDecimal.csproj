@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net6.0-windows10.0.22000.0</TargetFramework>
-		<UseWindowsForms>true</UseWindowsForms>
+		<TargetFrameworks>net48;netstandard2.1;netcoreapp3.1;net6.0-windows</TargetFrameworks>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<Platforms>x64</Platforms>
@@ -13,7 +12,6 @@
 		<OutputType>Library</OutputType>
 		<Nullable>enable</Nullable>
 		<RootNamespace>TestBigDecimal</RootNamespace>
-		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -28,13 +26,12 @@
 		<WarningsAsErrors>NU1605</WarningsAsErrors>
 	</PropertyGroup>
 	<ItemGroup>
-	  <PackageReference Include="FluentAssertions" Version="6.4.0" />
-	  <PackageReference Include="JetBrains.DotMemoryUnit" Version="3.1.20200127.214830" />
-	  <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
-	  <PackageReference Include="NUnit" Version="3.13.2" />
+		<PackageReference Include="JetBrains.DotMemoryUnit" Version="3.1.20200127.214830" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+		<PackageReference Include="NUnit" Version="3.13.2" />
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\BigDecimal\BigDecimal.csproj" />
+		<ProjectReference Include="..\BigDecimal\BigDecimal.csproj" />
 	</ItemGroup>
 	<Choose>
 		<When Condition="'$(Configuration)'=='Debug'">

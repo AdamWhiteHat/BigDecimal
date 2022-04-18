@@ -27,10 +27,10 @@
 
 namespace TestBigDecimal;
 
+using System;
 using System.Numerics;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
-using FluentAssertions;
 using NUnit.Framework;
 
 [Parallelizable( ParallelScope.All )]
@@ -361,7 +361,7 @@ public class TestBigDecimalOperations {
 
 		var squared = expected * expected;
 		TestContext.WriteLine( $"{expected} squared is {squared}." );
-		squared.Should()?.Be( expectedSquared );
+		Assert.Equals( squared, expectedSquared );
 
 		var actual = squared.NthRoot( 2, out var remainder );
 

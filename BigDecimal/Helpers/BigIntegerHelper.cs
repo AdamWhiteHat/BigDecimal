@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Numerics;
@@ -178,15 +177,15 @@ public static class BigIntegerHelper {
 			return false;
 		}
 
-		var parts = numberString.Split( '/', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries )/*.Select( s => s.Trim() )*/.ToImmutableList();
+		var parts = numberString.Split( new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries ).Select( s => s.Trim() ).ToList();
 
 		if ( parts.Count != 2 ) {
 			return false;
 		}
 
 		try {
-			var numerator = BigDecimal.Parse( parts[ 0 ] );
-			var denominator = BigDecimal.Parse( parts[ 1 ] );
+			var numerator = BigDecimal.Parse( parts[0] );
+			var denominator = BigDecimal.Parse( parts[1] );
 
 			result = BigDecimal.Divide( numerator, denominator );
 			return true;
