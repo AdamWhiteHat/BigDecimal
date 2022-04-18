@@ -484,14 +484,14 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		var resultString = String.Empty;
 		var decimalString = this.ToString( BigDecimalNumberFormatInfo );
 
-		var valueSplit = decimalString.Split( new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries );
+		var valueSplit = decimalString.Split( new Char[] { '.' }, StringSplitOptions.RemoveEmptyEntries );
 		if ( valueSplit.Length > 0 ) {
 			resultString = valueSplit[0];
 		}
 
 		var posE = resultString.IndexOf( "E", StringComparison.Ordinal );
 		if ( posE > 0 ) {
-			resultString = resultString.Split( new char[] { 'E' }, StringSplitOptions.RemoveEmptyEntries )[0];
+			resultString = resultString.Split( new Char[] { 'E' }, StringSplitOptions.RemoveEmptyEntries )[0];
 		}
 
 		return BigInteger.Parse( resultString );
@@ -744,7 +744,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		left.Exponent > right.Exponent ? AlignExponent( left, right ) >= right.Mantissa : left.Mantissa >= AlignExponent( right, left );
 
 	/// <summary>Returns the result of multiplying a BigDecimal by negative one.</summary>
-	public static BigDecimal Negate( BigDecimal value ) => new BigDecimal( BigInteger.Negate( value.Mantissa ) );
+	public static BigDecimal Negate( BigDecimal value ) => new BigDecimal( BigInteger.Negate( value.Mantissa ), value.Exponent );
 
 	/// <summary>Adds two BigDecimal values.</summary>
 	public static BigDecimal Add( BigDecimal left, BigDecimal right ) {
