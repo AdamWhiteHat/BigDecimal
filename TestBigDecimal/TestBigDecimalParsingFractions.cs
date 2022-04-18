@@ -35,28 +35,33 @@ using NUnit.Framework;
 using System;
 
 [TestFixture]
-public class TestBigDecimalParsingFractions {
+public class TestBigDecimalParsingFractions
+{
 
 	private static readonly String String123450000;
 
 	static TestBigDecimalParsingFractions() => String123450000 = "123450000" + new String( '0', UInt16.MaxValue );
 
 	[Test]
-	public void TestFractional1() {
+	public void TestFractional1()
+	{
 		const String test = " 12.1 / 36.3 ";
 		var expected = BigDecimal.Parse( "0.333" );
 
 		var parsed = test.TryParseFraction( out var result );
-		if ( parsed ) {
+		if ( parsed )
+		{
 			Assert.AreEqual( expected, result );
 		}
-		else {
+		else
+		{
 			Assert.Fail( "Only 3 3s." );
 		}
 	}
 
 	[Test]
-	public void TestNormalize123450000UInt16() {
+	public void TestNormalize123450000UInt16()
+	{
 		var expected = new BigDecimal( 123450000, UInt16.MaxValue );
 		var bd = BigDecimal.Parse( String123450000 );
 
