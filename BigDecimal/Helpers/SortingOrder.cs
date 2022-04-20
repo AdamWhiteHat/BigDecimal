@@ -2,7 +2,8 @@ namespace ExtendedNumerics.Helpers;
 
 using System;
 
-public static class SortingOrder {
+public static class SortingOrder
+{
 
 	/// <summary>1</summary>
 	public const SByte After = 1;

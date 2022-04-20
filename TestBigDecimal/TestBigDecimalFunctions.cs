@@ -7,10 +7,12 @@ using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 
 [TestFixture]
-public class TestBigDecimalFunctions {
+public class TestBigDecimalFunctions
+{
 
 	[Test]
-	public void TestGCD() {
+	public void TestGCD()
+	{
 		var expected = BigDecimal.Parse( "10" );
 
 		BigDecimal result = new BigInteger[] {
@@ -21,7 +23,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestGetFractionalPart() {
+	public void TestGetFractionalPart()
+	{
 		var expected = new BigDecimal( BigInteger.Parse( "9150201282920942551781108927727789384397020382853" ), -49 );
 		var value = new BigDecimal( BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" ), -49 );
 
@@ -31,7 +34,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestGetLength() {
+	public void TestGetLength()
+	{
 		var expected = BigDecimal.Parse( "2268507702394854741827137539360680923314" );
 		var value = new BigDecimal( BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" ), -49 );
 
@@ -39,7 +43,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestGetSign() {
+	public void TestGetSign()
+	{
 		BigDecimal zero1 = 0;
 		Assert.AreEqual( 0, zero1.Sign, "0" );
 
@@ -89,7 +94,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestGetWholeValue() {
+	public void TestGetWholeValue()
+	{
 		var expected = BigDecimal.Parse( "2268507702394854741827137539360680923314" );
 		var value = new BigDecimal( BigInteger.Parse( "22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853" ), -49 );
 
@@ -99,7 +105,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestGoldenIrrational() {
+	public void TestGoldenIrrational()
+	{
 		var goldenRatio = BigDecimal.Parse(
 			"1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374847540880753868917521266338622235369317931800607667263544333890865959395829056383226613199282902678806752087668925017116962070322210432162695486262963136144381497587012203408058879544547492461856953648644492" );
 
@@ -108,7 +115,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestLeastCommonDivisor() {
+	public void TestLeastCommonDivisor()
+	{
 		var expected = BigDecimal.Parse( "45319990731015" );
 
 		BigDecimal actual = BigIntegerHelper.LCM( new BigInteger[] {
@@ -126,7 +134,8 @@ public class TestBigDecimalFunctions {
 		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 b,
 		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 c,
 		[Random( Int16.MinValue, Int16.MaxValue, 3 )] Int16 d
-	) {
+	)
+	{
 		var top = new BigDecimal( a, b );
 		var bottom = new BigDecimal( c, d );
 		var expected = BigDecimal.Divide( top, bottom );
@@ -138,23 +147,28 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestRandomEquals( [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 a, [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 b ) {
+	public void TestRandomEquals( [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 a, [Random( Int16.MinValue, Int16.MaxValue, 10 )] Int16 b )
+	{
 		BigDecimal x = a;
 		BigDecimal y = b;
 
-		if ( x == y ) {
+		if ( x == y )
+		{
 			Assert.AreEqual( y, x );
 		}
-		else if ( x != y ) {
+		else if ( x != y )
+		{
 			Assert.AreNotEqual( x, y );
 		}
-		else {
+		else
+		{
 			Assert.Fail( "Equals failed." );
 		}
 	}
 
 	[Test]
-	public void TestRounding() {
+	public void TestRounding()
+	{
 		var up = BigDecimal.Parse( 0.50001 );
 		var down = BigDecimal.Parse( 0.49 );
 		var oneAndAhalf = BigDecimal.Parse( "1.5" );
@@ -196,7 +210,8 @@ public class TestBigDecimalFunctions {
 	}
 
 	[Test]
-	public void TestSignifigantDigits() {
+	public void TestSignifigantDigits()
+	{
 		const Int32 expected1 = 19;
 		var number1 = new BigDecimal( 12345678901234567890, -10 );
 		var result1 = number1.SignifigantDigits;

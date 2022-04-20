@@ -7,7 +7,8 @@ using NUnit.Framework;
 
 [Parallelizable( ParallelScope.All )]
 [TestFixture]
-public class TestBigDecimalConversion {
+public class TestBigDecimalConversion
+{
 
 	private const String LongNumbers =
 		"122685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853" +
@@ -15,7 +16,8 @@ public class TestBigDecimalConversion {
 		"322685077023934456384565345644576454645163485274775618673867785678763896936969078786987890789798927897383149150201282920942551781108927727789384397020382853";
 
 	[Test]
-	public void TestConversionFromBigInteger() {
+	public void TestConversionFromBigInteger()
+	{
 		var expected = BigInteger.Parse( LongNumbers );
 
 		var bigDecimal = BigDecimal.Parse( LongNumbers );
