@@ -1,5 +1,4 @@
 # BigDecimal
-Arbitrary precision decimal class
 
 BigDecimal is an arbitrary precision floating point number class.
 
