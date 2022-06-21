@@ -36,7 +36,7 @@ public static class BigIntegerHelper
 	public static Int32 GetLength( this BigInteger source )
 	{
 		var result = 0;
-		var copy = source;
+		var copy = BigInteger.Abs( source );
 		while ( copy > 0 )
 		{
 			copy /= 10;
