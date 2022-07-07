@@ -153,7 +153,7 @@ public class TestBigDecimalOperations
 	{
 		var divisor = BigDecimal.Parse("0.90606447789");
 		var actual = BigDecimal.Divide(BigDecimal.One, divisor);
-		actual = BigDecimal.Truncate(actual, 100);
+		actual = BigDecimal.Round(actual, 100);
 
 		//var expected = BigDecimal.Parse( "1.1036742134828557" );
 		var expected = BigDecimal.Parse("1.1036742134");

@@ -83,7 +83,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		BigDecimal result;
 		if (AlwaysTruncate)
 		{
-			result = Truncate(this, Precision);
+			result = Round(this, Precision);
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
@@ -124,7 +124,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		BigDecimal result;
 		if (AlwaysTruncate)
 		{
-			result = Truncate(this, Precision);
+			result = Round(this, Precision);
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
@@ -164,7 +164,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		BigDecimal result;
 		if (AlwaysTruncate)
 		{
-			result = Truncate(this, Precision);
+			result = Round(this, Precision);
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
@@ -211,7 +211,7 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	/// <summary>
 	/// Specifies whether the significant digits should be truncated to the given precision after each operation.	
 	/// Setting this to true will tend to accumulate errors at the precision boundary after several arithmetic operations.
-	/// Therefore, you should prefer using <see cref="Truncate(BigDecimal, int)"/> explicitly when you need it instead.
+	/// Therefore, you should prefer using <see cref="Round(BigDecimal, int)"/> explicitly when you need it instead.
 	/// This should generally be left disabled by default.
 	/// This setting may be useful if you are running into memory or performance issues, as could conceivably be brought on by many operations on irrational numbers.
 	/// </summary>
@@ -333,8 +333,8 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		BigDecimal r = right.Value;
 		if (AlwaysTruncate)
 		{
-			l = Truncate(l, Precision);
-			r = Truncate(r, Precision);
+			l = Round(l, Precision);
+			r = Round(r, Precision);
 		}
 		if (AlwaysNormalize)
 		{
@@ -403,35 +403,13 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		BigDecimal result = new BigDecimal((mantissa, exponent));
 		if (AlwaysTruncate)
 		{
-			result = Truncate(result, Precision);
+			result = Round(result, Precision);
 		}
 		if (AlwaysNormalize)
 		{
 			result = Normalize(result);
 		}
 		return result;
-	}
-
-	/// <summary>Truncates the BigDecimal to the given precision by removing the least significant digits.</summary>
-	public static BigDecimal Truncate(BigDecimal value, Int32 precision)
-	{
-		var mantissa = value.Mantissa;
-		var exponent = value.Exponent;
-
-		var sign = Math.Sign(exponent);
-		var digits = PlacesRightOfDecimal(value);
-		if (digits > precision)
-		{
-			int difference = (digits - precision);
-			mantissa = BigInteger.Divide(mantissa, BigInteger.Pow(TenInt, difference));
-
-			if (sign != 0)
-			{
-				exponent -= sign * difference;
-			}
-		}
-
-		return new BigDecimal((mantissa, exponent));
 	}
 
 	public static Int32 NumberOfDigits(BigInteger value) => (Int32)Math.Ceiling(BigInteger.Log10(value * value.Sign));
@@ -984,6 +962,9 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		return result;
 	}
 
+	/// <summary>Truncates the BigDecimal to the given precision by removing the least significant digits.</summary>
+	public static BigInteger Truncate(BigDecimal value) => Round(value);
+
 	/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
 	public static BigInteger Round(BigDecimal value) => Round(value, MidpointRounding.AwayFromZero);
 
@@ -1015,6 +996,28 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 		}
 
 		return wholePart;
+	}
+
+	/// <summary>Rounds a BigDecimal to the given number of digits.</summary>
+	public static BigDecimal Round(BigDecimal value, Int32 precision)
+	{
+		var mantissa = value.Mantissa;
+		var exponent = value.Exponent;
+
+		var sign = Math.Sign(exponent);
+		var digits = PlacesRightOfDecimal(value);
+		if (digits > precision)
+		{
+			int difference = (digits - precision);
+			mantissa = BigInteger.Divide(mantissa, BigInteger.Pow(TenInt, difference));
+
+			if (sign != 0)
+			{
+				exponent -= sign * difference;
+			}
+		}
+
+		return new BigDecimal((mantissa, exponent));
 	}
 
 	/// <summary>Rounds a BigDecimal to an integer value. The BigDecimal argument is rounded towards positive infinity.</summary>

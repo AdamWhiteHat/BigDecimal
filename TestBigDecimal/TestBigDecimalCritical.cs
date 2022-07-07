@@ -196,7 +196,7 @@ public class TestBigDecimalCritical
 		var expected = inputTruncated;
 
 		var longValue = BigDecimal.Parse(String.Concat(inputTruncated, inputOverflow));
-		var result = BigDecimal.Truncate(longValue, 5000);
+		var result = BigDecimal.Round(longValue, 5000);
 
 		var actual = result.ToString();
 
