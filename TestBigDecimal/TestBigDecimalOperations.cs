@@ -200,6 +200,37 @@ public class TestBigDecimalOperations
 	}
 
 	[Test]
+	public void TestDivide_50by2_001()
+	{
+		var actual = BigDecimal.Divide(BigDecimal.Parse("50"), BigDecimal.Parse("2"));
+		var expected = BigDecimal.Parse("25");
+
+		Assert.AreEqual(expected.ToString(), actual.ToString());
+	}
+
+	[Test]
+	public void TestDivide_OneOver()
+	{
+		var numerator = BigDecimal.One;
+		var denominator = BigDecimal.Parse("0.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068");
+
+		var actual1 = BigDecimal.One / denominator;
+		var actual2 = numerator / denominator;
+		var actual3 = BigDecimal.Divide(BigDecimal.One, denominator);
+		var actual4 = BigDecimal.Divide(numerator, denominator);
+
+		string expectedString = "7.06251330593104576979300515257055804273431002514553133399831687355590333758005608350397747591624394";
+		var expected = BigDecimal.Parse(expectedString);
+
+		Assert.AreEqual(expectedString, actual1.ToString(), "expectedString != actual1.ToString()");
+		Assert.AreEqual(expected.ToString(), actual1.ToString(), "expected.ToString() != actual1.ToString()");
+		Assert.AreEqual(expected, actual1, "expected != ( BigDecimal.One / denominator )");
+		Assert.AreEqual(expected, actual2, "expected != ( numerator / denominator )");
+		Assert.AreEqual(expected, actual3, "expected != ( BigDecimal.Divide(BigDecimal.One, denominator) )");
+		Assert.AreEqual(expected, actual4, "expected != ( BigDecimal.Divide(numerator, denominator) )");
+	}
+
+	[Test]
 	public void TestFloor001()
 	{
 		var expected = BigDecimal.Parse("3");
@@ -535,13 +566,40 @@ public class TestBigDecimalOperations
 	}
 
 	[Test]
-	public void TestSquareRoot()
+	public void TestSquareRoot001()
 	{
 		BigDecimal value = BigDecimal.Parse("5");
 		Int32 root = 2;
 		Int32 precision = 30;
 
 		BigDecimal expected = BigDecimal.Parse("2.236067977499789696409173668731");
+		BigDecimal actual = BigDecimal.NthRoot(value, root, precision);
+
+		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+	}
+
+	[Test]
+	public void TestSquareRoot_25_001()
+	{
+		BigDecimal value = BigDecimal.Parse("25");
+		Int32 root = 2;
+		Int32 precision = 18;
+
+		BigDecimal expected = BigDecimal.Parse("5");
+		BigDecimal actual = BigDecimal.NthRoot(value, root, precision);
+
+		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+	}
+
+	[Test]
+	public void TestSquareRoot_25_002()
+	{
+
+		BigDecimal value = new BigDecimal(-25);
+		Int32 root = 2;
+		Int32 precision = 18;
+
+		BigDecimal expected = BigDecimal.Parse("5");
 		BigDecimal actual = BigDecimal.NthRoot(value, root, precision);
 
 		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");

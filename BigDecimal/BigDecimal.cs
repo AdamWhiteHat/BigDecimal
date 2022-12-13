@@ -23,7 +23,7 @@ using Reflection;
 /// </summary>
 [DebuggerDisplay("{" + nameof(ToString) + "(),nq}")]
 [Immutable]
-public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
+public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
 {
 	private const String NullString = "(null)";
 
@@ -289,6 +289,24 @@ public readonly record struct BigDecimal : IComparable<BigDecimal>, IComparable<
 	public Int32 CompareTo(Int32 other) =>
 		this < other ? SortingOrder.Before :
 		this > other ? SortingOrder.After : SortingOrder.Same;
+
+	/// <summary>
+	/// Compares the current instance with another object of the same type and returns
+	/// an integer that indicates whether the current instance precedes, follows, or
+	/// occurs in the same position in the sort order as the other object.
+	/// </summary>
+	/// <param name="obj"> An object to compare with this instance.</param>	
+	/// <returns>
+	/// A return value of less than zero means this instance precedes obj in the sort order.
+	/// A return value of zero means  this instance occurs in the same position in the sort order as obj.
+	/// A return value of greater than zero means this instance follows obj in the sort order.
+	/// </returns>
+	int IComparable.CompareTo(Object obj)
+	{
+		if (obj == null) { return SortingOrder.After; }
+		if (!(obj is BigDecimal)) { throw new ArgumentException($"Argument must be of type {nameof(BigDecimal)}", nameof(obj)); }
+		return CompareTo((BigDecimal)obj);
+	}
 
 	public Boolean Equals(BigDecimal? other) => Equals(this, other);
 

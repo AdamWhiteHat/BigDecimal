@@ -28,6 +28,7 @@
 		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic numerics numbers biginteger csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedNumerics.BigDecimal/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/AdamWhiteHat/BigDecimal</RepositoryUrl>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 
 		<Version>$([System.DateTime]::Now.ToString("yyyy."$([System.DateTime]::Now.DayOfYear)".HHmm"))</Version>
@@ -66,6 +67,13 @@
 			</PropertyGroup>
 		</When>
 	</Choose>
+
+	<ItemGroup>
+	  <None Include="..\README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Roslynator.Analyzers" Version="4.0.0">
