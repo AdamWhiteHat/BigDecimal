@@ -6,7 +6,6 @@ using NUnit.Framework.Api;
 using NUnit.Framework.Constraints;
 using NUnit.Framework.Interfaces;
 using NUnit.Framework.Internal.Execution;
-using Microsoft.VisualStudio;
 
 namespace TestBigDecimal;
 [NonParallelizable]

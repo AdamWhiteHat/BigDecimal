@@ -63,10 +63,10 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// Private Constructor. This one bypasses <see cref="AlwaysTruncate"/> and <see cref="AlwaysNormalize"/> check and behavior.
 	/// </summary>
 	/// <param name="tuple"></param>
-	private BigDecimal((BigInteger mantissa, Int32 exponent) tuple)
+	private BigDecimal(Tuple<BigInteger, Int32> tuple)
 	{
-		this.Mantissa = tuple.mantissa;
-		this.Exponent = tuple.exponent;
+		this.Mantissa = tuple.Item1;
+		this.Exponent = tuple.Item2;
 	}
 
 	public BigDecimal(BigInteger numerator, BigInteger denominator)
@@ -418,7 +418,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 			mantissa = BigInteger.Negate(mantissa);
 		}
 
-		BigDecimal result = new BigDecimal((mantissa, exponent));
+		BigDecimal result = new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
 		if (AlwaysTruncate)
 		{
 			result = Round(result, Precision);
@@ -462,7 +462,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 		if (BigInteger.TryParse(mant, out var mantissa))
 		{
-			return new BigDecimal((mantissa, value.Exponent + zeros.Length));
+			return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, value.Exponent + zeros.Length));
 		}
 
 		return value;
@@ -1035,7 +1035,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 			}
 		}
 
-		return new BigDecimal((mantissa, exponent));
+		return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
 	}
 
 	/// <summary>Rounds a BigDecimal to an integer value. The BigDecimal argument is rounded towards positive infinity.</summary>
@@ -1064,7 +1064,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return result;
 	}
 
-	public override Int32 GetHashCode() => (this.Mantissa, this.Exponent).GetHashCode();
+	public override Int32 GetHashCode() => new Tuple<BigInteger, Int32>(this.Mantissa, this.Exponent).GetHashCode();
 
 	[MethodImpl(MethodImplOptions.AggressiveInlining)]
 	public override String ToString() => this.ToString(BigDecimalNumberFormatInfo);

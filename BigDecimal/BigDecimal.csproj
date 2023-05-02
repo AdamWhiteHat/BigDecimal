@@ -1,11 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net48;netstandard2.1;netcoreapp3.1;net6.0-windows</TargetFrameworks>
-
-		<Platforms>x64;x86</Platforms>
+		<TargetFrameworks>net45;net46;net48;netstandard2.1;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<OutputType>Library</OutputType>
 		<Nullable>enable</Nullable>
-
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest</AnalysisLevel>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -23,7 +21,7 @@
 		<PackageId>ExtendedNumerics.BigDecimal</PackageId>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>Adam White, Jan Christoph Bernack, Rick Harker</Authors>
-		<Copyright>Adam White. MIT License. See Licence.</Copyright>
+		<Copyright>Adam White. MIT License. See License.</Copyright>
 		<Description>An arbitrary precision decimal class with. Implemented as a arbitrary precision floating poing number using a mantessa and exponent.</Description>
 		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic numerics numbers biginteger csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedNumerics.BigDecimal/</PackageProjectUrl>
@@ -40,19 +38,6 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>		
 		<WarningsAsErrors>NU1605</WarningsAsErrors>
 	</PropertyGroup>
-
-	<Choose>
-		<When Condition="'$(Platform)'=='x64'">
-			<PropertyGroup>
-				<PlatformTarget>x64</PlatformTarget>
-			</PropertyGroup>
-		</When>
-		<When Condition="'$(Platform)'=='x86'">
-			<PropertyGroup>
-				<PlatformTarget>x86</PlatformTarget>
-			</PropertyGroup>
-		</When>
-	</Choose>
 
 	<Choose>
 		<When Condition="'$(Configuration)'=='Debug'">

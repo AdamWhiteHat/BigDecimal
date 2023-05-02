@@ -600,9 +600,14 @@ public class TestBigDecimalOperations
 		Int32 precision = 18;
 
 		BigDecimal expected = BigDecimal.Parse("5");
-		BigDecimal actual = BigDecimal.NthRoot(value, root, precision);
 
-		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+		BigDecimal actual;
+		TestDelegate testDelegate = new TestDelegate(() =>
+		{
+			actual = BigDecimal.NthRoot(value, root, precision);
+		});
+
+		Assert.Throws(typeof(ArgumentException), testDelegate);
 	}
 
 	[Test]

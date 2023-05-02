@@ -1,9 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net48;netcoreapp3.1;net6.0-windows</TargetFrameworks>
+		<TargetFrameworks>net45;net46;net48;netcoreapp3.1;net5.0;net6.0;net7.0</TargetFrameworks>
+		<PlatformTarget>AnyCPU</PlatformTarget>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest</AnalysisLevel>
-		<Platforms>x64;x86</Platforms>
 		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 		<RepositoryType>git</RepositoryType>
 		<GeneratePackageOnBuild>false</GeneratePackageOnBuild>
@@ -13,19 +13,6 @@
 		<Nullable>enable</Nullable>
 		<RootNamespace>TestBigDecimal</RootNamespace>
 	</PropertyGroup>
-
-	<Choose>
-		<When Condition="'$(Platform)'=='x64'">
-			<PropertyGroup>
-				<PlatformTarget>x64</PlatformTarget>
-			</PropertyGroup>
-		</When>
-		<When Condition="'$(Platform)'=='x86'">
-			<PropertyGroup>
-				<PlatformTarget>x86</PlatformTarget>
-			</PropertyGroup>
-		</When>
-	</Choose>
 
 	<Choose>
 		<When Condition="'$(Configuration)'=='Debug'">
@@ -57,7 +44,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.1.0" />
 		<PackageReference Include="NUnit" Version="3.12.0" />
-		<PackageReference Include="NUnit3TestAdapter" Version="4.2.1" />
+		<PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BigDecimal\BigDecimal.csproj" />
