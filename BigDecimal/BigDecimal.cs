@@ -808,67 +808,6 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return Pow(E, exponent);
 	}
 
-	/// <summary>
-	/// Returns the logarithm of a specified number in a specified base.	/// 
-	/// </summary>
-	/// <remarks>
-	/// Thank you to Jacob F. W. for this algorithm.
-	/// Code shamelessly stolen from here: https://www.codeproject.com/Tips/311714/Natural-Logarithms-and-Exponent
-	/// </remarks>
-	/// <param name="value">The value to take the logarithm of.</param>
-	/// <param name="base">The base.</param>
-	/// <returns>The base @base logarithm of value.</returns>
-	public static BigDecimal Log(BigDecimal value, BigDecimal @base)
-	{
-		BigDecimal power = value;
-		BigDecimal Base = @base;
-		BigDecimal sign = 1.0;
-
-		#region Error Checking
-
-		if (power <= 1.0 || Base <= 1.0)
-		{
-			if (power <= 0.0 || Base <= 0.0)
-			{
-				return double.NaN;
-			}
-			if (power < 1.0)
-			{
-				power = 1.0 / power;
-				sign *= -1.0;
-			}
-			if (Base < 1.0)
-			{
-				sign *= -1.0;
-				Base = 1.0 / Base;
-			}
-			if (power == 1.0)
-			{
-				if (Base != 1.0)
-				{
-					return 0.0;
-				}
-				return 1.0;
-			}
-		}
-
-		#endregion
-
-		BigDecimal whole = power;
-		BigDecimal n = 0.0;
-
-		while (whole >= Base)
-		{
-			whole /= Base;
-			n++;
-		}
-		if (whole == 1.0)
-		{
-			return (sign * n);
-		}
-		return sign * (n + (1.0 / Log(Base, whole)));
-	}
-
 	/// <summary>Returns a specified number raised to the specified power.</summary>
 	public static BigDecimal Pow(BigDecimal @base, BigInteger exponent)
 	{
