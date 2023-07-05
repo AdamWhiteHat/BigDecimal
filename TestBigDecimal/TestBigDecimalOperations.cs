@@ -33,7 +33,6 @@ using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 
-[Parallelizable(ParallelScope.All)]
 [TestFixture]
 public class TestBigDecimalOperations
 {
@@ -151,6 +150,9 @@ public class TestBigDecimalOperations
 	[Test]
 	public void TestDivide003()
 	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 11;
+
 		var divisor = BigDecimal.Parse("0.90606447789");
 		var actual = BigDecimal.Divide(BigDecimal.One, divisor);
 		actual = BigDecimal.Round(actual, 100);
@@ -159,6 +161,8 @@ public class TestBigDecimalOperations
 		var expected = BigDecimal.Parse("1.1036742134");
 
 		Assert.AreEqual(expected, actual);
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]
@@ -169,6 +173,35 @@ public class TestBigDecimalOperations
 		var expected = BigDecimal.Parse("0.05");
 
 		Assert.AreEqual(expected, actual);
+	}
+
+	[Test]
+	public void TestDivide005()
+	{
+		var a = new BigDecimal(5);
+		var b = new BigDecimal(8);
+
+		var actual = BigDecimal.Divide(a, b);
+		var expected = BigDecimal.Parse("0.625");
+
+		Assert.AreEqual(expected.ToString(), actual.ToString());
+	}
+
+	[Test]
+	public void TestDivide006()
+	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 12;
+
+		var a = new BigDecimal(1);
+		var b = new BigDecimal(7);
+
+		var actual = BigDecimal.Divide(a, b);
+		var expected = BigDecimal.Parse("0.142857142857");
+
+		Assert.AreEqual(expected.ToString(), actual.ToString());
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]
@@ -214,12 +247,15 @@ public class TestBigDecimalOperations
 		var numerator = BigDecimal.One;
 		var denominator = BigDecimal.Parse("0.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068");
 
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 100;
+
 		var actual1 = BigDecimal.One / denominator;
 		var actual2 = numerator / denominator;
 		var actual3 = BigDecimal.Divide(BigDecimal.One, denominator);
 		var actual4 = BigDecimal.Divide(numerator, denominator);
 
-		string expectedString = "7.06251330593104576979300515257055804273431002514553133399831687355590333758005608350397747591624394";
+		string expectedString = "7.062513305931045769793005152570558042734310025145531333998316873555903337580056083503977475916243946";
 		var expected = BigDecimal.Parse(expectedString);
 
 		Assert.AreEqual(expectedString, actual1.ToString(), "expectedString != actual1.ToString()");
@@ -228,6 +264,8 @@ public class TestBigDecimalOperations
 		Assert.AreEqual(expected, actual2, "expected != ( numerator / denominator )");
 		Assert.AreEqual(expected, actual3, "expected != ( BigDecimal.Divide(BigDecimal.One, denominator) )");
 		Assert.AreEqual(expected, actual4, "expected != ( BigDecimal.Divide(numerator, denominator) )");
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]
@@ -373,15 +411,20 @@ public class TestBigDecimalOperations
 	[Test]
 	public void TestReciprocal001()
 	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 10;
+
 		var dividend = new BigDecimal(1);
 		var divisor = new BigDecimal(3);
 
 		var actual = BigDecimal.Divide(dividend, divisor);
 
 		//var expected = BigDecimal.Parse( "0.3333333333333333" );
-		var expected = BigDecimal.Parse("0.3");
+		var expected = BigDecimal.Parse("0.3333333333");
 
 		Assert.AreEqual(expected, actual);
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]
@@ -402,6 +445,8 @@ public class TestBigDecimalOperations
 	[Test]
 	public void TestReciprocal003()
 	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 15;
 
 		//var expected = BigDecimal.Parse( "12.000000000000005" );
 		var expected = BigDecimal.Parse("12.000000000000004");
@@ -412,11 +457,15 @@ public class TestBigDecimalOperations
 		var actual = BigDecimal.Divide(dividend, divisor);
 
 		Assert.AreEqual(expected, actual);
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]
 	public void TestReciprocal004()
 	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 14;
 
 		// 2/0.63661977236758 == 3.1415926535898
 		var expected = BigDecimal.Parse("3.14159265358970");
@@ -427,6 +476,8 @@ public class TestBigDecimalOperations
 		var actual = BigDecimal.Divide(dividend, divisor);
 
 		Assert.AreEqual(expected, actual);
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]

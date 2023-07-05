@@ -45,8 +45,11 @@ public class TestBigDecimalParsingFractions
 	[Test]
 	public void TestFractional1()
 	{
+		int savePrecision = BigDecimal.Precision;
+		BigDecimal.Precision = 10;
+
 		const String test = " 12.1 / 36.3 ";
-		var expected = BigDecimal.Parse( "0.333" );
+		var expected = BigDecimal.Parse( "0.3333333333" );
 
 		var parsed = test.TryParseFraction( out var result );
 		if ( parsed )
@@ -57,6 +60,8 @@ public class TestBigDecimalParsingFractions
 		{
 			Assert.Fail( "Only 3 3s." );
 		}
+
+		BigDecimal.Precision = savePrecision;
 	}
 
 	[Test]

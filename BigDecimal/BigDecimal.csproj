@@ -35,8 +35,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>		
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<WarningsAsErrors>NU1605</WarningsAsErrors>
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
 	</PropertyGroup>
 
 	<Choose>
@@ -44,7 +45,7 @@
 			<PropertyGroup>
 				<DebugSymbols>true</DebugSymbols>
 				<DebugType>full</DebugType>
-				<Optimize>True</Optimize>
+				<Optimize>False</Optimize>
 				<DefineConstants>$(DefineConstants);DEBUG;VERBOSE;</DefineConstants>
 				<WarningLevel>2</WarningLevel>
 				<NoWarn>1701;1702;CA1724</NoWarn>
@@ -53,7 +54,7 @@
 		<When Condition="'$(Configuration)'=='Release'">
 			<PropertyGroup>
 				<DebugSymbols>false</DebugSymbols>
-				<Optimize>False</Optimize>
+				<Optimize>True</Optimize>
 				<WarningLevel>1</WarningLevel>
 				<DefineConstants>$(DefineConstants);</DefineConstants>
 			</PropertyGroup>
@@ -61,10 +62,10 @@
 	</Choose>
 
 	<ItemGroup>
-	  <None Include="..\README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 	<ItemGroup>

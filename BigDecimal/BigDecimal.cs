@@ -774,10 +774,31 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 		var counter = 0;
 
-		var mantissa = BigInteger.DivRem(dividend.Mantissa, divisor.Mantissa, out var remainder);
+		BigInteger remainder;
 
-		while (remainder != 0 && GetSignifigantDigits(mantissa) < divisor.SignifigantDigits)
+		var mantissa = BigInteger.DivRem(dividend.Mantissa, divisor.Mantissa, out remainder);
+
+		bool firstLoop = true;
+		BigInteger lastRemainder = 0;
+		while (remainder != 0)
 		{
+			if (firstLoop)
+			{
+				firstLoop = false;
+			}
+			else if (remainder == lastRemainder)
+			{
+				if (GetSignifigantDigits(mantissa) >= divisor.SignifigantDigits)
+				{
+					break;
+				}
+			}
+			else if (GetSignifigantDigits(mantissa) >= Precision)
+			{
+				break;
+			}
+
+
 			while (BigInteger.Abs(remainder) < BigInteger.Abs(divisor.Mantissa))
 			{
 				remainder *= 10;
@@ -785,6 +806,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 				counter++;
 			}
 
+			lastRemainder = remainder;
 			mantissa += BigInteger.DivRem(remainder, divisor.Mantissa, out remainder);
 		}
 
