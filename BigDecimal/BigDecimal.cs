@@ -943,6 +943,11 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return tmp * Math.Pow(basis, exponent);
 	}
 
+	public static BigDecimal SquareRoot(BigDecimal input, Int32 decimalPlaces)
+	{
+		return NthRoot(input, 2, decimalPlaces);
+	}
+
 	/// <summary> Returns the Nth root of the supplied input decimal to the given number of places. </summary>
 	/// <returns></returns>
 	public static BigDecimal NthRoot(BigDecimal input, Int32 root, Int32 decimalPlaces)
