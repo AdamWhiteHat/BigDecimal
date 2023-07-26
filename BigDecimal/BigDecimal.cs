@@ -762,6 +762,12 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	public static Boolean operator >=(BigDecimal left, BigDecimal right) =>
 		left.Exponent > right.Exponent ? AlignExponent(left, right) >= right.Mantissa : left.Mantissa >= AlignExponent(right, left);
 
+	/// <summary>Returns the smaller of two BigDecimal values.</summary>
+	public static BigDecimal Min(BigDecimal left, BigDecimal right) => (left <= right) ? left : right;
+
+	/// <summary>Returns the larger of two BigDecimal values.</summary>	
+	public static BigDecimal Max(BigDecimal left, BigDecimal right) => (left >= right) ? left : right;
+
 	/// <summary>Returns the result of multiplying a BigDecimal by negative one.</summary>
 	public static BigDecimal Negate(BigDecimal value) => new BigDecimal(BigInteger.Negate(value.Mantissa), value.Exponent);
 
