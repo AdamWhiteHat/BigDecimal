@@ -630,6 +630,53 @@ public class TestBigDecimalOperations
 	}
 
 	[Test]
+	public void TestSquareRoot002()
+	{
+		BigDecimal value = BigDecimal.Parse("0.0981898234602005160423505923443092051160170637298815793320356006279679013343110872318753144061611219225635804218963505102948529140625");
+		//                                        "0.0981898234602005160423505923443092051160170637298815793320356006279679013343110872318753144061611219225635804218963505102948529140625");
+		Int32 root = 2;
+		Int32 precision = 50;
+
+		BigDecimal expected = BigDecimal.Parse("0.31335255457742883389571245385500659019295986107402");
+		BigDecimal result = BigDecimal.NthRoot(value, root, precision);
+
+		BigDecimal actual = BigDecimal.Round(result, precision);
+
+		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+	}
+
+
+	[Test]
+	public void TestSquareRoot003()
+	{
+		BigDecimal value = BigDecimal.Parse("9818982346020051604235059234430920511601706372988157933203560062796790133431108723187531440616112192256358042189635051029485291406258555");
+		Int32 root = 2;
+		Int32 precision = 135;
+
+		BigDecimal expected = BigDecimal.Parse("99090778309689603548815656125983317432034385902667809355596183348807.410596077216611169596571667988328091906450145578959539307248420211367976153463820323404307029425296409616398791728069401888988546189821");
+		BigDecimal result = BigDecimal.NthRoot(value, root, precision);
+
+		BigDecimal actual = BigDecimal.Round(result, precision);
+
+		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+	}
+
+	[Test]
+	public void TestSquareRoot004()
+	{
+		BigDecimal value = BigDecimal.Parse("9818982346020051604235059234430920511601706372988157933203560062796790133431108723187531440616112192");
+		Int32 root = 2;
+		Int32 precision = 135;
+
+		BigDecimal expected = BigDecimal.Parse("99090778309689603548815656125983317432034385902667.809355596183348807410596077216611169596571667988326798354988734930975117508103720966474578967977953788831616628961714711683020533839237");
+		BigDecimal result = BigDecimal.NthRoot(value, root, precision);
+
+		BigDecimal actual = BigDecimal.Round(result, precision);
+
+		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
+	}
+
+	[Test]
 	public void TestSquareRoot_25_001()
 	{
 		BigDecimal value = BigDecimal.Parse("25");

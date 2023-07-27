@@ -990,6 +990,12 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	{
 		BigInteger mantissa = input.Mantissa;
 		Int32 exponent = input.Exponent;
+		
+		int sign = Math.Sign(exponent);
+		if (sign == 0)
+		{
+			sign = 1;
+		}
 
 		Int32 placesNeeded = (decimalPlaces * root) - PlacesRightOfDecimal(input);
 		if (placesNeeded > 0)
@@ -1001,7 +1007,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		while (exponent % root != 0)
 		{
 			mantissa *= 10;
-			exponent += 1;
+			exponent += sign;
 		}
 
 		BigInteger rem;
