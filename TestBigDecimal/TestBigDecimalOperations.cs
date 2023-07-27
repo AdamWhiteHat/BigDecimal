@@ -746,4 +746,138 @@ public class TestBigDecimalOperations
 
 		Assert.AreEqual(expected, actual, $"{root}th root of {value} did not return {expected}.");
 	}
+
+
+	[Test]
+	public void TestGreaterThan001()
+	{
+		BigDecimal left = BigDecimal.Parse("-3.001");
+		BigDecimal right = BigDecimal.Parse("-3.002");
+
+		bool actual = left > right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestGreaterThan002()
+	{
+		BigDecimal left = BigDecimal.Parse("3.000002");
+		BigDecimal right = BigDecimal.Parse("3.000001");
+
+		bool actual = left > right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestGreaterThanOrEqualTo001()
+	{
+		BigDecimal left = BigDecimal.Parse("-0.001");
+		BigDecimal right = BigDecimal.Parse("-0.001");
+
+		bool actual = left >= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestGreaterThanOrEqualTo002()
+	{
+		BigDecimal left = BigDecimal.Parse("-0.001");
+		BigDecimal right = BigDecimal.Parse("-0.002");
+
+		bool actual = left >= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestGreaterThanOrEqualTo003()
+	{
+		BigDecimal left = BigDecimal.Parse("0.001");
+		BigDecimal right = BigDecimal.Parse("0.0001");
+
+		bool actual = left >= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThan001()
+	{
+		BigDecimal left = BigDecimal.Parse("-300000.02");
+		BigDecimal right = BigDecimal.Parse("-300000.01");
+
+		bool actual = left < right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThan002()
+	{
+		BigDecimal left = BigDecimal.Parse("3000000.00000001");
+		BigDecimal right = BigDecimal.Parse("3000000.0000001");
+
+		bool actual = left < right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThanOrEqualTo001()
+	{
+		BigDecimal left = BigDecimal.Parse("3");
+		BigDecimal right = BigDecimal.Parse("3");
+
+		bool actual = left <= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThanOrEqualTo002()
+	{
+		BigDecimal left = BigDecimal.Parse("-3.0000002");
+		BigDecimal right = BigDecimal.Parse("-3.0000001");
+
+		bool actual = left <= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThanOrEqualTo003()
+	{
+		BigDecimal left = BigDecimal.Parse("-3.0000001");
+		BigDecimal right = BigDecimal.Parse("-3.00000001");
+
+		bool actual = left <= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
+	[Test]
+	public void TestLessThanOrEqualTo004()
+	{
+		BigDecimal left = BigDecimal.Parse("3.000000201");
+		BigDecimal right = BigDecimal.Parse("30.00000201");
+
+		bool actual = left <= right;
+		bool expected = true;
+
+		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
+	}
+
 }

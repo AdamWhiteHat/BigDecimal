@@ -232,34 +232,26 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	{
 		get
 		{
-			if (this.Mantissa.IsZero)
+			return this.Mantissa.Sign;
+			/*
+			if (IsZero())
 			{
 				return 0;
 			}
-
-			if (this.Mantissa.Sign == 1)
+			else if (IsNegative())
 			{
-				return 1; //BUG Is this correct?
+				return -1;
 			}
-
-			if (this.Exponent >= 0)
+			else
 			{
-				return -1; //BUG Is this correct?
+				return 1;
 			}
-
-			var mant = this.Mantissa.ToString();
-			var length = mant.Length + this.Exponent;
-			return length switch
-			{
-				0 when Int32.TryParse(mant[0].ToString(), out var tenthsPlace) => tenthsPlace >= 5 ? 1 : 0,
-				> 0 => 1,
-				var _ => 0
-			};
+			*/
 		}
 	}
 
-	/// <summary>Gets the number of signifigant digits in <see cref="BigDecimal"/>.
-	///Essentially tells you the number of digits in the mantisa.</summary>
+	/// <summary>Gets the number of significant digits in <see cref="BigDecimal"/>.
+	///Essentially tells you the number of digits in the mantissa.</summary>
 	public Int32 SignifigantDigits => GetSignifigantDigits(this.Mantissa);
 
 	/// <summary>The length of the BigDecimal value (Equivalent to SignifigantDigits).</summary>
@@ -990,7 +982,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	{
 		BigInteger mantissa = input.Mantissa;
 		Int32 exponent = input.Exponent;
-		
+
 		int sign = Math.Sign(exponent);
 		if (sign == 0)
 		{

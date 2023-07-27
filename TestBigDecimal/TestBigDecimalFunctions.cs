@@ -92,11 +92,11 @@ public class TestBigDecimalFunctions
 		Assert.AreEqual(0, zero6.Sign, "2/3  -1/3 - 1/3");
 
 		var oneTenth = BigDecimal.Divide(BigDecimal.One, new BigDecimal(10));
-		BigDecimal pointZeroOne = 0.1d;
+		BigDecimal pointZeroOne = 0.1m;
 		var zero7 = BigDecimal.Subtract(oneTenth, pointZeroOne);
 		Assert.AreEqual(0, zero7.Sign, "1/10 - 1/10");
 
-		var zero8 = BigDecimal.Add(new BigDecimal(1, -1), -1d / 10d);
+		var zero8 = BigDecimal.Add(new BigDecimal(1, -1), -1m / 10m);
 		Assert.AreEqual(0, zero8.Sign, "1 + -1/10");
 
 		var zero9 = new BigDecimal(15274, -7) * 0;
@@ -119,6 +119,18 @@ public class TestBigDecimalFunctions
 
 		BigDecimal negative4 = 10 * -1;
 		Assert.AreEqual(BigInteger.MinusOne.Sign, negative4.Sign, "10 * -1;");
+
+		string largeNegativeString = "-22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853";
+		BigDecimal largeNegative = BigDecimal.Parse(largeNegativeString);
+		Assert.AreEqual(BigInteger.MinusOne.Sign, largeNegative.Sign, largeNegativeString);
+
+		string highPrecisionNegativeString = "-2.2685077023948547418271375393606809233149150201282920942551781108927727789384397020382853";
+		BigDecimal highPrecisionNegative = BigDecimal.Parse(highPrecisionNegativeString);
+		Assert.AreEqual(BigInteger.MinusOne.Sign, highPrecisionNegative.Sign, highPrecisionNegativeString);
+
+		string smallNegativeString = "-0.000000000000000000000000000022680000000000000000000000000000150201282920942551781108927727789384397020382853";
+		BigDecimal smallNegative = BigDecimal.Parse(smallNegativeString);
+		Assert.AreEqual(BigInteger.MinusOne.Sign, smallNegative.Sign, smallNegativeString);
 	}
 
 	[Test]
