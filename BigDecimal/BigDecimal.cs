@@ -841,23 +841,6 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return new BigDecimal(mantissa, exponentChange - counter);
 	}
 
-	/// <summary>Returns e raised to the specified power</summary>
-	public static BigDecimal Exp(Double exponent)
-	{
-		BigInteger wholeNumber = (BigInteger)Math.Truncate(exponent);
-		Double fractionalPart = exponent % 1;
-		int root = (int)Math.Truncate(1d / fractionalPart);
-
-		BigDecimal result = Exp(wholeNumber) * NthRoot(E, root, Precision);
-		return result;
-	}
-
-	/// <summary>Returns e raised to the specified power</summary>
-	public static BigDecimal Exp(BigInteger exponent)
-	{
-		return Pow(E, exponent);
-	}
-
 	/// <summary>Returns a specified number raised to the specified power.</summary>
 	public static BigDecimal Pow(BigDecimal @base, BigInteger exponent)
 	{
@@ -1127,6 +1110,581 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 		return result;
 	}
+
+	#region Trigonometric Functions
+
+	#region Standard Trigonometric Functions
+
+	/// <summary>
+	/// Arbitrary precision sine function. 
+	/// The input should be the angle in radians.
+	/// The input must be restricted to the range of -π/2 <= θ <= π/2.
+	/// If your input is negative, just flip the sign.
+	/// </summary>
+	/// <returns></returns>
+	public static BigDecimal Sin(BigDecimal radians)
+	{
+		return Sin(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision sine function. 
+	/// The input should be the angle in radians.
+	/// The input must be restricted to the range of -π/2 <= θ <= π/2.
+	/// If your input is negative, just flip the sign.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	/// <returns></returns>
+	public static BigDecimal Sin(BigDecimal radians, int precision)
+	{
+		int resultSign = radians.Sign;
+		BigDecimal input = BigDecimal.Abs(radians);
+
+		if (input == 0)
+		{
+			return 0;
+		}
+		else if (input == TrigonometricHelper.HalfPi)
+		{
+			return 1 * resultSign;
+		}
+		else if (input > TrigonometricHelper.HalfPi)
+		{
+			input = TrigonometricHelper.WrapInput(radians);
+		}
+
+		BigDecimal sumStart = 0;
+		BigInteger counterStart = 1;
+		BigInteger jump = 2;
+		BigInteger multiplier = -1;
+		bool factorialDenominator = true;
+
+		BigDecimal result = TrigonometricHelper.TaylorSeriesSum(input, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+
+		return result * resultSign;
+	}
+
+	/// <summary>
+	/// Arbitrary precision cosine function.
+	/// </summary>
+	public static BigDecimal Cos(BigDecimal radians)
+	{
+		return Cos(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision cosine function.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Cos(BigDecimal radians, int precision)
+	{
+		return Sin(radians + TrigonometricHelper.HalfPi, precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision tangent function. 
+	/// The input must not be π/2 or 3π/2, as the tangent is undefined at that value.
+	/// </summary>
+	public static BigDecimal Tan(BigDecimal radians)
+	{
+		return Tan(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision tangent function. 
+	/// The input must not be π/2 or 3π/2, as the tangent is undefined at that value.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Tan(BigDecimal radians, int precision)
+	{
+		BigDecimal mod = BigDecimal.Normalize(BigDecimal.Mod(radians, TrigonometricHelper.HalfPi));
+		if (mod.IsZero())
+		{
+			throw new ArithmeticException("The tangent of π/2 is undefined.");
+		}
+
+		BigDecimal modThreePiOverTwo = BigDecimal.Normalize(BigDecimal.Mod(radians, new BigDecimal(3) * TrigonometricHelper.HalfPi));
+		if (modThreePiOverTwo.IsZero())
+		{
+			throw new ArithmeticException("The tangent of 3π/2 is undefined.");
+		}
+
+		// Wrap around at π
+		BigDecimal modPi = BigDecimal.Normalize(BigDecimal.Mod(radians, BigDecimal.Pi));
+
+		BigDecimal sin = Sin(modPi, precision);
+		BigDecimal cos = Cos(modPi, precision);
+		return sin / cos; // tan = sin / cos
+	}
+
+	/// <summary>
+	/// Arbitrary precision cotangent function. 
+	/// The input must not be zero, as the cotangent is undefined at that value.
+	/// </summary>
+	public static BigDecimal Cot(BigDecimal radians)
+	{
+		return Cot(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision cotangent function. 
+	/// The input must not be zero, as the cotangent is undefined at that value.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Cot(BigDecimal radians, int precision)
+	{
+		if (radians.IsZero())
+		{
+			throw new ArithmeticException("The cotangent of zero is undefined.");
+		}
+
+		BigDecimal modPi = BigDecimal.Normalize(BigDecimal.Mod(radians, BigDecimal.Pi));
+		if (modPi.IsZero())
+		{
+			throw new ArithmeticException("The cotangent of π is undefined.");
+		}
+
+		// Use modPi to wrap around at π
+		BigDecimal cos = Cos(modPi, precision);
+		BigDecimal sin = Sin(modPi, precision);
+
+		return cos / sin; // cot = cos / sin
+	}
+
+	/// <summary>
+	/// Arbitrary precision secant function. 
+	/// The input must not be (2*n + 1)*π/2 (an odd multiple of π/2), as the secant is undefined at that value.
+	/// </summary>
+	public static BigDecimal Sec(BigDecimal radians)
+	{
+		return Sec(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision secant function. 
+	/// The input must not be (2*n + 1)*π/2 (an odd multiple of π/2), as the secant is undefined at that value.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Sec(BigDecimal radians, int precision)
+	{
+		BigDecimal modOddPiOverTwo = TrigonometricHelper.ModOddHalfPi(radians);
+		if (modOddPiOverTwo == BigDecimal.One)
+		{
+			throw new ArithmeticException("The secant of (2*n + 1)*π/2 (an odd multiple of π/2) is undefined.");
+		}
+
+		// Wrap around at 2π
+		BigDecimal modTwoPi = BigDecimal.Normalize(BigDecimal.Mod(radians, new BigDecimal(2) * BigDecimal.Pi));
+
+		BigDecimal cos = Cos(modTwoPi, precision);
+		return BigDecimal.One / cos; // sec = 1 / cos
+	}
+
+	/// <summary>
+	/// Arbitrary precision cosecant function. 
+	/// The input must not be zero or π, as the cosecant is undefined at that value.
+	/// </summary>
+	public static BigDecimal Csc(BigDecimal radians)
+	{
+		return Csc(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision cosecant function. 
+	/// The input must not be zero or π, as the cosecant is undefined at that value.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Csc(BigDecimal radians, int precision)
+	{
+		if (radians.IsZero())
+		{
+			throw new ArithmeticException("The cosecant of zero is undefined.");
+		}
+
+		BigDecimal modPi = BigDecimal.Normalize(BigDecimal.Mod(radians, BigDecimal.Pi));
+		if (modPi.IsZero())
+		{
+			throw new ArithmeticException("The cosecant of π is undefined.");
+		}
+
+		// Wrap around at 2π
+		BigDecimal twoPi = BigDecimal.Normalize(BigDecimal.Mod(radians, 2 * BigDecimal.Pi));
+
+		BigDecimal sin = Sin(twoPi, precision);
+		return (BigDecimal.One / sin); // csc = 1 / sin
+	}
+
+	#endregion
+
+	#region Hyperbolic Trigonometric Functions
+
+	/// <summary>Arbitrary precision hyperbolic sine function.</summary>
+	public static BigDecimal Sinh(BigDecimal radians)
+	{
+		return Sinh(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision hyperbolic sine function.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Sinh(BigDecimal radians, int precision)
+	{
+		BigDecimal sumStart = 0;
+		BigInteger counterStart = 1;
+		BigInteger jump = 2;
+		BigInteger multiplier = 1;
+		bool factorialDenominator = true;
+
+		return TrigonometricHelper.TaylorSeriesSum(radians, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+	}
+
+	/// <summary>Arbitrary precision Hyperbolic cosine function.</summary>
+	public static BigDecimal Cosh(BigDecimal radians)
+	{
+		return Cosh(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision Hyperbolic cosine function.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Cosh(BigDecimal radians, int precision)
+	{
+		BigDecimal sumStart = 1;
+		BigInteger counterStart = 2;
+		BigInteger jump = 2;
+		BigInteger multiplier = 1;
+		bool factorialDenominator = true;
+
+		return TrigonometricHelper.TaylorSeriesSum(radians, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+	}
+
+	/// <summary>Arbitrary precision hyperbolic tangent function.</summary>
+	public static BigDecimal Tanh(BigDecimal radians)
+	{
+		return Tanh(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision hyperbolic tangent function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Tanh(BigDecimal radians, int precision)
+	{
+		BigDecimal sinh = Sinh(radians, precision);
+		BigDecimal cosh = Cosh(radians, precision);
+
+		return sinh / cosh; // tan = sinh / cosh
+	}
+
+	/// <summary>Arbitrary precision hyperbolic cotangent function.</summary>
+	public static BigDecimal Coth(BigDecimal radians)
+	{
+		return Coth(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision hyperbolic cotangent function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Coth(BigDecimal radians, int precision)
+	{
+		BigDecimal cosh = Cosh(radians, precision);
+		BigDecimal sinh = Sinh(radians, precision);
+
+		return cosh / sinh; // coth = cosh / sinh
+	}
+
+	/// <summary>Arbitrary precision hyperbolic secant function.</summary>
+	public static BigDecimal Sech(BigDecimal radians)
+	{
+		return Sech(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision hyperbolic secant function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Sech(BigDecimal radians, int precision)
+	{
+		BigDecimal cosh = Cosh(radians, precision);
+
+		return BigDecimal.One / cosh;   // sech = 1 / cosh
+	}
+
+	#endregion
+
+	#region Inverse Trigonometric Functions
+
+	/// <summary>Arbitrary precision inverse sine function.</summary>
+	public static BigDecimal Arcsin(BigDecimal radians)
+	{
+		return Arcsin(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision inverse sine function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Arcsin(BigDecimal radians, int precision)
+	{
+		int sign = radians.Sign;
+		BigDecimal input = BigDecimal.Mod(BigDecimal.Abs(radians), BigDecimal.One);
+		BigDecimal denominator = BigDecimal.SquareRoot(BigDecimal.One - (input * input), precision);
+		BigDecimal quotient = input / denominator;
+		return sign * Arctan(quotient, precision);
+	}
+
+	/// <summary>Arbitrary precision inverse cosine function.</summary>
+	public static BigDecimal Arccos(BigDecimal radians)
+	{
+		return Arccos(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision inverse cosine function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Arccos(BigDecimal radians, int precision)
+	{
+		int sign = radians.Sign;
+		BigDecimal input = BigDecimal.Mod(BigDecimal.Abs(radians), BigDecimal.One);
+		BigDecimal denominator = BigDecimal.SquareRoot(BigDecimal.One - (input * input), precision);
+		BigDecimal quotient = denominator / input;
+		if (sign == -1)
+		{
+			return BigDecimal.Pi - Arctan(quotient, precision);
+		}
+		return Arctan(quotient, precision);
+	}
+
+	/// <summary>Arbitrary precision inverse tangent function.</summary>
+	public static BigDecimal Arctan(BigDecimal radians)
+	{
+		return Arctan(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision inverse tangent function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Arctan(BigDecimal radians, int precision)
+	{
+		int sign = radians.Sign;
+		BigDecimal input = new BigDecimal(radians.Mantissa, radians.Exponent);
+
+		bool needsAdjustment = false;
+		if (sign == 0)
+		{
+			return 0;
+		}
+		else if (sign == -1)
+		{
+			needsAdjustment = (input < -1);
+		}
+		else
+		{
+			needsAdjustment = (input > 1);
+		}
+
+		if (needsAdjustment)
+		{
+			input = BigDecimal.One / input;
+		}
+
+		input = BigDecimal.Abs(input);
+
+		BigDecimal sumStart = 0;
+		BigInteger counterStart = 1;
+		BigInteger jump = 2;
+		BigInteger multiplier = -1;
+		bool factorialDenominator = false;
+
+		BigDecimal result = TrigonometricHelper.TaylorSeriesSum(input, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+
+		result = result * sign;
+
+		if (needsAdjustment)
+		{
+			result = (sign * TrigonometricHelper.HalfPi) - result;
+		}
+
+		return result;
+	}
+
+	/// <summary>Arbitrary precision inverse cotangent function.</summary>
+	public static BigDecimal Arccot(BigDecimal radians)
+	{
+		return Arccot(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision inverse cotangent function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Arccot(BigDecimal radians, int precision)
+	{
+		return TrigonometricHelper.HalfPi - Arctan(radians, precision);
+	}
+
+	/// <summary>Arbitrary precision inverse cosecant function.</summary>
+	public static BigDecimal Arccsc(BigDecimal radians)
+	{
+		return Arccsc(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>Arbitrary precision inverse cosecant function.</summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Arccsc(BigDecimal radians, int precision)
+	{
+		return Arcsin(BigDecimal.One / radians, precision);
+	}
+
+	#endregion
+
+	#region Natural Log & Exponentiation Function
+
+	/// <summary>Calculates e^x to arbitrary precision.</summary>
+	public static BigDecimal Exp(BigDecimal x)
+	{
+		return Exp(x, BigDecimal.Precision);
+	}
+
+	/// <summary>Calculates e^x to arbitrary precision.</summary>
+	/// <param name="x">The exponent to raise e to the power of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Exp(BigDecimal x, int precision)
+	{
+		BigDecimal sumStart = 1;
+		BigInteger counterStart = 1;
+		BigInteger jump = 1;
+		BigInteger multiplier = 1;
+		bool factorialDenominator = true;
+
+		return TrigonometricHelper.TaylorSeriesSum(x, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+	}
+
+	/// <summary>
+	/// Returns the natural logarithm of the input.
+	/// </summary>
+	/// <param name="argument">The argument to take the natural logarithm of.</param>
+	public static BigDecimal Ln(BigDecimal argument)
+	{
+		return Ln(argument, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Returns the natural logarithm of the input to a specified precision.
+	/// </summary>
+	/// <param name="argument">The argument to take the natural logarithm of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>	
+	public static BigDecimal Ln(BigDecimal argument, int precision)
+	{
+		BigDecimal x = new BigDecimal(argument.Mantissa, argument.Exponent);
+
+		BigDecimal result = 0;
+		while (x > ChunkSize)
+		{
+			var cbrt = BigDecimal.Round(BigDecimal.NthRoot(x, 3, precision));
+			x /= cbrt;
+			x /= cbrt;
+			result += Ln(cbrt, precision);
+			result += Ln(cbrt, precision);
+		}
+
+		result += LogNatural(x, precision);
+
+		return result;
+	}
+	private static BigDecimal ChunkSize = 1_000_000_000;
+
+	/// <summary>
+	/// Internal implementation of the natural log function to arbitrary precision.
+	/// </summary>	
+	/// <param name="argument">The argument to take the natural logarithm of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	internal static BigDecimal LogNatural(BigDecimal argument, int precision)
+	{
+		BigDecimal targetPrecision = TrigonometricHelper.GetPrecisionTarget(precision);
+		BigDecimal two = new BigDecimal(2);
+		BigDecimal x = new BigDecimal(argument.Mantissa, argument.Exponent);
+
+		bool firstRound = true;
+		BigDecimal nextGuess = 0;
+		BigDecimal currentGuess = 14;
+		BigDecimal difference = 1;
+
+		int counter = 0;
+		do
+		{
+			BigDecimal expGuess = Exp(currentGuess);
+
+			BigDecimal num = x - expGuess;
+			BigDecimal denom = x + expGuess;
+
+			BigDecimal quotient = two * (num / denom);
+
+			nextGuess = currentGuess + quotient;
+
+			if (firstRound)
+			{
+				firstRound = false;
+			}
+			else
+			{
+				difference = nextGuess - currentGuess;
+			}
+
+			currentGuess = nextGuess;
+			counter++;
+		}
+		while (BigDecimal.Abs(difference) > targetPrecision);
+
+		return currentGuess;
+	}
+
+	#endregion
+
+	#region Arbitrary Base Logarithm
+
+	/// <summary>
+	/// Returns the logarithm of an argument in an arbitrary base.
+	/// </summary>
+	/// <param name="base">The base of the logarithm.</param>
+	/// <param name="argument">The argument to take the logarithm of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal LogN(int @base, BigDecimal argument, int precision)
+	{
+		// Use change of base formula: logn(b, a) = ln(a) / ln(b)
+		return Ln(argument, precision) / Ln(@base, precision);
+	}
+
+	/// <summary>
+	/// Returns the base-2 logarithm of an argument.
+	/// </summary>
+	/// <param name="argument">The argument to take the base-2 logarithm of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Log2(BigDecimal argument, int precision)
+	{
+		return LogN(2, argument, precision);
+	}
+
+	/// <summary>
+	/// Returns the base-10 logarithm of an argument.
+	/// </summary>
+	/// <param name="argument">The argument to take the base-10 logarithm of.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Log10(BigDecimal argument, int precision)
+	{
+		return LogN(10, argument, precision);
+	}
+
+	#endregion
+
+	#endregion
 
 	public override Int32 GetHashCode() => new Tuple<BigInteger, Int32>(this.Mantissa, this.Exponent).GetHashCode();
 

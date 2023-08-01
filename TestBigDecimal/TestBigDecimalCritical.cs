@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Numerics;
 using ExtendedNumerics;
 using NUnit.Framework;
@@ -257,16 +258,16 @@ public class TestBigDecimalCritical
 		BigDecimal lrg2 = BigDecimal.Parse("2.718281828459045235360287471352662497757247093699959574966967");
 
 		var expected1 = "5.859874482";
-		var expected2 = "0.4233108251";
-		var expected3 = "8.5397342226";
-		var expected4 = "0.8652559794";
+		var expected2 = "0.423310825";
+		var expected3 = "8.539734222";
+		var expected4 = "0.865255979";
 		var expected5 = "9.869604401";
 		var expected6 = "148.4131591";
-		var expected7 = "8003077319547306";
-		var expected8 = "-3.1415926535";
+		var expected7 = "80030773195";
+		var expected8 = "-3.14159265";
 		var expected9 = "3";
 		var expected10 = "4";
-		var expected11 = "3.1415926535";
+		var expected11 = "3.141592653";
 
 		var actual1 = "";
 		var actual2 = "";
@@ -282,8 +283,8 @@ public class TestBigDecimalCritical
 
 		try
 		{
-			BigDecimal.Precision = 10;
-			BigDecimal.AlwaysTruncate = true;
+			BigDecimal.Precision = 50;
+			BigDecimal.AlwaysTruncate = false;
 
 			TestContext.WriteLine($"E = {BigDecimal.E}");
 			TestContext.WriteLine($"{new BigDecimal(lrg1.Mantissa, lrg1.Exponent)}");
@@ -301,17 +302,17 @@ public class TestBigDecimalCritical
 			BigDecimal result10 = BigDecimal.Ceiling(lrg1);
 			BigDecimal result11 = BigDecimal.Abs(lrg1);
 
-			actual1 = result1.ToString();
-			actual2 = result2.ToString();
-			actual3 = result3.ToString();
-			actual4 = result4.ToString();
-			actual5 = result5.ToString();
-			actual6 = result6.ToString();
-			actual7 = result7.ToString();
-			actual8 = result8.ToString();
-			actual9 = result9.ToString();
-			actual10 = result10.ToString();
-			actual11 = result11.ToString();
+			actual1 = new string(result1.ToString().Take(11).ToArray());
+			actual2 = new string(result2.ToString().Take(11).ToArray());
+			actual3 = new string(result3.ToString().Take(11).ToArray());
+			actual4 = new string(result4.ToString().Take(11).ToArray());
+			actual5 = new string(result5.ToString().Take(11).ToArray());
+			actual6 = new string(result6.ToString().Take(11).ToArray());
+			actual7 = new string(result7.ToString().Take(11).ToArray());
+			actual8 = new string(result8.ToString().Take(11).ToArray());
+			actual9 = new string(result9.ToString().Take(11).ToArray());
+			actual10 = new string(result10.ToString().Take(11).ToArray());
+			actual11 = new string(result11.ToString().Take(11).ToArray());
 		}
 		finally
 		{

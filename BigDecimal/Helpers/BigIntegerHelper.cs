@@ -10,7 +10,6 @@ using Exceptions;
 
 public static class BigIntegerHelper
 {
-
 	public static BigInteger GCD( this IEnumerable<BigInteger> numbers ) => numbers.Aggregate( GCD );
 
 	public static BigInteger GCD( BigInteger value1, BigInteger value2 )
@@ -230,6 +229,41 @@ public static class BigIntegerHelper
 
 			//throw new OutOfRangeException( "Couldn't parse numerator or denominator." );
 			return false;
+		}
+	}
+
+
+	/// <summary>
+	/// Calculates a factorial by the divide and conquer method.
+	/// This is faster than repeatedly multiplying the next value by a running product
+	/// by not repeatedly multiplying by large values.
+	/// Essentially, this multiplies every number in the array with its neighbor, 
+	/// returning an array half as long of products of two numbers.
+	/// We then take that array and multiply each pair of values in the array
+	/// with its neighbor, resulting in another array half the length of the previous one, and so on...
+	/// This results in many multiplications of small, equally sized operands 
+	/// and only a few multiplications of larger operands.
+	/// In the limit, this is more efficient.
+	/// 
+	/// The factorial function is used during the calculation of trigonometric functions to arbitrary precision.
+	/// </summary>
+	public static class FastFactorial
+	{
+		public static BigInteger Factorial(BigInteger value)
+		{
+			if (value == 0 || value == 1) { return 1; }
+			return MultiplyRange(2, value);
+		}
+
+		/// <summary>Divide the range of numbers to multiply in half recursively.</summary>
+		private static BigInteger MultiplyRange(BigInteger from, BigInteger to)
+		{
+			var diff = to - from;
+			if (diff == 1) { return from * to; }
+			if (diff == 0) { return from; }
+
+			BigInteger half = (from + to) / 2;
+			return BigInteger.Multiply(MultiplyRange(from, half), MultiplyRange(half + 1, to));
 		}
 	}
 }

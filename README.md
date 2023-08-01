@@ -5,6 +5,9 @@ BigDecimal is an arbitrary precision floating point number class.
 Like other floating point number implementations, it stores a Mantissa and an Exponent.
 The difference is, these values are of type BigInteger, and so can be arbitrary precision.
 
+NEW: Now supports logarithms and trigonometric functions:
+LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth, Sech, Arcsin, Arccos, Arctan, Arccot, Arccsc
+
 If you just want the compiled binaries, just include it in your project as a nuget package, or extract the assembly from the nuget package (a .nupkg file is just a .zip file renamed): [https://www.nuget.org/packages/ExtendedNumerics.BigDecimal](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal)
 
 Example usage:

@@ -22,8 +22,8 @@
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<Authors>Adam White, Jan Christoph Bernack, Rick Harker</Authors>
 		<Copyright>Adam White. MIT License. See License.</Copyright>
-		<Description>An arbitrary precision decimal class with. Implemented as a arbitrary precision floating poing number using a mantessa and exponent.</Description>
-		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic numerics numbers biginteger csharp</PackageTags>
+		<Description>An arbitrary precision decimal (base 10) floating point number type using a mantissa and exponent. Supports nth roots, trigonometric functions, logarithms, natural e, pi, etc.</Description>
+		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic trigonometry logarithms numerics numbers biginteger bigdecimal hyperbolic inverse trigonometric sine cosine tangent secant circular angles sin cos tan mantissa exponent floating point base10 csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedNumerics.BigDecimal/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/AdamWhiteHat/BigDecimal</RepositoryUrl>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
