@@ -31,11 +31,11 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2023</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1000</MinorVersion>
 		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
-		<BuildTimestamp>$([System.DateTime]::Now.ToString("yy"))$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
+		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
 		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
 		<AssemblyVersion>$(Version).$(BuildTimestamp)</AssemblyVersion>
