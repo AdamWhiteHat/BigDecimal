@@ -205,19 +205,24 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.InvariantCulture.NumberFormat;
 
-	/// <summary>Sets the maximum precision of division operations. If AlwaysTruncate is set to true all operations are affected.</summary>
+	/// <summary>
+	/// Sets the desired precision of all BigDecimal instances, in terms of the number of .
+	/// 
+	/// 
+	/// If AlwaysTruncate is set to true all operations are affected.</summary>
 	public static Int32 Precision { get; set; } = 5000;
 
 	/// <summary>
 	/// Specifies whether the significant digits should be truncated to the given precision after each operation.	
 	/// Setting this to true will tend to accumulate errors at the precision boundary after several arithmetic operations.
-	/// Therefore, you should prefer using <see cref="Round(BigDecimal, int)"/> explicitly when you need it instead.
+	/// Therefore, you should prefer using <see cref="Round(BigDecimal, int)"/> explicitly when you need it instead, 
+	/// such st at the end of a series of operations, especially if you are expecting the result to be truncated at the precision length.
 	/// This should generally be left disabled by default.
 	/// This setting may be useful if you are running into memory or performance issues, as could conceivably be brought on by many operations on irrational numbers.
 	/// </summary>
 	public static Boolean AlwaysTruncate { get; set; } = false;
 
-	/// <summary>TODO Describe this.</summary>
+	/// <summary>Specifies whether a call to Normalize is made after every operation and during constructor invocation. The default value is true.</summary>
 	public static Boolean AlwaysNormalize { get; set; } = true;
 
 	/// <summary>The mantissa of the internal floating point number representation of this BigDecimal.</summary>
@@ -227,7 +232,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	public readonly Int32 Exponent;
 
 	/// <summary>Gets a number that indicates the sign (negative, positive, or zero) of the current <see cref="BigDecimal" /> object. </summary>
-	/// <returns>-1 if the value of this object is negative, 0 if the value of this object is zero or 1 if the value of this object is positive.</returns
+	/// <returns>-1 if the value of this object is negative, 0 if the value of this object is zero or 1 if the value of this object is positive.</returns>
 	public Int32 Sign
 	{
 		get
@@ -325,7 +330,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// A return value of zero means  this instance occurs in the same position in the sort order as obj.
 	/// A return value of greater than zero means this instance follows obj in the sort order.
 	/// </returns>
-	int IComparable.CompareTo(Object obj)
+	int IComparable.CompareTo(Object? obj)
 	{
 		if (obj == null) { return SortingOrder.After; }
 		if (!(obj is BigDecimal)) { throw new ArgumentException($"Argument must be of type {nameof(BigDecimal)}", nameof(obj)); }
@@ -1027,8 +1032,8 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return result;
 	}
 
-	/// <summary>Truncates the BigDecimal to the given precision by removing the least significant digits.</summary>
-	public static BigInteger Truncate(BigDecimal value) => Round(value);
+	/// <summary>Truncates the BigDecimal at the decimal point. Equivalent to using Floor.</summary>
+	public static BigDecimal Truncate(BigDecimal value) => Floor(value);
 
 	/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
 	public static BigInteger Round(BigDecimal value) => Round(value, MidpointRounding.AwayFromZero);
@@ -1063,7 +1068,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return wholePart;
 	}
 
-	/// <summary>Rounds a BigDecimal to the given number of digits.</summary>
+	/// <summary>Rounds a BigDecimal to the given number of digits to the right of the decimal point. Left of the decimal point digits are not counted.</summary>
 	public static BigDecimal Round(BigDecimal value, Int32 precision)
 	{
 		var mantissa = value.Mantissa;
@@ -1085,7 +1090,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
 	}
 
-	/// <summary>Rounds a BigDecimal to an integer value. The BigDecimal argument is rounded towards positive infinity.</summary>
+	/// <summary>Rounds a BigDecimal up to the next largest integer value, even if the fractional part is less than one half. Equivalent to obtaining the floor and then adding one.</summary>
 	[NeedsTesting]
 	public static BigDecimal Ceiling(BigDecimal value)
 	{
@@ -1099,6 +1104,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return result;
 	}
 
+	/// <summary>Rounds a BigDecimal down to the next smallest integer value, even if the fractional part is greater than one half. Equivalent to discarding everything right of the decimal point.</summary>
 	public static BigDecimal Floor(BigDecimal value)
 	{
 		BigDecimal result = value.WholeValue;
@@ -1118,7 +1124,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <summary>
 	/// Arbitrary precision sine function. 
 	/// The input should be the angle in radians.
-	/// The input must be restricted to the range of -π/2 <= θ <= π/2.
+	/// The input must be restricted to the range of -π/2 &lt;= θ &lt;= π/2.
 	/// If your input is negative, just flip the sign.
 	/// </summary>
 	/// <returns></returns>
@@ -1130,7 +1136,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <summary>
 	/// Arbitrary precision sine function. 
 	/// The input should be the angle in radians.
-	/// The input must be restricted to the range of -π/2 <= θ <= π/2.
+	/// The input must be restricted to the range of -π/2 &lt;= θ &lt;= π/2.
 	/// If your input is negative, just flip the sign.
 	/// </summary>
 	/// <param name="radians">The argument radians.</param>

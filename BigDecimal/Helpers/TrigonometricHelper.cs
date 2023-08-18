@@ -114,7 +114,7 @@ namespace ExtendedNumerics.Helpers
 
 		/// <summary>
 		/// Wraps the input into the range:
-		/// -π/2 <= θ <= π/2
+		/// -π/2 &lt;= θ &lt;= π/2
 		/// </summary>
 		internal static BigDecimal WrapInput(BigDecimal radians)
 		{
