@@ -35,15 +35,27 @@ public class TestBigDecimalCritical
 		var actual = new BigDecimal(0);
 
 		Assert.AreEqual(expected, actual);
+		Assert.AreEqual("0", actual.ToString());
 	}
 
 	[Test]
-	public void TestConstructor00()
+	public void TestConstructor1()
 	{
 		BigDecimal expected = 0;
 		var actual = new BigDecimal(0, 0);
 
 		Assert.AreEqual(expected, actual);
+		Assert.AreEqual("0", actual.ToString());
+	}
+
+	[Test]
+	public void TestConstructor2()
+	{
+		BigDecimal expected = 0;
+		var actual = new BigDecimal(0, 1);
+
+		Assert.AreEqual(expected, actual);
+		Assert.AreEqual("0", actual.ToString());
 	}
 
 	[Test]

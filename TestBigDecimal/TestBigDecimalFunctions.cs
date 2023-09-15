@@ -25,39 +25,39 @@ public class TestBigDecimalFunctions
 	[Test]
 	public void TestMin()
 	{
-		var left = BigDecimal.Parse("30303");
-		var right1 = BigDecimal.Parse("30303");
+		string expected = "30303";
+
+		var left = BigDecimal.Parse(expected);
+		var right1 = BigDecimal.Parse(expected);
 		var right2 = BigDecimal.Parse("30303.5");
 		var right3 = BigDecimal.Parse("30304");
-
-		var expected = left;
 
 		var actual1 = BigDecimal.Min(left, right1);
 		var actual2 = BigDecimal.Min(left, right2);
 		var actual3 = BigDecimal.Min(left, right3);
 
-		Assert.AreEqual(expected.ToString(), actual1.ToString());
-		Assert.AreEqual(expected.ToString(), actual2.ToString());
-		Assert.AreEqual(expected.ToString(), actual3.ToString());
+		Assert.AreEqual(expected, actual1.ToString());
+		Assert.AreEqual(expected, actual2.ToString());
+		Assert.AreEqual(expected, actual3.ToString());
 	}
 
 	[Test]
 	public void TestMax()
 	{
+		var expected = "30304.1";
+
 		var left1 = BigDecimal.Parse("30304");
 		var left2 = BigDecimal.Parse("-30304.2");
 		var left3 = BigDecimal.Parse("30304.01");
-		var right = BigDecimal.Parse("30304.1");
-
-		var expected = right;
+		var right = BigDecimal.Parse(expected);
 
 		var actual1 = BigDecimal.Max(left1, right);
 		var actual2 = BigDecimal.Max(left2, right);
 		var actual3 = BigDecimal.Max(left3, right);
 
-		Assert.AreEqual(expected.ToString(), actual1.ToString());
-		Assert.AreEqual(expected.ToString(), actual2.ToString());
-		Assert.AreEqual(expected.ToString(), actual3.ToString());
+		Assert.AreEqual(expected, actual1.ToString());
+		Assert.AreEqual(expected, actual2.ToString());
+		Assert.AreEqual(expected, actual3.ToString());
 	}
 
 
@@ -146,7 +146,7 @@ public class TestBigDecimalFunctions
 	[Test]
 	public void TestLeastCommonDivisor()
 	{
-		var expected = BigDecimal.Parse("45319990731015");
+		var expected = "45319990731015";
 
 		BigDecimal actual = BigIntegerHelper.LCM(new BigInteger[] {
 			3, 5, 7, 11, 13, 101, 307, 311, 313
@@ -154,7 +154,7 @@ public class TestBigDecimalFunctions
 
 		// 15015, lcm(3, 5, 7, 11, 13, 101, 307, 311, 313) = 45319990731015 lcm(4973, 4292, 4978, 4968, 4297, 4287) = 2822891742340306560
 
-		Assert.AreEqual(expected, actual);
+		Assert.AreEqual(expected, actual.ToString());
 	}
 
 	[Test]

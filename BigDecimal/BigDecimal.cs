@@ -93,6 +93,10 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
+		if (this.Mantissa == 0)
+		{
+			this.Exponent = 0;
+		}
 	}
 
 	public BigDecimal(Int32 value) : this(new BigInteger(value), 0) { }
@@ -521,8 +525,13 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	[Pure]
 	public static BigDecimal Normalize(BigDecimal value)
 	{
-		if (value.IsZero())
+		if (value.Mantissa.IsZero)
 		{
+			if (value.Exponent != 0)
+			{
+				return new BigDecimal(new Tuple<BigInteger, Int32>(BigInteger.Zero, 0));
+			}
+
 			return value;
 		}
 
