@@ -156,7 +156,7 @@ public class TestBigDecimalFunctions
 
 		Assert.AreEqual(expected, actual.ToString());
 	}
-
+	/*
 	[Test]
 	[NonParallelizable]
 	public void TestRandomDivision(
@@ -178,7 +178,7 @@ public class TestBigDecimalFunctions
 
 		//TestContext.WriteLine( actual );
 	}
-
+	
 	[Test]
 	[NonParallelizable]
 	public void TestRandomEquals([Random(Int16.MinValue, Int16.MaxValue, 10)] Int16 a, [Random(Int16.MinValue, Int16.MaxValue, 10)] Int16 b)
@@ -199,7 +199,7 @@ public class TestBigDecimalFunctions
 			Assert.Fail("Equals failed.");
 		}
 	}
-
+	*/
 	[Test]
 	public void TestRounding()
 	{

@@ -439,7 +439,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		if (input.StartsWith(numberFormatProvider.NegativeSign, StringComparison.OrdinalIgnoreCase))
 		{
 			isNegative = true;
-			input = input.Replace(numberFormatProvider.NegativeSign, String.Empty);
+			input = input.TrimStart(new char[] { numberFormatProvider.NegativeSign.Single() });
 		}
 
 		var posE = input.LastIndexOf('E') + 1;
