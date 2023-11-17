@@ -1,17 +1,9 @@
-﻿#nullable enable
+﻿namespace ExtendedNumerics;
 
-namespace ExtendedNumerics;
-
-using System;
-using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.Globalization;
-using System.Linq;
-using System.Numerics;
-using System.Runtime.CompilerServices;
 using Exceptions;
 using Helpers;
-using Properties;
 using Reflection;
 
 /// <summary>
@@ -522,7 +514,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 	/// <summary>Removes any trailing zeros on the mantissa, adjusts the exponent, and returns a new <see cref="BigDecimal" />.</summary>
 	/// <param name="value"></param>
-	[Pure]
+	
 	public static BigDecimal Normalize(BigDecimal value)
 	{
 		if (value.Mantissa.IsZero)

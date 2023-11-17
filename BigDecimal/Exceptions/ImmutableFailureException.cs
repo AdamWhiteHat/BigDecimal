@@ -1,6 +1,5 @@
 namespace ExtendedNumerics.Exceptions;
 
-using System;
 using System.Runtime.Serialization;
 
 [Serializable]

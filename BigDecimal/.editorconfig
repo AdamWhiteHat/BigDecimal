@@ -1,14 +1,20 @@
 [*.cs]
 
 # IDE0073: The file header is missing or not located at the top of the file
-dotnet_diagnostic.ide0073.severity = none
+dotnet_diagnostic.ide0073.severity = error
 
 file_header_template = BigDecimal is copyright by Adam White.\nMIT License.\nhttps://github.com/AdamWhiteHat/BigDecimal
 
 # IDE0049: Simplify Names
 dotnet_style_predefined_type_for_locals_parameters_members = false
 
+# 'using' directive preferences
+csharp_using_directive_placement = inside_namespace:error
+
+
 # Microsoft .NET properties
+csharp_indent_braces = false
+csharp_new_line_before_open_brace = all
 csharp_space_between_method_call_parameter_list_parentheses = true
 csharp_space_between_method_declaration_parameter_list_parentheses = true
 csharp_space_between_parentheses = control_flow_statements,expressions
@@ -35,19 +41,19 @@ dotnet_diagnostic.rcs1037.severity = suggestion
 dotnet_diagnostic.rcs1145.severity = error
 
 # RCS1008: Use explicit type instead of 'var' (when the type is not obvious).
-dotnet_diagnostic.RCS1008.severity = silent
+dotnet_diagnostic.rcs1008.severity = silent
 
 # IDE0049: Simplify Names
 dotnet_style_predefined_type_for_member_access = false
 
 # IDE0002: Simplify Member Access
-dotnet_diagnostic.IDE0002.severity = none
+dotnet_diagnostic.ide0002.severity = none
 
 # RCS1010: [deprecated] Use 'var' instead of explicit type (when the type is obvious)
-dotnet_diagnostic.RCS1010.severity = none
+dotnet_diagnostic.rcs1010.severity = none
 
 # RCS1118: Mark local variable as const
-dotnet_diagnostic.RCS1118.severity = silent
+dotnet_diagnostic.rcs1118.severity = silent
 csharp_indent_labels = one_less_than_current
 csharp_using_directive_placement = inside_namespace:error
 csharp_prefer_simple_using_statement = true:suggestion
@@ -56,6 +62,18 @@ csharp_style_namespace_declarations = file_scoped:error
 csharp_style_prefer_method_group_conversion = true:silent
 csharp_style_prefer_top_level_statements = true:silent
 csharp_style_prefer_primary_constructors = true:suggestion
+
+# RCS1141: Add 'param' element to documentation comment
+dotnet_diagnostic.rcs1141.severity = error
+
+# IDE0034: Simplify 'default' expression
+csharp_prefer_simple_default_expression = false
+
+# RCS1244: Simplify 'default' expression
+dotnet_diagnostic.rcs1244.severity = none
+
+# RCS1036: Remove unnecessary blank line
+dotnet_diagnostic.rcs1036.severity = none
 
 [*.{cs,vb}]
 #### Naming styles ####
@@ -108,5 +126,20 @@ dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
 
-# Default severity for analyzer diagnostics with category 'Roslynator'
-dotnet_analyzer_diagnostic.category-Roslynator.severity = suggestion
+dotnet_analyzer_diagnostic.category-roslynator.severity = suggestion
+dotnet_analyzer_diagnostic.category-style.severity = suggestion
+
+# Unused element in a documentation comment
+dotnet_diagnostic.rcs1228.severity = none
+
+dotnet_style_namespace_match_folder = true:error
+csharp_style_namespace_declarations = file_scoped:error
+
+dotnet_diagnostic.ide0055.severity = none
+
+dotnet_style_qualification_for_event = true
+dotnet_style_qualification_for_field = true
+dotnet_style_qualification_for_method = true
+dotnet_style_qualification_for_property = true
+
+csharp_style_prefer_index_operator = false
