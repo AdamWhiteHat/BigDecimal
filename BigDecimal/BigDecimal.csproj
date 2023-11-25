@@ -33,7 +33,7 @@
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2023</MajorVersion>
 		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1000</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">2</PatchVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">3</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 

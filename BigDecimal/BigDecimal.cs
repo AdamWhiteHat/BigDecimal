@@ -207,7 +207,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 	private static BigInteger TenInt { get; } = new(10);
 
-	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.InvariantCulture.NumberFormat;
+	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.CurrentCulture.NumberFormat;
 
 	/// <summary>
 	/// Sets the desired precision of all BigDecimal instances, in terms of the number of .
