@@ -93,6 +93,10 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 			this.Mantissa = result.Mantissa;
 			this.Exponent = result.Exponent;
 		}
+		if (this.Mantissa == 0)
+		{
+			this.Exponent = 0;
+		}
 	}
 
 	public BigDecimal(Int32 value) : this(new BigInteger(value), 0) { }
@@ -203,7 +207,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 	private static BigInteger TenInt { get; } = new(10);
 
-	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.InvariantCulture.NumberFormat;
+	private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.CurrentCulture.NumberFormat;
 
 	/// <summary>
 	/// Sets the desired precision of all BigDecimal instances, in terms of the number of .
@@ -435,7 +439,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		if (input.StartsWith(numberFormatProvider.NegativeSign, StringComparison.OrdinalIgnoreCase))
 		{
 			isNegative = true;
-			input = input.Replace(numberFormatProvider.NegativeSign, String.Empty);
+			input = input.TrimStart(new char[] { numberFormatProvider.NegativeSign.Single() });
 		}
 
 		var posE = input.LastIndexOf('E') + 1;
@@ -521,8 +525,13 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	[Pure]
 	public static BigDecimal Normalize(BigDecimal value)
 	{
-		if (value.IsZero())
+		if (value.Mantissa.IsZero)
 		{
+			if (value.Exponent != 0)
+			{
+				return new BigDecimal(new Tuple<BigInteger, Int32>(BigInteger.Zero, 0));
+			}
+
 			return value;
 		}
 
