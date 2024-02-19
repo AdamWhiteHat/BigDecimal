@@ -1433,6 +1433,34 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return BigDecimal.One / cosh;   // sech = 1 / cosh
 	}
 
+	/// <summary>
+	/// Arbitrary precision hyperbolic cosecant function.
+	/// The input must not be zero.
+	/// </summary>
+	public static BigDecimal Csch(BigDecimal radians)
+	{
+		return Csch(radians, BigDecimal.Precision);
+	}
+
+	/// <summary>
+	/// Arbitrary precision hyperbolic cosecant function.
+	/// The input must not be zero.
+	/// </summary>
+	/// <param name="radians">The argument radians.</param>
+	/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+	public static BigDecimal Csch(BigDecimal radians, int precision)
+	{
+		BigDecimal input = BigDecimal.Normalize(radians);
+		if (input.IsZero())
+		{
+			throw new ArithmeticException("The hyperbolic cosecant of zero is undefined.");
+		}
+
+		BigDecimal sinh = Sinh(input, precision);
+
+		return BigDecimal.One / sinh;   // csch = 1 / sinh
+	}
+
 	#endregion
 
 	#region Inverse Trigonometric Functions

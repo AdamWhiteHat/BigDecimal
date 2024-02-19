@@ -184,6 +184,16 @@ namespace TestBigDecimal
 			Test_TrigFunction(BigDecimal.Sech, sech, 14, Precision, -1);
 		}
 
+		[Test]
+		public static void Test_Csch()
+		{
+			// csch = 1 / sinh
+			Func<double, double> csch = (x) => 1.0d / Math.Sinh(x);
+
+			Test_TrigFunction(BigDecimal.Csch, csch, 11, Precision, 1);
+			Test_TrigFunction(BigDecimal.Csch, csch, 11, Precision, -1);
+		}
+
 		#endregion
 
 		#region Inverse Trigonometric Functions
