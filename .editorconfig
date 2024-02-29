@@ -1,5 +1,5 @@
-# Remove the line below if you want to inherit .editorconfig settings from higher directories
 root = true
+# Remove the line below if you want to inherit .editorconfig settings from higher directories
 
 ## Roslynator.CSharp.Analyzers
 
@@ -7,6 +7,9 @@ root = true
 roslynator_accessibility_modifiers = explicit
 roslynator_enum_has_flag_style = method
 roslynator_object_creation_type_style = explicit|implicit|implicit_when_type_is_obvious
+
+# ReSharper properties
+resharper_csharp_max_line_length = 150
 
 # C# files
 [*.cs]
@@ -27,13 +30,12 @@ insert_final_newline = false
 # Organize usings
 dotnet_separate_import_directive_groups = false
 dotnet_sort_system_directives_first = false
-file_header_template = unset
+file_header_template = 
 
-# this. and Me. preferences
-dotnet_style_qualification_for_event = false
-dotnet_style_qualification_for_field = false
-dotnet_style_qualification_for_method = false
-dotnet_style_qualification_for_property = false
+dotnet_style_qualification_for_event = true
+dotnet_style_qualification_for_field = true
+dotnet_style_qualification_for_method = true
+dotnet_style_qualification_for_property = true
 
 # Language keywords vs BCL types preferences
 dotnet_style_predefined_type_for_locals_parameters_members = true
@@ -52,7 +54,6 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members
 dotnet_style_coalesce_expression = true
 dotnet_style_collection_initializer = true
 dotnet_style_explicit_tuple_names = true
-dotnet_style_namespace_match_folder = true
 dotnet_style_null_propagation = true
 dotnet_style_object_initializer = true
 dotnet_style_operator_placement_when_wrapping = beginning_of_line
@@ -115,7 +116,7 @@ csharp_preferred_modifier_order = public,private,protected,internal,static,exter
 # Code-block preferences
 csharp_prefer_braces = true:silent
 csharp_prefer_simple_using_statement = true:suggestion
-csharp_style_namespace_declarations = block_scoped:silent
+csharp_style_namespace_declarations = file_scoped:error
 csharp_style_prefer_method_group_conversion = true:silent
 
 # Expression-level preferences
@@ -133,7 +134,7 @@ csharp_style_unused_value_assignment_preference = discard_variable:suggestion
 csharp_style_unused_value_expression_statement_preference = discard_variable:silent
 
 # 'using' directive preferences
-csharp_using_directive_placement = outside_namespace:silent
+csharp_using_directive_placement = inside_namespace:error
 
 # New line preferences
 csharp_style_allow_blank_line_after_colon_in_constructor_initializer_experimental = true:silent
@@ -254,7 +255,9 @@ dotnet_style_prefer_inferred_tuple_names = true:suggestion
 dotnet_style_prefer_inferred_anonymous_type_member_names = true:suggestion
 dotnet_style_prefer_compound_assignment = true:suggestion
 dotnet_style_prefer_simplified_interpolation = true:suggestion
-dotnet_style_namespace_match_folder = true:suggestion
+
+dotnet_style_namespace_match_folder = true:error
+
 dotnet_style_readonly_field = true:suggestion
 dotnet_style_predefined_type_for_locals_parameters_members = true:silent
 dotnet_style_predefined_type_for_member_access = true:silent
@@ -262,3 +265,6 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:silent
 dotnet_style_allow_multiple_blank_lines_experimental = true:silent
 dotnet_style_allow_statement_immediately_after_block_experimental = true:silent
 dotnet_code_quality_unused_parameters = all:suggestion
+
+dotnet_analyzer_diagnostic.category-roslynator.severity = suggestion
+dotnet_analyzer_diagnostic.category-style.severity = suggestion
