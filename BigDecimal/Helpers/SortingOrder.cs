@@ -1,7 +1,8 @@
 namespace ExtendedNumerics.Helpers;
 
-using System;
-
+/// <summary>
+/// <see cref="Librainian.Types.CompareToOrder"/>
+/// </summary>
 public static class SortingOrder
 {
 
