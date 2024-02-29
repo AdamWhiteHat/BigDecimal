@@ -2,7 +2,6 @@ namespace ExtendedNumerics.Reflection;
 
 using System.Collections.Generic;
 using System.Reflection;
-using Exceptions;
 
 /// <summary>http://blogs.msdn.com/b/kevinpilchbisson/archive/2007/11/20/enforcing-immutability-in-code.aspx</summary>
 [AttributeUsage( AttributeTargets.Class | AttributeTargets.Struct )]
@@ -61,6 +60,8 @@ public sealed class ImmutableAttribute : Attribute
 	}
 
 	/// <summary>Ensures that 'type' follows the rules for immutability</summary>
+	/// <param name="type"></param>
+	/// <param name="whiteList"></param>
 	/// <exception cref="ImmutableFailureException">Thrown if a mutability issue appears.</exception>
 	public static void VerifyTypeIsImmutable( Type type, IEnumerable<Type> whiteList )
 	{
@@ -126,6 +127,8 @@ public sealed class ImmutableAttribute : Attribute
 	}
 
 	/// <summary>Ensures that all types in 'assemblies' that are marked [Immutable] follow the rules for immutability.</summary>
+	/// <param name="assemblies"></param>
+	/// <param name="whiteList"></param>
 	/// <exception cref="ImmutableFailureException">Thrown if a mutability issue appears.</exception>
 	public static void VerifyTypesAreImmutable( IEnumerable<Assembly> assemblies, params Type[] whiteList )
 	{

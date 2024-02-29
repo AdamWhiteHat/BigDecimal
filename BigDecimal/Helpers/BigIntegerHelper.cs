@@ -1,5 +1,6 @@
 ﻿namespace ExtendedNumerics.Helpers;
 
+using Extensions;
 using System.Collections.Generic;
 using global::Librainian.Parsing;
 using Properties;
@@ -158,7 +159,7 @@ public static partial class BigIntegerHelper
 
 	public static BigInteger Square( this BigInteger input ) => input * input;
 
-	[NeedsTesting]
+	[NeedsUnitTesting]
 	public static BigInteger SquareRoot( this BigInteger input )
 	{
 		if ( input.IsZero )
@@ -206,7 +207,7 @@ public static partial class BigIntegerHelper
 	/// <param name="numberString"></param>
 	/// <param name="result"></param>
 	/// <exception cref="OutOfRangeException">Uncomment this if you want an exception instead of a Boolean.</exception>
-	[NeedsTesting]
+	[NeedsUnitTesting]
 	public static Boolean TryParseFraction( this String numberString, out BigDecimal? result )
 	{
 		result = default( BigDecimal? );

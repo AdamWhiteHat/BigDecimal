@@ -72,11 +72,14 @@
 	</Choose>
 
 	<ItemGroup>
-	  <None Remove="Librainian\.editorconfig" />
+	  <Compile Remove="Librainian\**" />
+	  <EmbeddedResource Remove="Librainian\**" />
+	  <None Remove="Librainian\**" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EditorConfigFiles Include="Librainian\.editorconfig" />
+	  <Compile Include="Librainian\Parsing\ParsingConstants.Chars.cs" />
+	  <Compile Include="Librainian\Parsing\ParsingConstants.Strings.cs" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,9 +1,9 @@
 ﻿namespace ExtendedNumerics;
 
-using System.Diagnostics.Contracts;
+using Extensions;
 using System.Globalization;
-using Exceptions;
 using Helpers;
+using Properties;
 using Reflection;
 
 /// <summary>
@@ -345,13 +345,16 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <exception cref="InvalidOperationException"></exception>
 	public static BigDecimal GetPiDigits(Int32 digits = 512)
 	{
-		digits += "3.".Length;
+		const String theStartOfPi = "3.";
+		var theLengthOfStartOfPi = theStartOfPi.Length;
+		
+		digits += theLengthOfStartOfPi;
 		if (digits is <= 0 or > 1_000_000)
 		{
 			throw new ArgumentOutOfRangeException(nameof(digits));
 		}
 
-		var s = Resources.PiString.Substring(0, 2 + digits);
+		var s = NumberResources.PiString.Substring(0, theLengthOfStartOfPi + digits);
 
 		if (String.IsNullOrWhiteSpace(s))
 		{
@@ -590,7 +593,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	}
 
 	/// <summary>Gets the fractional part of the BigDecimal, setting everything left of the decimal point to zero.</summary>
-	[NeedsTesting] //TODO Needs tests on E notation, negative numbers, and extra small or large numbers.
+	[NeedsUnitTesting] //TODO Needs tests on E notation, negative numbers, and extra small or large numbers.
 	public BigDecimal GetFractionalPart()
 	{
 		var resultString = String.Empty;
@@ -729,7 +732,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		return Convert.ToUInt32(t.ToString());
 	}
 
-	[NeedsTesting]
+	[NeedsUnitTesting]
 	public static BigDecimal operator %(BigDecimal left, BigDecimal right) => left - Floor(right * (left / right));
 
 	public static BigDecimal operator +(BigDecimal value) => value;
@@ -761,10 +764,10 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		left.Exponent > right.Exponent ? AlignExponent(left, right) >= right.Mantissa : left.Mantissa >= AlignExponent(right, left);
 
 	/// <summary>Returns the smaller of two BigDecimal values.</summary>
-	public static BigDecimal Min(BigDecimal left, BigDecimal right) => (left <= right) ? left : right;
+	public static BigDecimal Min(BigDecimal left, BigDecimal right) => left <= right ? left : right;
 
 	/// <summary>Returns the larger of two BigDecimal values.</summary>	
-	public static BigDecimal Max(BigDecimal left, BigDecimal right) => (left >= right) ? left : right;
+	public static BigDecimal Max(BigDecimal left, BigDecimal right) => left >= right ? left : right;
 
 	/// <summary>Returns the result of multiplying a BigDecimal by negative one.</summary>
 	public static BigDecimal Negate(BigDecimal value) => new BigDecimal(BigInteger.Negate(value.Mantissa), value.Exponent);
@@ -1079,7 +1082,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		var digits = PlacesRightOfDecimal(value);
 		if (digits > precision)
 		{
-			int difference = (digits - precision);
+			int difference = digits - precision;
 			mantissa = BigInteger.Divide(mantissa, BigInteger.Pow(TenInt, difference));
 
 			if (sign != 0)
@@ -1092,7 +1095,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	}
 
 	/// <summary>Rounds a BigDecimal up to the next largest integer value, even if the fractional part is less than one half. Equivalent to obtaining the floor and then adding one.</summary>
-	[NeedsTesting]
+	[NeedsUnitTesting]
 	public static BigDecimal Ceiling(BigDecimal value)
 	{
 		BigDecimal result = value.WholeValue;
@@ -1324,7 +1327,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		BigDecimal twoPi = BigDecimal.Normalize(BigDecimal.Mod(radians, 2 * BigDecimal.Pi));
 
 		BigDecimal sin = Sin(twoPi, precision);
-		return (BigDecimal.One / sin); // csc = 1 / sin
+		return BigDecimal.One / sin; // csc = 1 / sin
 	}
 
 	#endregion
@@ -1518,11 +1521,11 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		}
 		else if (sign == -1)
 		{
-			needsAdjustment = (input < -1);
+			needsAdjustment = input < -1;
 		}
 		else
 		{
-			needsAdjustment = (input > 1);
+			needsAdjustment = input > 1;
 		}
 
 		if (needsAdjustment)
@@ -1789,7 +1792,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <summary>Allow the BigDecimal to be formatted with the E notation.</summary>
 	/// <param name="bigDecimal"></param>
 	/// <returns></returns>
-	[NeedsTesting]
+	[NeedsUnitTesting]
 	private static String ToScientificENotation(BigDecimal bigDecimal)
 	{
 

@@ -2,21 +2,19 @@
 // MIT License.
 // https://github.com/AdamWhiteHat/BigDecimal
 
-namespace ExtendedNumerics.Helpers;
-
-using Extensions;
+namespace ExtendedNumerics.Extensions;
 
 /// <summary>
 /// Mark that this needs unit testing to confirm it works as expected.
 /// </summary>
 [AttributeUsage( AttributeTargets.All )]
-internal class NeedsTestingAttribute : Attribute
+internal class NeedsUnitTestingAttribute : Attribute
 {
 
 	/// <summary>
 	/// Mark that this needs unit testing to confirm it works as expected.
 	/// </summary>
-	public NeedsTestingAttribute()
+	public NeedsUnitTestingAttribute()
 	{
 #if DEBUG
 #pragma warning disable CS1030 // #warning directive
@@ -29,7 +27,7 @@ internal class NeedsTestingAttribute : Attribute
 	/// Mark that this needs unit testing to confirm it works as expected for the given <paramref name="reason"/>.
 	/// </summary>
 	/// <param name="reason"></param>
-	public NeedsTestingAttribute( String reason )
+	public NeedsUnitTestingAttribute( String reason )
 	{
 #if DEBUG
 #pragma warning disable CS1030 // #warning directive
@@ -38,7 +36,7 @@ internal class NeedsTestingAttribute : Attribute
 #endif
 
 		//TestContext.WriteLine( reason ); // Would need the NUnit or Microsoft nuget..
-		reason.WriteLineIfDebugging( true );
+		//reason.WriteLineIfDebugging( true );
 	}
 
 }

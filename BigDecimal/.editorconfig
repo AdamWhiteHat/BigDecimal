@@ -126,9 +126,6 @@ dotnet_style_operator_placement_when_wrapping = beginning_of_line
 tab_width = 4
 indent_size = 4
 
-dotnet_analyzer_diagnostic.category-roslynator.severity = suggestion
-dotnet_analyzer_diagnostic.category-style.severity = suggestion
-
 # Unused element in a documentation comment
 dotnet_diagnostic.rcs1228.severity = none
 
@@ -143,3 +140,28 @@ dotnet_style_qualification_for_method = true
 dotnet_style_qualification_for_property = true
 
 csharp_style_prefer_index_operator = false
+
+roslynator_analyzers.enabled_by_default = true
+roslynator_refactorings.enabled = true
+roslynator_compiler_diagnostic_fixes.enabled = true
+dotnet_analyzer_diagnostic.category-roslynator.severity = suggestion
+dotnet_analyzer_diagnostic.category-style.severity = suggestion
+dotnet_diagnostic.RCS0045.severity = none
+dotnet_diagnostic.RCS0046.severity = none
+dotnet_diagnostic.RCS1012.severity = none
+dotnet_diagnostic.RCS1013.severity = none
+dotnet_diagnostic.RCS1100.severity = none
+dotnet_diagnostic.RCS0021.severity = none
+dotnet_diagnostic.RCS0009.severity = none
+dotnet_diagnostic.RCS1002.severity = none
+dotnet_diagnostic.RCS0030.severity = none
+dotnet_diagnostic.RCS0056.severity = suggestion
+dotnet_diagnostic.RCS1141.severity = error
+dotnet_diagnostic.RCS1142.severity = warning
+dotnet_diagnostic.RCS1247.severity = none
+dotnet_diagnostic.RCS0020.severity = none
+dotnet_diagnostic.RCS0047.severity = none
+dotnet_diagnostic.RCS1141.severity = silent
+
+# //TODO dotnet_diagnostic.RCS0053 can actually look nice. I just don't know how to tell VS or Resharper to do it.
+dotnet_diagnostic.RCS0053.severity = none
