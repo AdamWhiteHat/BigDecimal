@@ -4,6 +4,7 @@
 
 namespace ExtendedNumerics.Exceptions;
 
+using Properties;
 using System.Runtime.Serialization;
 
 /// <summary>
@@ -28,7 +29,7 @@ public class OutOfRangeException : Exception
 	{
 		if ( String.IsNullOrEmpty( message ) )
 		{
-			throw new NullException( "A message must be provided." );
+			throw new NullException( LanguageResources.A_message_must_be_provided );
 		}
 	}
 
@@ -36,7 +37,7 @@ public class OutOfRangeException : Exception
 	{
 		if ( String.IsNullOrEmpty( message ) )
 		{
-			throw new NullException( "A message must be provided." );
+			throw new NullException( LanguageResources.A_message_must_be_provided );
 		}
 	}
 
