@@ -165,3 +165,5 @@ dotnet_diagnostic.RCS1141.severity = silent
 
 # //TODO dotnet_diagnostic.RCS0053 can actually look nice. I just don't know how to tell VS or Resharper to do it.
 dotnet_diagnostic.RCS0053.severity = none
+
+csharp_style_prefer_range_operator = false:error
