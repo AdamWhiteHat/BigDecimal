@@ -12,7 +12,8 @@ public static partial class BigIntegerHelper
 	/// Separated to its own page because the array-text is <b>huge</b>.
 	/// </remarks>
 	/// //TODO Move this array into a Resource?
-	public static Lazy<UInt64[]> PrimesBelow1M => new( static () => new UInt64[] {
+	public static Lazy<UInt64[]> PrimesBelow1M => new( static () =>
+	[
 		2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101,
 		103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197,
 		199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311,
@@ -7681,5 +7682,5 @@ public static partial class BigIntegerHelper
 		999611, 999613, 999623, 999631, 999653, 999667, 999671, 999683, 999721, 999727,
 		999749, 999763, 999769, 999773, 999809, 999853, 999863, 999883, 999907, 999917,
 		999931, 999953, 999959, 999961, 999979, 999983
-	}, LazyThreadSafetyMode.PublicationOnly );
+	], LazyThreadSafetyMode.PublicationOnly );
 }

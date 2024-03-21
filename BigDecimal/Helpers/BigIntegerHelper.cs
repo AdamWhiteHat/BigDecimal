@@ -197,8 +197,8 @@ public static partial class BigIntegerHelper
 	/// A list of primes smaller than 1,000,000 converted to <see cref="BigInteger"/> type, source: https://www.mathematical.com/primes0to1000k.html
 	/// </summary>
 	///TODO Can we make this async?
-	public static Lazy<BigInteger[]> PrimesBelow1MB => new( static () => PrimesBelow1M.Value.Select( static value => new BigInteger( value ) ).ToArray(),
-		LazyThreadSafetyMode.PublicationOnly );
+	public static Lazy<BigInteger[]> PrimesBelow1MB => new Lazy<BigInteger[]>(
+		static () => PrimesBelow1M.Value.Select( static value => new BigInteger( value ) ).ToArray(), LazyThreadSafetyMode.PublicationOnly );
 
 	/// <summary>
 	///     <para>Attempt to parse a fraction from a String.</para>
