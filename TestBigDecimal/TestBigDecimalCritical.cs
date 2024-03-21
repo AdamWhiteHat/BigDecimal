@@ -1,14 +1,11 @@
-﻿using System;
+﻿namespace TestBigDecimal;
+
+using System;
 using System.Linq;
 using System.Numerics;
 using ExtendedNumerics;
 using NUnit.Framework;
-using NUnit.Framework.Api;
-using NUnit.Framework.Constraints;
-using NUnit.Framework.Interfaces;
-using NUnit.Framework.Internal.Execution;
 
-namespace TestBigDecimal;
 [NonParallelizable]
 [TestFixture]
 public class TestBigDecimalCritical
@@ -285,7 +282,7 @@ public class TestBigDecimalCritical
 
 		BigDecimal mod1 = BigDecimal.Parse("3141592653589793238462643383279502");
 		BigDecimal mod2 = BigDecimal.Parse("27182818284590452");
-		BigDecimal neg1 = BigDecimal.Parse("-3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647");
+		//BigDecimal neg1 = BigDecimal.Parse("-3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647");
 		BigDecimal lrg1 = BigDecimal.Parse("3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647");
 		BigDecimal lrg2 = BigDecimal.Parse("2.718281828459045235360287471352662497757247093699959574966967");
 
