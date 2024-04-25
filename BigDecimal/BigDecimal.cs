@@ -665,7 +665,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <exception cref="OutOfRangeException"></exception>
 	public static explicit operator Double( BigDecimal value )
 	{
-		var t = (BigDecimal)value.Mantissa * Math.Pow( 10, value.Exponent );
+		var t = (BigDecimal)value.Mantissa * Pow( 10, value.Exponent );
 		if ( t > MaxBigDecimalForDouble.Value )
 		{
 			throw new OutOfRangeException( $"{nameof( BigDecimal )} is too large to convert to a {nameof( Double )}." );
@@ -679,7 +679,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <exception cref="OutOfRangeException"></exception>
 	public static explicit operator Single( BigDecimal value )
 	{
-		var t = (BigDecimal)value.Mantissa * Math.Pow( 10, value.Exponent );
+		var t = (BigDecimal)value.Mantissa * Pow( 10, value.Exponent );
 		if ( t > MaxBigDecimalForSingle.Value )
 		{
 			throw new OutOfRangeException( $"{nameof( BigDecimal )} is too large to convert to a {nameof( Single )}." );
@@ -693,7 +693,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 	/// <exception cref="OutOfRangeException"></exception>
 	public static explicit operator Decimal( BigDecimal value )
 	{
-		var t = (BigDecimal)value.Mantissa * Math.Pow( 10, value.Exponent );
+		var t = (BigDecimal)value.Mantissa * Pow( 10, value.Exponent );
 		if ( t > MaxBigDecimalForDecimal.Value )
 		{
 			throw new OutOfRangeException( $"{nameof( BigDecimal )} is too large to convert to a {nameof( Decimal )}." );

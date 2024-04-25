@@ -854,4 +854,42 @@ public class TestBigDecimalOperations {
 		Assert.AreEqual(expected, actual, $"{left} > {right} == {expected}");
 	}
 
+	[Test]
+	public void TestDoubleCasting() {
+		BigDecimal value1 = BigDecimal.Pow(10, -1);
+		BigDecimal value2 = new BigDecimal(99.00000001);
+		BigDecimal res = BigDecimal.Divide(value2, value1);
+
+		double delta = 0.0000001;
+		double expected = 990.0000001;
+		double actual = (double)res;
+
+		Assert.AreEqual(expected, actual, delta, $"{expected} != {actual}");
+	}
+
+	[Test]
+	public void TestSingleCasting() {
+		BigDecimal value1 = BigDecimal.Pow(10, -1);
+		BigDecimal value2 = new BigDecimal(99.00000001);
+		BigDecimal res = BigDecimal.Divide(value2, value1);
+
+		double delta = 0.0000001;
+		Single expected = 990.0000001f;
+		Single actual = (Single)res;
+
+		Assert.AreEqual(expected, actual, delta, $"{expected} != {actual}");
+	}
+
+	[Test]
+	public void TestDecimalCasting() {
+		BigDecimal value1 = BigDecimal.Pow(10, -1);
+		BigDecimal value2 = new BigDecimal(99.00000001);
+		BigDecimal res = BigDecimal.Divide(value2, value1);
+
+		double delta = 0.0000001;
+		double expected = 990.0000001;
+		decimal actual = (decimal)res;
+
+		Assert.AreEqual(expected, Convert.ToDouble(actual), delta, $"{expected} != {actual}");
+	}
 }
