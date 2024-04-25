@@ -1,13 +1,16 @@
 ﻿namespace TestBigDecimal;
 
 using System;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 
 [TestFixture]
+[Culture("en-US,ru-RU")]
 [NonParallelizable]
 public class TestBigDecimalTrigonometricFunctions {
 
@@ -106,14 +109,17 @@ public class TestBigDecimalTrigonometricFunctions {
 		Int32 precision,
 		Int32 sign = 1,
 		[CallerMemberName] String callerName = "") {
-		
+
 		//var e = BigDecimal.Parse("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427");
 
 		var halfPi = TrigonometricHelper.HalfPi;
-		var perturbation = BigDecimal.Parse("0.00123");
+
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var val = TestBigDecimalHelper.PrepareValue("0.00123", format);
+		var perturbation = BigDecimal.Parse(val);
 
 		var negHalfPi = -halfPi;
-		
+
 		var tl = sign * (negHalfPi - perturbation);
 		var tg = sign * (negHalfPi + perturbation);
 		var ul = sign * -perturbation;
@@ -122,23 +128,23 @@ public class TestBigDecimalTrigonometricFunctions {
 		var vg = sign * (halfPi + perturbation);
 		var wl = sign * (BigDecimal.Pi - perturbation);
 		var wg = sign * (BigDecimal.Pi + perturbation);
-		
+
 		var halfPiTimes3 = halfPi * 3;
-		
+
 		var xl = sign * (halfPiTimes3 - perturbation);
 		var xg = sign * (halfPiTimes3 + perturbation);
 		var yl = sign * (TrigonometricHelper.TwicePi - perturbation);
 		var yg = sign * (TrigonometricHelper.TwicePi + perturbation);
-		
+
 		var halfPiTimes5 = halfPi * 5;
-		
+
 		var zl = sign * (halfPiTimes5 - perturbation);
 		var zg = sign * (halfPiTimes5 + perturbation);
 
 		var lineLength = 47;
 		var callerNameLength = callerName.Length + 3;
 		var repeatTimes = (lineLength - 3) / callerNameLength;
-		var remainder = lineLength - ( repeatTimes * callerNameLength );
+		var remainder = lineLength - (repeatTimes * callerNameLength);
 
 		var leftPad = remainder / 2;
 		var rightPad = remainder - leftPad;
@@ -146,7 +152,7 @@ public class TestBigDecimalTrigonometricFunctions {
 		var sgn = sign == -1 ? "-" : "";
 
 		var callerNameBanner = " * ".PadRight(3 + leftPad) + String.Join(" * ", Enumerable.Repeat(callerName, repeatTimes)) +
-		                       " * ".PadLeft(3 + rightPad);
+							   " * ".PadLeft(3 + rightPad);
 
 		TestContext.WriteLine($"<{callerName}>");
 		TestContext.WriteLine("");
@@ -199,7 +205,9 @@ public class TestBigDecimalTrigonometricFunctions {
 
 		TestContext.WriteLine("");
 		TestContext.WriteLine(" Misc --");
-		ExecMethod(sign * BigDecimal.Parse("22.123"), testFunc, comparisonFunc, precision, 5, sgn + "22.123", callerName);
+
+		val = TestBigDecimalHelper.PrepareValue("22.123", format);
+		ExecMethod(sign * BigDecimal.Parse(val), testFunc, comparisonFunc, precision, 5, sgn + val, callerName);
 
 		/*
 		ExecMethod(sign * (E / 2), testFunc, comparisonFunc, precision, matchDigits, sgn + "(E / 2)", callerName);
@@ -237,7 +245,7 @@ public class TestBigDecimalTrigonometricFunctions {
 			return output;
 		}
 	}
-	
+
 	[Test]
 	public static void Test_ArccosNeg1() {
 		Test_TrigFunction(BigDecimal.Arccos, Func, 14, Precision * 2, -1);
@@ -263,7 +271,7 @@ public class TestBigDecimalTrigonometricFunctions {
 
 		return;
 
-		static Double Arccot(Double x) => ( Math.PI / 2 ) - Math.Atan(x);
+		static Double Arccot(Double x) => (Math.PI / 2) - Math.Atan(x);
 	}
 
 	[Test]
@@ -361,46 +369,54 @@ public class TestBigDecimalTrigonometricFunctions {
 	[Test]
 	public static void Test_Ln() {
 		var argument = BigDecimal.Parse("65536");
-		var expected = "11.09035488895912495067571394333082508920800214976";
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = TestBigDecimalHelper.PrepareValue("11.09035488895912495067571394333082508920800214976", format);
 
 		var result = BigDecimal.Ln(argument, Precision);
 
 		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof( BigDecimal.Ln ));
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
 	}
 
 	[Test]
 	public static void Test_Log10() {
 		var argument = BigDecimal.Parse("2");
-		var expected = "0.301029995663981195213738894724493026768189881462";
+		
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = TestBigDecimalHelper.PrepareValue("0.301029995663981195213738894724493026768189881462", format);
 
 		var result = BigDecimal.Log10(argument, Precision);
 
 		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof( BigDecimal.Log10 ));
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log10));
 	}
 
 	[Test]
 	public static void Test_Log2() {
-		var argument = BigDecimal.Parse("46340.95002");
-		var expected = "15.50000000025398948770312730360932446932123539424";
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var val = TestBigDecimalHelper.PrepareValue("46340.95002", format);
+
+		var argument = BigDecimal.Parse(val);
+		var expected = TestBigDecimalHelper.PrepareValue("15.50000000025398948770312730360932446932123539424", format);
 
 		var result = BigDecimal.Log2(argument, Precision);
 
 		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof( BigDecimal.Log2 ));
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log2));
 	}
 
 	[Test]
 	public static void Test_LogN() {
 		var @base = 3;
 		var argument = BigDecimal.Parse("65536");
-		var expected = "10.09487605714331899359243382948417366879337024211";
+
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = TestBigDecimalHelper.PrepareValue("10.09487605714331899359243382948417366879337024211", format);
 
 		var result = BigDecimal.LogN(@base, argument, Precision);
 
 		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof( BigDecimal.LogN ));
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.LogN));
 	}
 
 	[Test]
