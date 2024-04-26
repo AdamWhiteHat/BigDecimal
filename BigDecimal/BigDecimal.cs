@@ -22,7 +22,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		try
 		{
 			Pi = Parse(
-				"3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196" );
+				"3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196", CultureInfo.InvariantCulture );
 		}
 		catch ( Exception exception )
 		{
@@ -41,7 +41,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		try
 		{
 			E = Parse(
-				"2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383" );
+				"2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383", CultureInfo.InvariantCulture );
 		}
 		catch ( Exception exception )
 		{
@@ -359,7 +359,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 			throw new InvalidOperationException( $"Unable to load the value of π.[{digits}] from resources." );
 		}
 
-		return Parse( s );
+		return Parse( s, CultureInfo.InvariantCulture );
 	}
 
 	/// <summary>Static equality test.</summary>
@@ -575,7 +575,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		var resultString = String.Empty;
 		var decimalString = this.ToString( BigDecimalNumberFormatInfo );
 
-		var valueSplit = decimalString.Split( '.' ); //, StringSplitOptions.RemoveEmptyEntries
+		var valueSplit = decimalString.Split( BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray() ); //, StringSplitOptions.RemoveEmptyEntries
 		if ( valueSplit.Length > 0 )
 		{
 			resultString = valueSplit[0];
@@ -597,7 +597,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 		var resultString = String.Empty;
 		var decimalString = this.ToString();
 
-		var valueSplit = decimalString.Split( '.' );
+		var valueSplit = decimalString.Split( BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray() );
 		if ( valueSplit.Length == 1 )
 		{
 			return Zero; //BUG Is this right?
@@ -1807,7 +1807,7 @@ public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>,
 
 		//TODO none of this is tested or guaranteed to work yet. Like negatives, or small numbers need the correct logic.
 
-		var result2 = $"{manString.Insert( period, "." )}E{bigDecimal.Exponent:D}";
+		var result2 = $"{manString.Insert( period, BigDecimalNumberFormatInfo.NumberDecimalSeparator )}E{bigDecimal.Exponent:D}";
 		return result2;
 	}
 
