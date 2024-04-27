@@ -963,6 +963,29 @@ namespace ExtendedNumerics
 		/// <summary>Rounds a BigDecimal to the given number of digits to the right of the decimal point. Left of the decimal point digits are not counted.</summary>
 		public static BigDecimal Round(BigDecimal value, Int32 precision)
 		{
+			if (precision < 0)
+			{
+				string integer = value.WholeValue.ToString();
+				int len = integer.Length;
+				if (precision > len)
+				{
+					throw new ArgumentOutOfRangeException(LanguageResources.Arg_NegativePrecision);
+				}
+				else if (precision == len)
+				{
+					return BigDecimal.Zero;
+				}
+				int diff = len + precision;
+
+				string result = integer.Substring(0, diff);
+				result += new string(Enumerable.Repeat('0', Math.Abs(precision)).ToArray());
+				return BigDecimal.Parse(result);
+			}
+			else if (precision == 0)
+			{
+				return new BigDecimal(value.WholeValue);
+			}
+
 			var mantissa = value.Mantissa;
 			var exponent = value.Exponent;
 			var sign = Math.Sign(exponent);
