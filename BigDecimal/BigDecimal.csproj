@@ -31,9 +31,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2024</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1002</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">4</PatchVersion>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2025</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1000</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -49,92 +49,8 @@
 		<AssemblyOriginatorKeyFile>..\BigDecimalPrivate.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net45|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net46|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net472|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net48|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.1|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcoreapp3.1|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net5.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net6.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net7.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|net8.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net45|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net46|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net472|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net48|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.1|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netcoreapp3.1|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net5.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net6.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net7.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|net8.0|AnyCPU'">
-	  <GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+	<PropertyGroup>
+		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
 	</PropertyGroup>
 
 	<Choose>
@@ -173,18 +89,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Properties\LanguageResources.Designer.cs">
-	    <DesignTime>True</DesignTime>
-	    <AutoGen>True</AutoGen>
-	    <DependentUpon>LanguageResources.resx</DependentUpon>
-	  </Compile>
+		<Compile Update="Properties\LanguageResources.Designer.cs">
+			<DesignTime>True</DesignTime>
+			<AutoGen>True</AutoGen>
+			<DependentUpon>LanguageResources.resx</DependentUpon>
+		</Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <EmbeddedResource Update="Properties\LanguageResources.resx">
-	    <Generator>PublicResXFileCodeGenerator</Generator>
-	    <LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
-	  </EmbeddedResource>
+		<EmbeddedResource Update="Properties\LanguageResources.resx">
+			<Generator>PublicResXFileCodeGenerator</Generator>
+			<LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
+		</EmbeddedResource>
 	</ItemGroup>
 
 </Project>
