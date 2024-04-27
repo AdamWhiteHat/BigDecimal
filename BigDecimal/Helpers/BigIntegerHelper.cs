@@ -1,290 +1,274 @@
-﻿namespace ExtendedNumerics.Helpers;
-
-using Extensions;
+﻿using System;
 using System.Collections.Generic;
-using global::Librainian.Parsing;
-using Properties;
-using System.Threading;
+using System.Linq;
+using System.Numerics;
+using ExtendedNumerics.Properties;
 
-public static partial class BigIntegerHelper
+namespace ExtendedNumerics.Helpers
 {
-	public static BigInteger GCD( this IEnumerable<BigInteger> numbers ) => numbers.Aggregate( GCD );
-
-	public static BigInteger GCD( BigInteger value1, BigInteger value2 )
+	public static partial class BigIntegerHelper
 	{
-		var absValue1 = BigInteger.Abs( value1 );
-		var absValue2 = BigInteger.Abs( value2 );
+		public static BigInteger GCD(this IEnumerable<BigInteger> numbers) => numbers.Aggregate(GCD);
 
-		while ( ( absValue1 != BigInteger.Zero ) && ( absValue2 != BigInteger.Zero ) )
+		public static BigInteger GCD(BigInteger value1, BigInteger value2)
 		{
-			if ( absValue1 > absValue2 )
+			var absValue1 = BigInteger.Abs(value1);
+			var absValue2 = BigInteger.Abs(value2);
+
+			while ((absValue1 != BigInteger.Zero) && (absValue2 != BigInteger.Zero))
 			{
-				absValue1 %= absValue2;
+				if (absValue1 > absValue2)
+				{
+					absValue1 %= absValue2;
+				}
+				else
+				{
+					absValue2 %= absValue1;
+				}
 			}
-			else
+			return BigInteger.Max(absValue1, absValue2);
+		}
+
+		public static Int32 GetLength(this BigInteger source)
+		{
+			var result = 0;
+			var copy = BigInteger.Abs(source);
+			while (copy > BigInteger.Zero)
 			{
-				absValue2 %= absValue1;
+				copy /= Ten;
+				result++;
 			}
+			return result;
 		}
 
-		return BigInteger.Max( absValue1, absValue2 );
-	}
-
-	public static Int32 GetLength( this BigInteger source )
-	{
-		var result = 0;
-		var copy = BigInteger.Abs( source );
-		while ( copy > BigInteger.Zero )
+		public static IEnumerable<BigInteger> GetRange(BigInteger min, BigInteger max)
 		{
-			copy /= Ten;
-			result++;
-		}
-
-		return result;
-	}
-
-	public static IEnumerable<BigInteger> GetRange( BigInteger min, BigInteger max )
-	{
-		while ( min < max )
-		{
-			yield return min;
-			min++;
-		}
-	}
-
-	public static Int32 GetSignifigantDigits( this BigInteger value )
-	{
-		if ( value.IsZero )
-		{
-			return 0;
-		}
-
-		var valueString = value.ToString().TrimEnd( '0' ); //CONFIRM Is this correct?
-
-		if ( String.IsNullOrEmpty( valueString ) )
-		{
-			return 0;
-		}
-
-		if ( value < BigInteger.Zero )
-		{
-			return valueString.Length - 1;
-		}
-
-		return valueString.Length;
-	}
-
-	public static Boolean IsCoprime( BigInteger value1, BigInteger value2 ) => GCD( value1, value2 ) == BigInteger.One;
-
-	public static BigInteger LCM( IEnumerable<BigInteger> numbers ) => numbers.Aggregate( LCM );
-
-	public static BigInteger LCM( BigInteger num1, BigInteger num2 )
-	{
-		var absValue1 = BigInteger.Abs( num1 );
-		var absValue2 = BigInteger.Abs( num2 );
-		return ( absValue1 * absValue2 ) / GCD( absValue1, absValue2 );
-	}
-
-	//  
-
-	/// <summary>
-	///<para>Returns the NTHs root of a <see cref="BigInteger"/> with <paramref name="remainder"/>.</para>
-	/// <para>The root must be greater than or equal to 1 or value must be a positive integer.</para>
-	/// </summary>
-	/// <param name="value"></param>
-	/// <param name="root"></param>
-	/// <param name="remainder"></param>
-	/// <returns></returns>
-	/// <exception cref="ArgumentException"></exception>
-	public static BigInteger NthRoot( this BigInteger value, Int32 root, out BigInteger remainder )
-	{
-		if ( root < 1 )
-		{
-			throw new ArgumentException( LanguageResources.Must_be_greater_than_or_equal_to_1, nameof( root ) );
-		}
-
-		if ( value.Sign == -1 )
-		{
-			throw new ArgumentException( LanguageResources.Must_be_a_positive_integer, nameof( value ) );
-		}
-
-		if ( value == BigInteger.One )
-		{
-			remainder = BigInteger.Zero;
-			return BigInteger.One;
-		}
-
-		if ( value == BigInteger.Zero )
-		{
-			remainder = BigInteger.Zero;
-			return BigInteger.Zero;
-		}
-
-		if ( root == 1 )
-		{
-			remainder = BigInteger.Zero;
-			return value;
-		}
-
-		var upperbound = value;
-		var lowerbound = BigInteger.Zero;
-
-		do
-		{
-			var nval = ( upperbound + lowerbound ) >> 1;
-			
-			var tstsq = BigInteger.Pow( nval, root );
-			
-			if ( tstsq > value )
+			while (min < max)
 			{
-				upperbound = nval;
-			}
-
-			if ( tstsq < value )
-			{
-				lowerbound = nval;
-			}
-
-			if ( tstsq == value )
-			{
-				lowerbound = nval;
-				break;
-			}
-		}
-		while ( lowerbound != ( upperbound - BigInteger.One ) );
-
-		remainder = value - BigInteger.Pow( lowerbound, root );
-		return lowerbound;
-	}
-
-	public static BigInteger Square( this BigInteger input ) => input * input;
-
-	[NeedsUnitTesting]
-	public static BigInteger SquareRoot( this BigInteger input )
-	{
-		if ( input.IsZero )
-		{
-			return BigInteger.Zero;
-		}
-
-		var n = BigInteger.Zero;
-		var p = BigInteger.Zero;
-		var low = BigInteger.Zero;
-		var high = BigInteger.Abs( input );
-
-		while ( high > ( low + BigInteger.One ) )
-		{
-			n = ( high + low ) >> 1;
-			p = n * n;
-			if ( input < p )
-			{
-				high = n;
-			}
-			else if ( input > p )
-			{
-				low = n;
-			}
-			else
-			{
-				break;
+				yield return min;
+				min++;
 			}
 		}
 
-		return input == p ? n : low;
-	}
-
-	/// <summary>
-	/// A list of primes smaller than 1,000,000 converted to <see cref="BigInteger"/> type, source: https://www.mathematical.com/primes0to1000k.html
-	/// </summary>
-	///TODO Can we make this async?
-	public static Lazy<BigInteger[]> PrimesBelow1MB => new Lazy<BigInteger[]>(
-		static () => PrimesBelow1M.Value.Select( static value => new BigInteger( value ) ).ToArray(), LazyThreadSafetyMode.PublicationOnly );
-
-	/// <summary>
-	///     <para>Attempt to parse a fraction from a String.</para>
-	/// </summary>
-	/// <example>" 1234.45 / 346.456 "</example>
-	/// <param name="numberString"></param>
-	/// <param name="result"></param>
-	/// <exception cref="OutOfRangeException">Uncomment this if you want an exception instead of a Boolean.</exception>
-	[NeedsUnitTesting]
-	public static Boolean TryParseFraction( this String numberString, out BigDecimal? result )
-	{
-		result = default( BigDecimal? );
-
-		if ( String.IsNullOrWhiteSpace( numberString ) )
+		public static Int32 GetSignifigantDigits(this BigInteger value)
 		{
-			return false;
+			if (value.IsZero)
+			{
+				return 0;
+			}
+
+			var valueString = value.ToString().TrimEnd('0'); //CONFIRM Is this correct?
+
+			if (String.IsNullOrEmpty(valueString))
+			{
+				return 0;
+			}
+			if (value < BigInteger.Zero)
+			{
+				return valueString.Length - 1;
+			}
+			return valueString.Length;
 		}
+
+		public static Boolean IsCoprime(BigInteger value1, BigInteger value2) => GCD(value1, value2) == BigInteger.One;
+
+		public static BigInteger LCM(IEnumerable<BigInteger> numbers) => numbers.Aggregate(LCM);
+
+		public static BigInteger LCM(BigInteger num1, BigInteger num2)
+		{
+			var absValue1 = BigInteger.Abs(num1);
+			var absValue2 = BigInteger.Abs(num2);
+			return (absValue1 * absValue2) / GCD(absValue1, absValue2);
+		}
+
+		/// <summary>
+		///<para>Returns the NTHs root of a <see cref="BigInteger"/> with <paramref name="remainder"/>.</para>
+		/// <para>The root must be greater than or equal to 1 or value must be a positive integer.</para>
+		/// </summary>
+		/// <param name="value"></param>
+		/// <param name="root"></param>
+		/// <param name="remainder"></param>
+		/// <returns></returns>
+		/// <exception cref="ArgumentException"></exception>
+		public static BigInteger NthRoot(this BigInteger value, Int32 root, out BigInteger remainder)
+		{
+			if (root < 1)
+			{
+				throw new ArgumentException(LanguageResources.Arg_MustBeGreaterThanOrEqualToOne, nameof(root));
+			}
+
+			if (value.Sign == -1)
+			{
+				throw new ArgumentException(LanguageResources.Arg_MustBeAPositiveInteger, nameof(value));
+			}
+
+			if (value == BigInteger.One)
+			{
+				remainder = BigInteger.Zero;
+				return BigInteger.One;
+			}
+
+			if (value == BigInteger.Zero)
+			{
+				remainder = BigInteger.Zero;
+				return BigInteger.Zero;
+			}
+
+			if (root == 1)
+			{
+				remainder = BigInteger.Zero;
+				return value;
+			}
+
+			var upperbound = value;
+			var lowerbound = BigInteger.Zero;
+
+			do
+			{
+				var nval = (upperbound + lowerbound) >> 1;
+
+				var tstsq = BigInteger.Pow(nval, root);
+
+				if (tstsq > value)
+				{
+					upperbound = nval;
+				}
+
+				if (tstsq < value)
+				{
+					lowerbound = nval;
+				}
+
+				if (tstsq == value)
+				{
+					lowerbound = nval;
+					break;
+				}
+			}
+			while (lowerbound != (upperbound - BigInteger.One));
+
+			remainder = value - BigInteger.Pow(lowerbound, root);
+			return lowerbound;
+		}
+
+		public static BigInteger Square(this BigInteger input) => input * input;
+
+		public static BigInteger SquareRoot(this BigInteger input)
+		{
+			if (input.IsZero)
+			{
+				return BigInteger.Zero;
+			}
+
+			var n = BigInteger.Zero;
+			var p = BigInteger.Zero;
+			var low = BigInteger.Zero;
+			var high = BigInteger.Abs(input);
+
+			while (high > (low + BigInteger.One))
+			{
+				n = (high + low) >> 1;
+				p = n * n;
+				if (input < p)
+				{
+					high = n;
+				}
+				else if (input > p)
+				{
+					low = n;
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return input == p ? n : low;
+		}
+
+		/// <summary>
+		/// ttempt to parse a fraction from a String.
+		/// </summary>
+		/// <example>" 1234.45 / 346.456 "</example>
+		/// <param name="numberString"></param>
+		/// <param name="result"></param>
+		/// <exception cref="OverflowException">Uncomment this if you want an exception instead of a Boolean.</exception>
+		public static Boolean TryParseFraction(this String numberString, out BigDecimal? result)
+		{
+			result = default(BigDecimal?);
+
+			if (String.IsNullOrWhiteSpace(numberString))
+			{
+				return false;
+			}
 
 #if NET5_0_OR_GREATER || NETCOREAPP || NETSTANDARD2_1_OR_GREATER
-		var parts = numberString.Split( ParsingConstants.Chars.ForwardSlash, StringSplitOptions.RemoveEmptyEntries ).Select( static s => s.Trim() ).ToList();
+		var parts = numberString.Split('/', StringSplitOptions.RemoveEmptyEntries).Select(static s => s.Trim() ).ToList();
 #else
-		var parts = numberString.Split( ParsingConstants.Arrays.ForwardSlash, StringSplitOptions.RemoveEmptyEntries ).Select( static s => s.Trim() ).ToList();
+			List<string> parts = numberString.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Select(static s => s.Trim()).ToList();
 #endif
 
-		if ( parts.Count != 2 )
-		{
-			return false;
+			if (parts.Count != 2)
+			{
+				return false;
+			}
+
+			try
+			{
+				var numerator = BigDecimal.Parse(parts[0]);
+				var denominator = BigDecimal.Parse(parts[1]);
+
+				result = BigDecimal.Divide(numerator, denominator);
+				return true;
+			}
+			catch (Exception)
+			{
+				//throw new OverflowException(LanguageResources.Overflow_Fraction);
+				return false;
+			}
 		}
 
-		try
-		{
-			var numerator = BigDecimal.Parse( parts[0] );
-			var denominator = BigDecimal.Parse( parts[1] );
 
-			result = BigDecimal.Divide( numerator, denominator );
-			return true;
-		}
-		catch ( Exception )
+		/// <summary>
+		/// <para>
+		/// Calculates a factorial by the divide and conquer method.
+		/// This is faster than repeatedly multiplying the next value by a running product
+		/// by not repeatedly multiplying by large values.
+		/// Essentially, this multiplies every number in the array with its neighbor,
+		/// returning an array half as long of products of two numbers.
+		/// We then take that array and multiply each pair of values in the array
+		/// with its neighbor, resulting in another array half the length of the previous one, and so on...
+		/// This results in many multiplications of small, equally sized operands 
+		/// and only a few multiplications of larger operands.
+		/// In the limit, this is more efficient.
+		/// </para>
+		/// <para>
+		/// The factorial function is used during the calculation of trigonometric functions to arbitrary precision.
+		/// </para>
+		/// </summary>
+		public static class FastFactorial
 		{
+			public static BigInteger Factorial(BigInteger value)
+			{
+				if ((value == BigInteger.Zero) || (value == BigInteger.One)) { return BigInteger.One; }
+				return MultiplyRange(Two, value);
+			}
 
-			//throw new OutOfRangeException( "Couldn't parse numerator or denominator." );
-			return false;
+			/// <summary>Divide the range of numbers to multiply in half recursively.</summary>
+			/// <param name="from"></param>
+			/// <param name="to"></param>
+			private static BigInteger MultiplyRange(BigInteger from, BigInteger to)
+			{
+				var diff = to - from;
+				if (diff == BigInteger.One) { return from * to; }
+				if (diff == BigInteger.Zero) { return from; }
+
+				var half = (from + to) / Two;
+				return BigInteger.Multiply(MultiplyRange(from, half), MultiplyRange(half + BigInteger.One, to));
+			}
 		}
+
+		public static readonly BigInteger Two = 2;
+		public static readonly BigInteger Ten = 10;
 	}
-
-
-	/// <summary>
-	/// <para>
-	/// Calculates a factorial by the divide and conquer method.
-	/// This is faster than repeatedly multiplying the next value by a running product
-	/// by not repeatedly multiplying by large values.
-	/// Essentially, this multiplies every number in the array with its neighbor,
-	/// returning an array half as long of products of two numbers.
-	/// We then take that array and multiply each pair of values in the array
-	/// with its neighbor, resulting in another array half the length of the previous one, and so on...
-	/// This results in many multiplications of small, equally sized operands 
-	/// and only a few multiplications of larger operands.
-	/// In the limit, this is more efficient.
-	/// </para>
-	/// <para>
-	/// The factorial function is used during the calculation of trigonometric functions to arbitrary precision.
-	/// </para>
-	/// </summary>
-	public static class FastFactorial
-	{
-		public static BigInteger Factorial(BigInteger value)
-		{
-			if (( value == BigInteger.Zero ) || ( value == BigInteger.One ) ) { return BigInteger.One; }
-			return MultiplyRange(Two, value);
-		}
-
-		/// <summary>Divide the range of numbers to multiply in half recursively.</summary>
-		/// <param name="from"></param>
-		/// <param name="to"></param>
-		private static BigInteger MultiplyRange(BigInteger from, BigInteger to)
-		{
-			var diff = to - from;
-			if (diff == BigInteger.One ) { return from * to; }
-			if (diff == BigInteger .Zero) { return from; }
-
-			var half = (from + to) /  Two;
-			return BigInteger.Multiply(MultiplyRange(from, half), MultiplyRange(half + BigInteger.One, to));
-		}
-	}
-
-	public static readonly BigInteger Two = 2;
-	public static readonly BigInteger Ten = 10;
-
 }

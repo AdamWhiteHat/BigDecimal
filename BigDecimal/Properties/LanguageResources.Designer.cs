@@ -22,7 +22,7 @@ namespace ExtendedNumerics.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class LanguageResources {
+    public class LanguageResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace ExtendedNumerics.Properties {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ExtendedNumerics.Properties.LanguageResources", typeof(LanguageResources).Assembly);
@@ -51,7 +51,7 @@ namespace ExtendedNumerics.Properties {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -61,47 +61,200 @@ namespace ExtendedNumerics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} must not equal zero..
-        /// </summary>
-        internal static string _must_not_equal_zero_ {
-            get {
-                return ResourceManager.GetString("_must_not_equal_zero_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to A message must be provided..
-        /// </summary>
-        internal static string A_message_must_be_provided {
-            get {
-                return ResourceManager.GetString("A_message_must_be_provided", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Argument must be of type {0}.
-        /// </summary>
-        internal static string Argument_must_be_of_type__0_ {
-            get {
-                return ResourceManager.GetString("Argument_must_be_of_type__0_", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Must be a positive integer..
         /// </summary>
-        internal static string Must_be_a_positive_integer {
+        public static string Arg_MustBeAPositiveInteger {
             get {
-                return ResourceManager.GetString("Must_be_a_positive_integer", resourceCulture);
+                return ResourceManager.GetString("Arg_MustBeAPositiveInteger", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Must be greater than or equal to 1.
         /// </summary>
-        internal static string Must_be_greater_than_or_equal_to_1 {
+        public static string Arg_MustBeGreaterThanOrEqualToOne {
             get {
-                return ResourceManager.GetString("Must_be_greater_than_or_equal_to_1", resourceCulture);
+                return ResourceManager.GetString("Arg_MustBeGreaterThanOrEqualToOne", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Argument must be of type {0}.
+        /// </summary>
+        public static string Arg_MustBeOfType {
+            get {
+                return ResourceManager.GetString("Arg_MustBeOfType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} must not equal zero..
+        /// </summary>
+        public static string Arg_MustNotEqualZero {
+            get {
+                return ResourceManager.GetString("Arg_MustNotEqualZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Negative precision cannot round left of the decimal point more place values than there are whole number digits..
+        /// </summary>
+        public static string Arg_NegativePrecision {
+            get {
+                return ResourceManager.GetString("Arg_NegativePrecision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cotangent of π is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Cot_Pi {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Cot_Pi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cotangent of zero is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Cot_Zero {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Cot_Zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cosecant of π is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Csc_Pi {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Csc_Pi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The cosecant of zero is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Csc_Zero {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Csc_Zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The hyperbolic cosecant of zero is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Csch_Zero {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Csch_Zero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The secant of (2*n + 1)*π/2 (an odd multiple of π/2) is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Sec_OddPiOver2 {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Sec_OddPiOver2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tangent of 3π/2 is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Tan_3PiOver2 {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Tan_3PiOver2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tangent of π/2 is undefined..
+        /// </summary>
+        public static string Arithmetic_Trig_Undefined_Tan_PiOver2 {
+            get {
+                return ResourceManager.GetString("Arithmetic_Trig_Undefined_Tan_PiOver2", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to value is not a number (NaN)..
+        /// </summary>
+        public static string NotFinite_NaN {
+            get {
+                return ResourceManager.GetString("NotFinite_NaN", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot raise zero to a negative power..
+        /// </summary>
+        public static string NotSupported_NegativePower {
+            get {
+                return ResourceManager.GetString("NotSupported_NegativePower", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal cannot represent infinity..
+        /// </summary>
+        public static string Overflow_BigDecimal_Infinity {
+            get {
+                return ResourceManager.GetString("Overflow_BigDecimal_Infinity", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal is too large for a Decimal..
+        /// </summary>
+        public static string Overflow_Decimal {
+            get {
+                return ResourceManager.GetString("Overflow_Decimal", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal is too large for a Double..
+        /// </summary>
+        public static string Overflow_Double {
+            get {
+                return ResourceManager.GetString("Overflow_Double", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Couldn&apos;t parse numerator or denominator..
+        /// </summary>
+        public static string Overflow_Fraction {
+            get {
+                return ResourceManager.GetString("Overflow_Fraction", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal is too large for a Int32..
+        /// </summary>
+        public static string Overflow_Int32 {
+            get {
+                return ResourceManager.GetString("Overflow_Int32", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal is too large for a Single..
+        /// </summary>
+        public static string Overflow_Single {
+            get {
+                return ResourceManager.GetString("Overflow_Single", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to BigDecimal is too large for a UInt32..
+        /// </summary>
+        public static string Overflow_UInt32 {
+            get {
+                return ResourceManager.GetString("Overflow_UInt32", resourceCulture);
             }
         }
     }

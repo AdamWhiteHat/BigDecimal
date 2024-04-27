@@ -1,7 +1,6 @@
 ﻿namespace TestBigDecimal;
 
 using System;
-using System.Globalization;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
@@ -12,7 +11,8 @@ using NUnit.Framework;
 [TestFixture]
 [Culture("en-US,ru-RU")]
 [NonParallelizable]
-public class TestBigDecimalTrigonometricFunctions {
+public class TestBigDecimalTrigonometricFunctions
+{
 
 	private static void ExecMethod(
 		BigDecimal input,
@@ -21,14 +21,16 @@ public class TestBigDecimalTrigonometricFunctions {
 		Int32 precision,
 		Int32 matchDigits,
 		String testDescription,
-		String? callerName = null) {
+		String? callerName = null)
+	{
 		var inputString = $"Input: {input}";
 		TestContext.WriteLine(inputString);
 
 		var doubleInput = (Double)input;
 		var doubleExpected = comparisonFunc(doubleInput);
 
-		if (Double.IsNaN(doubleExpected) || Double.IsInfinity(doubleExpected)) {
+		if (Double.IsNaN(doubleExpected) || Double.IsInfinity(doubleExpected))
+		{
 			TestContext.WriteLine("SKIPPED: The value of this function for this input is undefined.");
 
 			return;
@@ -40,7 +42,8 @@ public class TestBigDecimalTrigonometricFunctions {
 
 		var stringExpected = doubleExpected.ToString();
 
-		if (stringExpected.Contains('E')) {
+		if (stringExpected.Contains('E'))
+		{
 			stringExpected = doubleExpected.ToString("F16");
 		}
 
@@ -55,11 +58,13 @@ public class TestBigDecimalTrigonometricFunctions {
 		var expectedTruncLength = expectedDecimalOffset + matchDigits + 1;
 		var actualTruncLength = actualDecimalOffset + matchDigits + 1;
 
-		if (stringExpected.Length < expectedTruncLength) {
+		if (stringExpected.Length < expectedTruncLength)
+		{
 			expectedTruncLength = stringExpected.Length;
 		}
 
-		if (stringActual.Length < actualTruncLength) {
+		if (stringActual.Length < actualTruncLength)
+		{
 			actualTruncLength = stringActual.Length;
 		}
 
@@ -74,14 +79,17 @@ public class TestBigDecimalTrigonometricFunctions {
 
 		var testPassed = truncatedExpecting == truncatedActual;
 
-		if (testPassed) {
+		if (testPassed)
+		{
 			TestContext.WriteLine($"Expecting: {truncatedExpecting}");
 			TestContext.WriteLine($"   Actual: {truncatedActual}");
 		}
-		else {
+		else
+		{
 			var displayString = bigdecimalActual.ToString();
 
-			if (displayString.Length > 65) {
+			if (displayString.Length > 65)
+			{
 				displayString = new String(displayString.Take(65).ToArray()) + $"... ({displayString.Length - 65} more digits)";
 			}
 
@@ -91,10 +99,12 @@ public class TestBigDecimalTrigonometricFunctions {
 
 		TestContext.WriteLine("");
 
-		if (testPassed) {
+		if (testPassed)
+		{
 			Assert.AreEqual(truncatedExpecting, truncatedActual, testInfo);
 		}
-		else {
+		else
+		{
 			var delta = 0.0001;
 			Assert.AreEqual(doubleExpected, doubleActual, delta, testInfo);
 		}
@@ -108,7 +118,8 @@ public class TestBigDecimalTrigonometricFunctions {
 		Int32 matchDigits,
 		Int32 precision,
 		Int32 sign = 1,
-		[CallerMemberName] String callerName = "") {
+		[CallerMemberName] String callerName = "")
+	{
 
 		//var e = BigDecimal.Parse("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427");
 
@@ -157,12 +168,14 @@ public class TestBigDecimalTrigonometricFunctions {
 		TestContext.WriteLine($"<{callerName}>");
 		TestContext.WriteLine("");
 
-		if (sign == 1) {
+		if (sign == 1)
+		{
 			TestContext.WriteLine(callerNameBanner);
 			TestContext.WriteLine(" + ++ +++++++++++++ INPUT SIGN: POSITIVE +++++++++++++ ++ + ");
 			TestContext.WriteLine(callerNameBanner);
 		}
-		else {
+		else
+		{
 			TestContext.WriteLine(callerNameBanner);
 			TestContext.WriteLine(" - -- ------------- INPUT SIGN: NEGATIVE ------------- -- - ");
 			TestContext.WriteLine(callerNameBanner);
@@ -222,23 +235,27 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[OneTimeSetUp]
-	public void SetUp() {
+	public void SetUp()
+	{
 		Precision = 50;
 		BigDecimal.Precision = Precision;
 		BigDecimal.AlwaysTruncate = false;
 	}
 
 	[Test]
-	public static void Test_Arccos1() {
+	public static void Test_Arccos1()
+	{
 		Test_TrigFunction(BigDecimal.Arccos, Func, 14, Precision * 2, 1);
 
 		return;
 
-		static Double Func(Double x) {
+		static Double Func(Double x)
+		{
 			var input = Math.Abs(x) % 1;
 			var output = Math.Atan(Math.Sqrt(1.0d - Math.Pow(input, 2)) / input);
 
-			if (Math.Sign(x) == -1) {
+			if (Math.Sign(x) == -1)
+			{
 				return Math.PI - output;
 			}
 
@@ -247,16 +264,19 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_ArccosNeg1() {
+	public static void Test_ArccosNeg1()
+	{
 		Test_TrigFunction(BigDecimal.Arccos, Func, 14, Precision * 2, -1);
 
 		return;
 
-		static Double Func(Double x) {
+		static Double Func(Double x)
+		{
 			var input = Math.Abs(x) % 1;
 			var output = Math.Atan(Math.Sqrt(1.0d - Math.Pow(input, 2)) / input);
 
-			if (Math.Sign(x) == -1) {
+			if (Math.Sign(x) == -1)
+			{
 				return Math.PI - output;
 			}
 
@@ -265,7 +285,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Arccot() {
+	public static void Test_Arccot()
+	{
 		Test_TrigFunction(BigDecimal.Arccot, Arccot, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Arccot, Arccot, 14, Precision, -1);
 
@@ -275,7 +296,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Arccsc() {
+	public static void Test_Arccsc()
+	{
 		Test_TrigFunction(BigDecimal.Arccsc, Arccsc, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Arccsc, Arccsc, 14, Precision, -1);
 
@@ -285,13 +307,15 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Arcsin() {
+	public static void Test_Arcsin()
+	{
 		Test_TrigFunction(BigDecimal.Arcsin, Asin, 14, Precision * 2, 1);
 		Test_TrigFunction(BigDecimal.Arcsin, Asin, 14, Precision * 2, -1);
 
 		return;
 
-		static Double Asin(Double x) {
+		static Double Asin(Double x)
+		{
 			var input = Math.Abs(x) % 1;
 
 			return Math.Sign(x) * Math.Atan(input / Math.Sqrt(1.0d - Math.Pow(input, 2)));
@@ -299,25 +323,29 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Arctan() {
+	public static void Test_Arctan()
+	{
 		Test_TrigFunction(BigDecimal.Arctan, Math.Atan, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Arctan, Math.Atan, 14, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Cos() {
+	public static void Test_Cos()
+	{
 		Test_TrigFunction(BigDecimal.Cos, Math.Cos, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Cos, Math.Cos, 14, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Cosh() {
+	public static void Test_Cosh()
+	{
 		Test_TrigFunction(BigDecimal.Cosh, Math.Cosh, 11, Precision, 1);
 		Test_TrigFunction(BigDecimal.Cosh, Math.Cosh, 11, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Cot() {
+	public static void Test_Cot()
+	{
 		Test_TrigFunction(BigDecimal.Cot, Cot, 9, Precision, 1);
 		Test_TrigFunction(BigDecimal.Cot, Cot, 9, Precision, -1);
 
@@ -328,7 +356,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Coth() {
+	public static void Test_Coth()
+	{
 		Test_TrigFunction(BigDecimal.Coth, Coth, 12, Precision, 1);
 		Test_TrigFunction(BigDecimal.Coth, Coth, 12, Precision, -1);
 
@@ -339,7 +368,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Csc() {
+	public static void Test_Csc()
+	{
 		Test_TrigFunction(BigDecimal.Csc, Csc, 9, Precision, 1);
 		Test_TrigFunction(BigDecimal.Csc, Csc, 9, Precision, -1);
 
@@ -350,7 +380,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Csch() {
+	public static void Test_Csch()
+	{
 		Test_TrigFunction(BigDecimal.Csch, Csch, 11, Precision, 1);
 		Test_TrigFunction(BigDecimal.Csch, Csch, 11, Precision, -1);
 
@@ -361,13 +392,15 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Exp() {
+	public static void Test_Exp()
+	{
 		Test_TrigFunction(BigDecimal.Exp, Math.Exp, 11, Precision, 1);
 		Test_TrigFunction(BigDecimal.Exp, Math.Exp, 11, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Ln() {
+	public static void Test_Ln()
+	{
 		var argument = BigDecimal.Parse("65536");
 		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
 		var expected = TestBigDecimalHelper.PrepareValue("11.09035488895912495067571394333082508920800214976", format);
@@ -379,9 +412,10 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Log10() {
+	public static void Test_Log10()
+	{
 		var argument = BigDecimal.Parse("2");
-		
+
 		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
 		var expected = TestBigDecimalHelper.PrepareValue("0.301029995663981195213738894724493026768189881462", format);
 
@@ -392,7 +426,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Log2() {
+	public static void Test_Log2()
+	{
 		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
 		var val = TestBigDecimalHelper.PrepareValue("46340.95002", format);
 
@@ -406,7 +441,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_LogN() {
+	public static void Test_LogN()
+	{
 		var @base = 3;
 		var argument = BigDecimal.Parse("65536");
 
@@ -420,7 +456,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Sec() {
+	public static void Test_Sec()
+	{
 		Test_TrigFunction(BigDecimal.Sec, Sec, 9, Precision, 1);
 		Test_TrigFunction(BigDecimal.Sec, Sec, 9, Precision, -1);
 
@@ -431,7 +468,8 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Sech() {
+	public static void Test_Sech()
+	{
 		Test_TrigFunction(BigDecimal.Sech, Sech, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Sech, Sech, 14, Precision, -1);
 
@@ -442,25 +480,29 @@ public class TestBigDecimalTrigonometricFunctions {
 	}
 
 	[Test]
-	public static void Test_Sin() {
+	public static void Test_Sin()
+	{
 		Test_TrigFunction(BigDecimal.Sin, Math.Sin, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Sin, Math.Sin, 14, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Sinh() {
+	public static void Test_Sinh()
+	{
 		Test_TrigFunction(BigDecimal.Sinh, Math.Sinh, 11, Precision, 1);
 		Test_TrigFunction(BigDecimal.Sinh, Math.Sinh, 11, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Tan() {
+	public static void Test_Tan()
+	{
 		Test_TrigFunction(BigDecimal.Tan, Math.Tan, 9, Precision, 1);
 		Test_TrigFunction(BigDecimal.Tan, Math.Tan, 9, Precision, -1);
 	}
 
 	[Test]
-	public static void Test_Tanh() {
+	public static void Test_Tanh()
+	{
 		Test_TrigFunction(BigDecimal.Tanh, Math.Tanh, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Tanh, Math.Tanh, 14, Precision, -1);
 	}

@@ -1,30 +1,37 @@
-﻿namespace TestBigDecimal; 
-using System;
+﻿using System;
 using System.Globalization;
 using System.Text;
 using ExtendedNumerics;
 
-public static class TestBigDecimalHelper {
-	public static String GetInternalValues(BigDecimal bigDecimal) {
-		StringBuilder result = new StringBuilder();
+namespace TestBigDecimal
+{
 
-		result.AppendLine($"{bigDecimal.ToString()}");
-		result.AppendLine("{");
-		result.AppendLine($"	Mantessa: {bigDecimal.Mantissa}");
-		result.AppendLine($"	Exponent: {bigDecimal.Exponent}");
-		result.AppendLine($"	DecimalIndex: {bigDecimal.GetDecimalIndex()}");
-		result.AppendLine($"	Length: {bigDecimal.Length}");
-		result.AppendLine($"	SignifigantDigits: {bigDecimal.SignifigantDigits}");
-		result.AppendLine("}");
+	public static class TestBigDecimalHelper
+	{
+		public static String GetInternalValues(BigDecimal bigDecimal)
+		{
+			StringBuilder result = new StringBuilder();
 
-		return result.ToString();
-	}
+			result.AppendLine($"{bigDecimal.ToString()}");
+			result.AppendLine("{");
+			result.AppendLine($"	Mantessa: {bigDecimal.Mantissa}");
+			result.AppendLine($"	Exponent: {bigDecimal.Exponent}");
+			result.AppendLine($"	DecimalIndex: {bigDecimal.GetDecimalIndex()}");
+			result.AppendLine($"	Length: {bigDecimal.Length}");
+			result.AppendLine($"	SignifigantDigits: {bigDecimal.SignifigantDigits}");
+			result.AppendLine("}");
 
-	public static string PrepareValue(string value, NumberFormatInfo numberFormatInfo) {
-		if (numberFormatInfo.NumberDecimalSeparator != ".") {
-			return value.Replace(".", numberFormatInfo.NumberDecimalSeparator);
+			return result.ToString();
 		}
 
-		return value;
+		public static string PrepareValue(string value, NumberFormatInfo numberFormatInfo)
+		{
+			if (numberFormatInfo.NumberDecimalSeparator != ".")
+			{
+				return value.Replace(".", numberFormatInfo.NumberDecimalSeparator);
+			}
+
+			return value;
+		}
 	}
 }

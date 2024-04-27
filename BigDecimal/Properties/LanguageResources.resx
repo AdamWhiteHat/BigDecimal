@@ -117,22 +117,70 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Must_be_greater_than_or_equal_to_1" xml:space="preserve">
+  <data name="Arg_MustBeGreaterThanOrEqualToOne" xml:space="preserve">
     <value>Must be greater than or equal to 1</value>
   </data>
-  <data name="Must_be_a_positive_integer" xml:space="preserve">
+  <data name="Arg_MustBeAPositiveInteger" xml:space="preserve">
     <value>Must be a positive integer.</value>
   </data>
-  <data name="_must_not_equal_zero_" xml:space="preserve">
-    <value>{0} must not equal zero.</value>
-    <comment>{0} must not equal zero.</comment>
-  </data>
-  <data name="Argument_must_be_of_type__0_" xml:space="preserve">
+  <data name="Arg_MustBeOfType" xml:space="preserve">
     <value>Argument must be of type {0}</value>
-    <comment>Argument must be of type {0}</comment>
   </data>
-  <data name="A_message_must_be_provided" xml:space="preserve">
-    <value>A message must be provided.</value>
-    <comment>A message must be provided.</comment>
+  <data name="Arg_MustNotEqualZero" xml:space="preserve">
+    <value>{0} must not equal zero.</value>
+  </data>
+  <data name="Arg_NegativePrecision" xml:space="preserve">
+    <value>Negative precision cannot round left of the decimal point more place values than there are whole number digits.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Cot_Pi" xml:space="preserve">
+    <value>The cotangent of π is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Cot_Zero" xml:space="preserve">
+    <value>The cotangent of zero is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Csch_Zero" xml:space="preserve">
+    <value>The hyperbolic cosecant of zero is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Csc_Pi" xml:space="preserve">
+    <value>The cosecant of π is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Csc_Zero" xml:space="preserve">
+    <value>The cosecant of zero is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Sec_OddPiOver2" xml:space="preserve">
+    <value>The secant of (2*n + 1)*π/2 (an odd multiple of π/2) is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Tan_3PiOver2" xml:space="preserve">
+    <value>The tangent of 3π/2 is undefined.</value>
+  </data>
+  <data name="Arithmetic_Trig_Undefined_Tan_PiOver2" xml:space="preserve">
+    <value>The tangent of π/2 is undefined.</value>
+  </data>
+  <data name="NotFinite_NaN" xml:space="preserve">
+    <value>value is not a number (NaN).</value>
+  </data>
+  <data name="NotSupported_NegativePower" xml:space="preserve">
+    <value>Cannot raise zero to a negative power.</value>
+  </data>
+  <data name="Overflow_BigDecimal_Infinity" xml:space="preserve">
+    <value>BigDecimal cannot represent infinity.</value>
+  </data>
+  <data name="Overflow_Decimal" xml:space="preserve">
+    <value>BigDecimal is too large for a Decimal.</value>
+  </data>
+  <data name="Overflow_Double" xml:space="preserve">
+    <value>BigDecimal is too large for a Double.</value>
+  </data>
+  <data name="Overflow_Fraction" xml:space="preserve">
+    <value>Couldn't parse numerator or denominator.</value>
+  </data>
+  <data name="Overflow_Int32" xml:space="preserve">
+    <value>BigDecimal is too large for a Int32.</value>
+  </data>
+  <data name="Overflow_Single" xml:space="preserve">
+    <value>BigDecimal is too large for a Single.</value>
+  </data>
+  <data name="Overflow_UInt32" xml:space="preserve">
+    <value>BigDecimal is too large for a UInt32.</value>
   </data>
 </root>
