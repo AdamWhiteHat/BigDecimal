@@ -33,7 +33,7 @@
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2025</MajorVersion>
 		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1000</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">1</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -50,7 +50,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<GenerateAssemblyInfo>True</GenerateAssemblyInfo>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 	</PropertyGroup>
 
 	<Choose>
