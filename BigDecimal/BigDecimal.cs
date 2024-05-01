@@ -960,18 +960,17 @@ namespace ExtendedNumerics
 			return wholePart;
 		}
 
-		/// <summary>Rounds a BigDecimal to the given number of digits to the right of the decimal point. Left of the decimal point digits are not counted.</summary>
+		/// <summary>
+		/// Rounds a BigDecimal to the given number of digits to the right of the decimal point.
+		/// Pass a negative precision value to round (zero) digits to the left of the decimal point in a manner that mimics Excel's ROUNDDOWN function.
+		/// </summary>
 		public static BigDecimal Round(BigDecimal value, Int32 precision)
 		{
 			if (precision < 0)
 			{
 				string integer = value.WholeValue.ToString();
 				int len = integer.Length;
-				if (precision > len)
-				{
-					throw new ArgumentOutOfRangeException(LanguageResources.Arg_NegativePrecision);
-				}
-				else if (precision == len)
+				if (Math.Abs(precision) >= len)
 				{
 					return BigDecimal.Zero;
 				}

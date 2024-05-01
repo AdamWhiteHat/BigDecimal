@@ -214,32 +214,55 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRounding_NegativePrecision()
+		public void TestRounding_NegativePrecision001()
 		{
 			BigDecimal a = BigDecimal.Parse("31415.92654");
 
+			var result6 = BigDecimal.Round(a, 6).ToString();
+			var result5 = BigDecimal.Round(a, 5).ToString();
+			var result4 = BigDecimal.Round(a, 4).ToString();
+			var result3 = BigDecimal.Round(a, 3).ToString();
+			var result2 = BigDecimal.Round(a, 2).ToString();
+			var result1 = BigDecimal.Round(a, 1).ToString();
 			var result0 = BigDecimal.Round(a, 0).ToString();
-			var result1 = BigDecimal.Round(a, -1).ToString();
-			var result2 = BigDecimal.Round(a, -2).ToString();
-			var result3 = BigDecimal.Round(a, -3).ToString();
-			var result4 = BigDecimal.Round(a, -4).ToString();
-			var result5 = BigDecimal.Round(a, -5).ToString();
+			var result_1 = BigDecimal.Round(a, -1).ToString();
+			var result_2 = BigDecimal.Round(a, -2).ToString();
+			var result_3 = BigDecimal.Round(a, -3).ToString();
+			var result_4 = BigDecimal.Round(a, -4).ToString();
+			var result_5 = BigDecimal.Round(a, -5).ToString();
+			var result_6 = BigDecimal.Round(a, -6).ToString();
+			var result_7 = BigDecimal.Round(a, -7).ToString();
 
-			TestContext.WriteLine($"{result0}");
-			TestContext.WriteLine($"{result1}");
-			TestContext.WriteLine($"{result2}");
-			TestContext.WriteLine($"{result3}");
-			TestContext.WriteLine($"{result4}");
+			TestContext.WriteLine($"{result6}");
 			TestContext.WriteLine($"{result5}");
+			TestContext.WriteLine($"{result4}");
+			TestContext.WriteLine($"{result3}");
+			TestContext.WriteLine($"{result2}");
+			TestContext.WriteLine($"{result1}");
+			TestContext.WriteLine($"{result0}");
+			TestContext.WriteLine($"{result_1}");
+			TestContext.WriteLine($"{result_2}");
+			TestContext.WriteLine($"{result_3}");
+			TestContext.WriteLine($"{result_4}");
+			TestContext.WriteLine($"{result_5}");
+			TestContext.WriteLine($"{result_6}");
+			TestContext.WriteLine($"{result_7}");
 
+			Assert.AreEqual("31415.92654", result6);
+			Assert.AreEqual("31415.92654", result5);
+			Assert.AreEqual("31415.9265", result4);
+			Assert.AreEqual("31415.926", result3);
+			Assert.AreEqual("31415.92", result2);
+			Assert.AreEqual("31415.9", result1);
 			Assert.AreEqual("31415", result0);
-			Assert.AreEqual("31410", result1);
-			Assert.AreEqual("31400", result2);
-			Assert.AreEqual("31000", result3);
-			Assert.AreEqual("30000", result4);
-			Assert.AreEqual("0", result5);
+			Assert.AreEqual("31410", result_1);
+			Assert.AreEqual("31400", result_2);
+			Assert.AreEqual("31000", result_3);
+			Assert.AreEqual("30000", result_4);
+			Assert.AreEqual("0", result_5);
+			Assert.AreEqual("0", result_6);
+			Assert.AreEqual("0", result_7);
 		}
-
 
 		[Test]
 		public void TestGetWholeValue()
