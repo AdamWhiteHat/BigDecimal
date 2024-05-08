@@ -852,6 +852,21 @@ namespace ExtendedNumerics
 			return result;
 		}
 
+		/// <summary>Returns a specified number raised to the specified power.</summary>
+		public static BigDecimal Pow(Double basis, Double exponent)
+		{
+			var tmp = One;
+			while (Math.Abs(exponent) > ExpChunk)
+			{
+				var diff = exponent > 0 ? ExpChunk : -ExpChunk;
+				tmp *= Math.Pow(basis, diff);
+				exponent -= diff;
+			}
+
+			return tmp * Math.Pow(basis, exponent);
+		}
+		private static double ExpChunk = 2.0d;
+
 		public static BigDecimal SquareRoot(BigDecimal input, Int32 decimalPlaces)
 		{
 			return NthRoot(input, 2, decimalPlaces);

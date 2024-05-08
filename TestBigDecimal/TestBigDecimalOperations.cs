@@ -409,6 +409,60 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected, actual.ToString());
 		}
 
+
+		[Test]
+		public void TestExponentiation1()
+		{
+			double exp = 0.052631578947368421d;
+			double phi = (1.0d + Math.Sqrt(5)) / 2.0d;
+
+			BigDecimal result1 = BigDecimal.Pow(9.0d, 0.5d);
+			BigDecimal result2 = BigDecimal.Pow(16.0d, 0.25d);
+			string expected1 = "3";
+			string expected2 = "2";
+
+			BigDecimal result3 = BigDecimal.Pow(phi, 13);
+			string expected3 = "521.001919378725";
+
+			BigDecimal result4 = BigDecimal.Pow(1162261467, exp);
+			BigDecimal result5 = BigDecimal.Pow(9349, exp);
+			string expected4 = "3";
+			string expected5 = "1.61803398777557";
+
+			BigDecimal result6 = BigDecimal.Pow(1.618034d, 16.000000256d);
+			BigDecimal result7 = BigDecimal.Pow(phi, 20.0000000128d);
+			string expected6 = "2207.00006429941";
+			string expected7 = "15127.0000270679";
+
+			BigDecimal result8 = BigDecimal.Pow(29192926025390625d, 0.07142857142857142d);
+			string expected8 = "14.999999999999998";
+
+			Assert.AreEqual(expected1, result1.ToString());
+			Assert.AreEqual(expected2, result2.ToString());
+			Assert.AreEqual(expected3, result3.ToString().Substring(0, 16));
+			Assert.AreEqual(expected4, result4.ToString());
+			Assert.AreEqual(expected5, result5.ToString().Substring(0, 16));
+			Assert.AreEqual(expected6, result6.ToString().Substring(0, 16));
+			Assert.AreEqual(expected7, result7.ToString().Substring(0, 16));
+			Assert.AreEqual(expected8, result8.ToString());
+		}
+
+		[Test]
+		public void TestExponentiation2()
+		{
+			BigDecimal result1 = BigDecimal.Pow(new BigDecimal(16), new BigInteger(16));
+			BigDecimal result2 = BigDecimal.Pow(new BigDecimal(101), new BigInteger(13));
+			string expected1 = "18446744073709551616";
+			string expected2 = "113809328043328941786781301";
+
+			BigDecimal result3 = BigDecimal.Pow(new BigDecimal(0.25), 2);
+			string expected3 = "0.0625";
+
+			Assert.AreEqual(expected1, result1.ToString());
+			Assert.AreEqual(expected2, result2.ToString());
+			Assert.AreEqual(expected3, result3.ToString());
+		}
+
 		[Test]
 		public void TestNegate()
 		{
