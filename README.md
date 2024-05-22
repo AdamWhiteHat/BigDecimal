@@ -4,11 +4,20 @@ BigDecimal is an arbitrary precision floating point number class.
 
 Like other floating point number implementations, it stores a Mantissa and an Exponent.
 The difference is, these values are of type BigInteger, and so can be arbitrary precision.
-
-NEW: Now supports logarithms and trigonometric functions:
+<br /><br />
+  :new: Now supports logarithms and trigonometric functions:
 LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth, Sech, Csch, Arcsin, Arccos, Arctan, Arccot, Arccsc
+<br /><br />
+  :arrow_down: [Download the latest package from NuGet](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) if you just want the compiled binaries. You can either include the nuget package in your project outright, or extract the assembly .dll from the nuget package. (Explaination: A .nupkg file is just a .zip file renamed. Use 7zip to extract the binaries from it.): 
+<br /><br />
+  :interrobang:	[See the Documentation Wiki Page](https://github.com/AdamWhiteHat/BigDecimal/wiki/Documentation) for important information on correct and accurate usage, tips and other information.
+<br /><br />
+  :left_speech_bubble: [Visit the community discussion forums](https://github.com/AdamWhiteHat/BigDecimal/discussions) if you have a question or want to start a discussion relevant to the this project. 
+<br /><br />
+  :cockroach: [View out open issues](https://github.com/AdamWhiteHat/BigDecimal/issues) if you are experiencing a bug or have an idea for a new feature. You can also discuss new feature ideas in the [discussion](https://github.com/AdamWhiteHat/BigDecimal/discussions) forums first. An 'issue' for the new feature can be created from a discussion at any time.
 
-If you just want the compiled binaries, just include it in your project as a nuget package, or extract the assembly from the nuget package (a .nupkg file is just a .zip file renamed): [https://www.nuget.org/packages/ExtendedNumerics.BigDecimal](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal)
+ 
+<br /><br />
 
 Example usage:
 ```csharp
@@ -21,12 +30,12 @@ Console.WriteLine(BigDecimal.Precision);
 BigDecimal goldenRatio = BigDecimal.Divide(BigDecimal.Add(BigDecimal.One, BigDecimal.Pow(5d, 0.5d)), BigDecimal.Parse("2"));
 BigDecimal almostInteger = BigDecimal.Pow(goldenRatio, 23);
 Console.WriteLine(almostInteger);
-// 64079.000015605783843835009599722600391518338454771405992063505171997949372951472701529422358634915404757740005027416333594519349348824890921372720968246769717009339797514969003242216358994087504831741
+// 64079.00001560578384383500959972260039151833845477140599206350517199794937295147270152942235863491540475774000502741633359451934934882489092137272096824676971700933979751496900324221635899408750483174158953011851250910101237515143968376713756637230312138443375432324556317247823731646925119584432357765294362228759928426416872990657055876547580521657363887865665906948418349
 
 Console.WriteLine(almostInteger.Mantissa);
-// 64079000015605783843835009599722600391518338454771405992063505171997949372951472701529422358634915404757740005027416333594519349348824890921372720968246769717009339797514969003242216358994087504831741
+// 6407900001560578384383500959972260039151833845477140599206350517199794937295147270152942235863491540475774000502741633359451934934882489092137272096824676971700933979751496900324221635899408750483174158953011851250910101237515143968376713756637230312138443375432324556317247823731646925119584432357765294362228759928426416872990657055876547580521657363887865665906948418349
 Console.WriteLine(almostInteger.Exponent);
-// -193
+// -368
 
 BigDecimal X = BigDecimal.Parse("0.000551876379690949227373068432671081677704194260485651214128035320088300220750");
 Console.WriteLine(X);
@@ -34,7 +43,8 @@ Console.WriteLine(X);
 
 BigDecimal result = BigDecimal.Divide(BigDecimal.One, X);
 Console.WriteLine(result);
-// 1812.000000000000000000000000000000000000000000000000000000000000000000000001
+// 1812.000000000000000000000000000000000000000000000000000000000000000000000001812000000000000000000000000000000000000000000000000000000000000000000000001812000000000000000000000000000000000000000000000000000000000000000000000001
+
 ```
 
 
