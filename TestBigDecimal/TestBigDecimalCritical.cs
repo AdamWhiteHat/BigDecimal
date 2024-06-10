@@ -75,6 +75,51 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestConstructor_Float()
+		{
+			string expected1 = "1.7976157";
+			var actual1 = new BigDecimal(1.7976157f);
+
+			string expected2 = "-1.7976157";
+			var actual2 = new BigDecimal(-1.7976157f);
+
+			Assert.AreEqual(expected1, actual1.ToString());
+			TestContext.WriteLine($"{expected1} == {actual1}");
+			Assert.AreEqual(expected2, actual2.ToString());
+			TestContext.WriteLine($"{expected2} == {actual2}");
+		}
+
+		[Test]
+		public void TestConstructor_Double()
+		{
+			//TestConstructor_Double("0", 0);
+			//TestConstructor_Double("0", 0.0);
+			////TestConstructor_Double("0", -0.0);
+			//
+			//TestConstructor_Double("7976931348623157", 7976931348623157);
+			//TestConstructor_Double("-7976931348623157", -7976931348623157);
+			//
+			//TestConstructor_Double("1000000000000000", 1000000000000000);
+			//TestConstructor_Double("-1000000000000000", -1000000000000000);
+
+			TestConstructor_Double("1.7976931348623157", 1.7976931348623157);
+			TestConstructor_Double("-1.7976931348623157", -1.7976931348623157);
+
+			TestConstructor_Double("0.0000000008623157", 0.0000000008623157);
+			TestConstructor_Double("-0.0000000000623157", -0.0000000000623157);
+
+			TestConstructor_Double("0.0101010101010101", 0.0101010101010101);
+			TestConstructor_Double("-0.0101010101010101", -0.0101010101010101);
+		}
+
+		private void TestConstructor_Double(string expected, Double value)
+		{
+			var actual = new BigDecimal(value);
+			Assert.AreEqual(expected, actual.ToString());
+			TestContext.WriteLine($"{expected} == {actual}");
+		}
+
+		[Test]
 		public void TestConstructor001WriteLineA()
 		{
 			var expected1 = TestBigDecimalHelper.PrepareValue("3.141592793238462", this.Format);
@@ -91,9 +136,24 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestConstructor001WriteLineB()
+		public void TestCastingDecimal()
 		{
-			const Decimal m = 0.0000000000000001m;
+			Decimal m = 0.0000000000000001m;
+
+			var e = new BigDecimal(1000000000, -25);
+			var h = (BigDecimal)m;
+
+			TestContext.WriteLine("m = " + m);
+			TestContext.WriteLine("e = " + e);
+			TestContext.WriteLine("h = " + h);
+
+			Assert.AreEqual(h.ToString(), e.ToString());
+		}
+
+		[Test]
+		public void TestCastingDouble()
+		{
+			Double m = 0.0000000000000001d;
 
 			var e = new BigDecimal(1000000000, -25);
 			var h = (BigDecimal)m;
