@@ -69,7 +69,9 @@ namespace ExtendedNumerics
 			}
 		}
 
-		public BigDecimal(Int32 value) : this(new BigInteger(value), 0) { }
+		public BigDecimal(Int32 value) : this(new BigInteger(value)) { }
+
+		public BigDecimal(BigInteger value) : this(value, 0) { }
 
 		public BigDecimal(Single value)
 		{
@@ -83,32 +85,9 @@ namespace ExtendedNumerics
 				throw new NotFiniteNumberException(LanguageResources.NotFinite_NaN);
 			}
 
-			var mantissa = new BigInteger(value);
-			var exponent = 0;
-			Single scaleFactor = 1;
-			while (Math.Abs((value * scaleFactor) - Single.Parse(mantissa.ToString())) > 0)
-			{
-				exponent--;
-				scaleFactor *= 10;
-				mantissa = new BigInteger(value * scaleFactor);
-			}
-
-			this.Mantissa = mantissa;
-			this.Exponent = exponent;
-			BigDecimal result;
-			if (AlwaysTruncate)
-			{
-				result = Round(this, Precision);
-				this.Mantissa = result.Mantissa;
-				this.Exponent = result.Exponent;
-			}
-
-			if (AlwaysNormalize)
-			{
-				result = Normalize(this);
-				this.Mantissa = result.Mantissa;
-				this.Exponent = result.Exponent;
-			}
+			BigDecimal results = Parse(value);
+			this.Mantissa = results.Mantissa;
+			this.Exponent = results.Exponent;
 		}
 
 		public BigDecimal(Double value)
@@ -123,50 +102,17 @@ namespace ExtendedNumerics
 				throw new NotFiniteNumberException(LanguageResources.NotFinite_NaN);
 			}
 
-			var mantissa = new BigInteger(value);
-			var exponent = 0;
-			Double scaleFactor = 1;
-			while (Math.Abs((value * scaleFactor) - Double.Parse(mantissa.ToString())) > 0)
-			{
-				exponent--;
-				scaleFactor *= 10;
-				mantissa = new BigInteger(value * scaleFactor);
-			}
-
-			this.Mantissa = mantissa;
-			this.Exponent = exponent;
-			BigDecimal result;
-			if (AlwaysTruncate)
-			{
-				result = Round(this, Precision);
-				this.Mantissa = result.Mantissa;
-				this.Exponent = result.Exponent;
-			}
-
-			if (AlwaysNormalize)
-			{
-				result = Normalize(this);
-				this.Mantissa = result.Mantissa;
-				this.Exponent = result.Exponent;
-			}
+			BigDecimal results = Parse(value);
+			this.Mantissa = results.Mantissa;
+			this.Exponent = results.Exponent;
 		}
 
 		public BigDecimal(Decimal value)
 		{
-			var mantissa = new BigInteger(value);
-			var exponent = 0;
-			Decimal scaleFactor = 1;
-			while (Decimal.Parse(mantissa.ToString()) != (value * scaleFactor))
-			{
-				exponent--;
-				scaleFactor *= 10;
-				mantissa = new BigInteger(value * scaleFactor);
-			}
-
-			Mantissa = mantissa;
-			Exponent = exponent;
+			BigDecimal results = Parse(value);
+			this.Mantissa = results.Mantissa;
+			this.Exponent = results.Exponent;
 		}
-
 
 		/// <summary>Gets a value that represents the number 0 (zero).</summary>
 		public static BigDecimal Ten => 10;
@@ -194,7 +140,7 @@ namespace ExtendedNumerics
 
 		private static BigInteger TenInt { get; } = new BigInteger(10);
 
-		private static NumberFormatInfo BigDecimalNumberFormatInfo { get; } = CultureInfo.CurrentCulture.NumberFormat;
+		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
 
 		/// <summary>
 		/// Sets the desired precision of all BigDecimal instances, in terms of the number of .
@@ -336,8 +282,14 @@ namespace ExtendedNumerics
 				&& l.Sign.Equals(r.Sign);
 		}
 
+		/// <summary>Converts the string representation of a float to the BigDecimal equivalent.</summary>
+		public static BigDecimal Parse(Single input) => Parse(input.ToString("R"));
+
+		/// <summary>Converts the string representation of a double to the BigDecimal equivalent.</summary>
+		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
+
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Double input) => Parse(input.ToString(CultureInfo.CurrentCulture));
+		public static BigDecimal Parse(Decimal input) => Parse(input.ToString("R"));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		/// <param name="input">A string that contains a number to convert.</param>
@@ -572,15 +524,11 @@ namespace ExtendedNumerics
 
 		public static implicit operator BigDecimal(Int64 value) => new BigDecimal(new BigInteger(value), 0);
 
-		public static implicit operator BigDecimal(Single value) => new BigDecimal(value);
+		public static implicit operator BigDecimal(Single value) => Parse(value);
 
-		public static implicit operator BigDecimal(Decimal value) => new BigDecimal(value);
+		public static implicit operator BigDecimal(Decimal value) => Parse(value);
 
-		public static implicit operator BigDecimal(Double value)
-		{
-			var s = value.ToString("G17", BigDecimalNumberFormatInfo); //G17 according to the Microsoft docs.
-			return Parse(s);
-		}
+		public static implicit operator BigDecimal(Double value) => Parse(value);
 
 		public static explicit operator BigInteger(BigDecimal value)
 		{
@@ -1707,9 +1655,8 @@ namespace ExtendedNumerics
 		/// <summary>Allow the BigDecimal to be formatted with the E notation.</summary>
 		/// <param name="bigDecimal"></param>
 		/// <returns></returns>
-		private static String ToScientificENotation(BigDecimal bigDecimal)
+		public static String ToScientificENotation(BigDecimal bigDecimal)
 		{
-
 			// 1.238E456 1.238E-456
 			// -1.238E456
 			// -1.238E-456 1E456 1E-456
@@ -1717,18 +1664,23 @@ namespace ExtendedNumerics
 			// -1E-456
 			// -3E-2
 
-			var manString = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
+			string mantissa = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
 
-			var period = (manString.Length - bigDecimal.Exponent) + 1;
+			int exponent = bigDecimal.Exponent + (bigDecimal.SignifigantDigits - 1);
+			int point = 1;
 			if (bigDecimal.Mantissa.Sign == -1)
 			{
-				++period;
+				point += 1;
 			}
 
 			//TODO none of this is tested or guaranteed to work yet. Like negatives, or small numbers need the correct logic.
-
-			var result2 = $"{manString.Insert(period, BigDecimalNumberFormatInfo.NumberDecimalSeparator)}E{bigDecimal.Exponent:D}";
-			return result2;
+			string sign = "+";
+			if (Math.Sign(exponent) == -1)
+			{
+				sign = "-";
+			}
+			var result = $"{mantissa.Insert(point, BigDecimalNumberFormatInfo.NumberDecimalSeparator)}E{sign}{Math.Abs(exponent)}";
+			return result;
 		}
 	}
 }

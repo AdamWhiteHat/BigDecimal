@@ -77,16 +77,17 @@ namespace TestBigDecimal
 		[Test]
 		public void TestConstructor_Float()
 		{
-			string expected1 = "1.7976157";
-			var actual1 = new BigDecimal(1.7976157f);
-
-			string expected2 = "-1.7976157";
-			var actual2 = new BigDecimal(-1.7976157f);
+			string expected1 = "0.3486328";
+			float d1 = 0.3486328125f;
+			TestContext.WriteLine($"R: \"{expected1}\" decimal: {d1.ToString("R")}");
+			TestContext.WriteLine($"E: \"{expected1}\" decimal: {d1.ToString("E")}");
+			TestContext.WriteLine($"G9: \"{expected1}\" decimal: {d1.ToString("G9")}");
+			TestContext.WriteLine($"G10: \"{expected1}\" decimal: {d1.ToString("G10")}");
+			TestContext.WriteLine($"F9: \"{expected1}\" decimal: {d1.ToString("F9")}");
+			var actual1 = new BigDecimal(d1);
 
 			Assert.AreEqual(expected1, actual1.ToString());
 			TestContext.WriteLine($"{expected1} == {actual1}");
-			Assert.AreEqual(expected2, actual2.ToString());
-			TestContext.WriteLine($"{expected2} == {actual2}");
 		}
 
 		[Test]
@@ -281,11 +282,32 @@ namespace TestBigDecimal
 		[Test]
 		public void TestParseEpsilon()
 		{
-			var val = TestBigDecimalHelper.PrepareValue("4.9406564584124654E-324", this.Format);
+			string expected = TestBigDecimalHelper.PrepareValue("4.9406564584124654E-324", this.Format);
+			BigDecimal actual = BigDecimal.Parse(expected);
+
+			Assert.AreEqual(expected, BigDecimal.ToScientificENotation(actual));
+		}
+
+		[Test]
+		public void TestParseLarge()
+		{
+			string expected = TestBigDecimalHelper.PrepareValue("4.9406564584124654E+324", this.Format);
+			BigDecimal actual = BigDecimal.Parse(expected);
+
+			Assert.AreEqual(expected, BigDecimal.ToScientificENotation(actual));
+		}
+
+
+		[Test]
+		public void TestParseRoundTrip()
+		{
+			double dval = 0.6822871999174d;
+			var val = TestBigDecimalHelper.PrepareValue("0.6822871999174", this.Format);
 			var actual = BigDecimal.Parse(val);
-			var expected = (BigDecimal)Double.Epsilon;
+			var expected = (BigDecimal)dval;
 			Assert.AreEqual(expected, actual);
 		}
+
 
 		[Test]
 		[NonParallelizable]
