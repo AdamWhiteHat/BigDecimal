@@ -613,10 +613,10 @@ namespace TestBigDecimal
 			BigDecimal high = (Double)100.3;
 			BigDecimal low = (Double)25.1;
 
-			string expected = TestBigDecimalHelper.PrepareValue("75.199999999999999", this.Format);
+			string expected = TestBigDecimalHelper.PrepareValue("75.2", this.Format);
 			BigDecimal actual = BigDecimal.Subtract(high, low);
 
-			Assert.AreEqual(expected, actual.ToString(), $"100.3 - 25.1 should equal 75.199999999999999 because of the lack of type specification, 25.1 is cast as a Double, and doesnt do a good job representing a number such as 25.1, similar how 1/3 isnt represented in base 10 in a clean way.\nHigh: {TestBigDecimalHelper.GetInternalValues(high)}\nLow: {TestBigDecimalHelper.GetInternalValues(low)}\nResult: {TestBigDecimalHelper.GetInternalValues(actual)}");
+			Assert.AreEqual(expected, actual.ToString(), $"100.3 - 25.1 should equal 75.2\nHigh: {TestBigDecimalHelper.GetInternalValues(high)}\nLow: {TestBigDecimalHelper.GetInternalValues(low)}\nResult: {TestBigDecimalHelper.GetInternalValues(actual)}");
 		}
 
 		[Test]

@@ -704,6 +704,19 @@ namespace ExtendedNumerics
 			return new BigDecimal(mantissa, exponentChange - counter);
 		}
 
+		/// <summary>
+		/// Returns a specified number raised to the specified power.
+		/// Note: This method may be a bit slower than the other Pow overloads. Prefer the other overloads if possible. 
+		/// To improve execution speed, set <see cref="BigDecimal.AlwaysTruncate"/> to <see langword="true"/> 
+		/// and set <see cref="BigDecimal.Precision"/> to only the precision that you need.
+		/// </summary>
+		public static BigDecimal Pow(BigDecimal @base, BigDecimal exponent, int precision)
+		{
+			//  b^p = e^(p*ln(b))
+			BigDecimal ln_b = BigDecimal.Ln(@base, precision);
+			return BigDecimal.Exp(exponent * ln_b, precision);
+		}
+
 		/// <summary>Returns a specified number raised to the specified power.</summary>
 		public static BigDecimal Pow(BigDecimal @base, BigInteger exponent)
 		{
@@ -815,7 +828,7 @@ namespace ExtendedNumerics
 		/// <summary>Returns a specified number raised to the specified power.</summary>
 		public static BigDecimal Pow(Double @base, Double exponent)
 		{
-			if (exponent==0)
+			if (exponent == 0)
 			{
 				return One;
 			}
@@ -1516,10 +1529,11 @@ namespace ExtendedNumerics
 			while (x > ChunkSize)
 			{
 				var cbrt = Round(NthRoot(x, 3, precision));
-				x /= cbrt;
-				x /= cbrt;
-				result += Ln(cbrt, precision);
-				result += Ln(cbrt, precision);
+
+				x /= (cbrt * cbrt);
+				var temp1 = Ln(cbrt, precision);
+				result += temp1;
+				result += temp1;
 			}
 
 			result += LogNatural(x, precision);
