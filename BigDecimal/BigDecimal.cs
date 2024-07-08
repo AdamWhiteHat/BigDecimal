@@ -729,36 +729,41 @@ namespace ExtendedNumerics
 			{
 				return One;
 			}
+			if (exponent == One)
+			{
+				return @base;
+			}
 
 			BigDecimal baseValue = @base;
+			BigInteger exp = exponent;
 
-			if (exponent.Sign < 0)
+			if (exp.Sign < 0)
 			{
 				if (baseValue == Zero)
 				{
-					throw new NotSupportedException(LanguageResources.NotSupported_NegativePower);
+					throw new ArgumentException(LanguageResources.Arg_MustNotEqualZero, nameof(@base));
 				}
 
 				// n^(-e) -> (1/n)^e
 				baseValue = One / baseValue;
-				exponent = BigInteger.Negate(exponent);
+				exp = BigInteger.Negate(exp);
 			}
 
 			var result = One;
-			while (exponent > BigInteger.Zero)
+			while (exp > BigInteger.Zero)
 			{
-				if ((exponent % 2) == 1)
+				if ((exp % 2) == 1)
 				{
 					result *= baseValue;
-					exponent--;
-					if (exponent == 0)
+					exp--;
+					if (exp == 0)
 					{
 						break;
 					}
 				}
 
 				baseValue *= baseValue;
-				exponent /= 2;
+				exp /= 2;
 			}
 
 			return result;
@@ -771,47 +776,63 @@ namespace ExtendedNumerics
 		/// This version loses precision slower, and so is used when <see cref="AlwaysTruncate"/> is set to <see langword="true"/>. 
 		/// Otherwise <see cref="Pow_Fast"/> is used because it is more performant.
 		/// </remarks>
-		private static BigDecimal Pow_Precision(BigDecimal baseValue, BigInteger exponent)
+		private static BigDecimal Pow_Precision(BigDecimal @base, BigInteger exponent)
 		{
 			if (exponent.IsZero)
 			{
 				return One;
 			}
+			if (exponent == One)
+			{
+				return @base;
+			}
 
-			if (exponent.Sign < 0)
+			BigDecimal baseValue = @base;
+			BigInteger exp = exponent;
+
+			if (exp.Sign < 0)
 			{
 				if (baseValue == Zero)
 				{
-					throw new NotSupportedException(LanguageResources.NotSupported_NegativePower);
+					throw new ArgumentException(LanguageResources.Arg_MustNotEqualZero, nameof(@base));
 				}
 
 				// n^(-e) -> (1/n)^e
 				baseValue = One / baseValue;
-				exponent = BigInteger.Negate(exponent);
+				exp = BigInteger.Negate(exp);
 			}
 
-			var result = baseValue;
-			while (exponent > BigInteger.One)
+			var result = @base;
+			while (exp > BigInteger.One)
 			{
-				result *= baseValue;
-				exponent--;
+				result *= @base;
+				exp--;
 			}
 
 			return result;
 		}
 
 		/// <summary>Returns a specified number raised to the specified power.</summary>
-		public static BigDecimal Pow(Double basis, Double exponent)
+		public static BigDecimal Pow(Double @base, Double exponent)
 		{
+			if (exponent==0)
+			{
+				return One;
+			}
+			if (exponent == 1.0d)
+			{
+				return @base;
+			}
+
 			var tmp = One;
 			while (Math.Abs(exponent) > ExpChunk)
 			{
 				var diff = exponent > 0 ? ExpChunk : -ExpChunk;
-				tmp *= Math.Pow(basis, diff);
+				tmp *= Math.Pow(@base, diff);
 				exponent -= diff;
 			}
 
-			return tmp * Math.Pow(basis, exponent);
+			return tmp * Math.Pow(@base, exponent);
 		}
 		private static double ExpChunk = 2.0d;
 
