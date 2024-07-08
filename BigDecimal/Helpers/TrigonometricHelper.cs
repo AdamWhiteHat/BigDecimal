@@ -18,8 +18,8 @@ namespace ExtendedNumerics.Helpers
 		/// </summary>
 		internal static BigDecimal GetPrecisionTarget(int precision)
 		{
-			var adjustedPrecision = precision + 1;
-			return new BigDecimal(BigInteger.One, -adjustedPrecision); //BUG the var is named precision, but is given as the exponent?
+			var adjustedPrecision = precision;
+			return new BigDecimal(BigInteger.One, -adjustedPrecision);
 		}
 
 		/// <summary>

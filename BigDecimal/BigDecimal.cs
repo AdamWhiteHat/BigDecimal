@@ -869,7 +869,7 @@ namespace ExtendedNumerics
 
 			BigInteger rem;
 			BigInteger newMantissa = mantissa.NthRoot(root, out rem);
-			Int32 newExponent = exponent /= root;  //BUG Is this assignment a bug?
+			Int32 newExponent = exponent /= root;
 
 			return new BigDecimal(newMantissa, newExponent);
 		}
