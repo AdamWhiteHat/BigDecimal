@@ -126,8 +126,8 @@
   <data name="Arg_MustBeOfType" xml:space="preserve">
     <value>Argument must be of type {0}</value>
   </data>
-  <data name="Arg_MustNotEqualZero" xml:space="preserve">
-    <value>{0} must not equal zero.</value>
+  <data name="Arg_CannotBeZero" xml:space="preserve">
+    <value>{0} cannot be zero.</value>
   </data>
   <data name="Arg_NegativePrecision" xml:space="preserve">
     <value>Negative precision cannot round left of the decimal point more place values than there are whole number digits.</value>
@@ -182,5 +182,14 @@
   </data>
   <data name="Overflow_UInt32" xml:space="preserve">
     <value>BigDecimal is too large for a UInt32.</value>
+  </data>
+  <data name="Arg_TheDomainOf_0_Is_1" xml:space="preserve">
+    <value>The domain of {0} is {1}</value>
+  </data>
+  <data name="Arg_NegativePowerOfZero" xml:space="preserve">
+    <value>Cannot raise zero to a negative power.</value>
+  </data>
+  <data name="Arg_CannotBePiMultiple" xml:space="preserve">
+    <value>{0} cannot be π or a multiple of π.</value>
   </data>
 </root>

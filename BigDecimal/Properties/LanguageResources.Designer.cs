@@ -61,6 +61,24 @@ namespace ExtendedNumerics.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to {0} cannot be π or a multiple of π..
+        /// </summary>
+        public static string Arg_CannotBePiMultiple {
+            get {
+                return ResourceManager.GetString("Arg_CannotBePiMultiple", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} cannot be zero..
+        /// </summary>
+        public static string Arg_CannotBeZero {
+            get {
+                return ResourceManager.GetString("Arg_CannotBeZero", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Must be a positive integer..
         /// </summary>
         public static string Arg_MustBeAPositiveInteger {
@@ -88,11 +106,11 @@ namespace ExtendedNumerics.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to {0} must not equal zero..
+        ///   Looks up a localized string similar to Cannot raise zero to a negative power..
         /// </summary>
-        public static string Arg_MustNotEqualZero {
+        public static string Arg_NegativePowerOfZero {
             get {
-                return ResourceManager.GetString("Arg_MustNotEqualZero", resourceCulture);
+                return ResourceManager.GetString("Arg_NegativePowerOfZero", resourceCulture);
             }
         }
         
@@ -102,6 +120,15 @@ namespace ExtendedNumerics.Properties {
         public static string Arg_NegativePrecision {
             get {
                 return ResourceManager.GetString("Arg_NegativePrecision", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The domain of {0} is {1}.
+        /// </summary>
+        public static string Arg_TheDomainOf_0_Is_1 {
+            get {
+                return ResourceManager.GetString("Arg_TheDomainOf_0_Is_1", resourceCulture);
             }
         }
         

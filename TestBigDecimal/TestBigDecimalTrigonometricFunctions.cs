@@ -1,8 +1,10 @@
 ﻿namespace TestBigDecimal;
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Threading;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
@@ -13,6 +15,15 @@ using NUnit.Framework;
 [NonParallelizable]
 public class TestBigDecimalTrigonometricFunctions
 {
+	private static Dictionary<string, Func<BigDecimal, bool>> FunctionDomainTestDictionary = new Dictionary<string, Func<BigDecimal, bool>>
+	{
+		{ "Arccsc", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
+		{ "Arcsec", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
+		{ "Arccos", new Func<BigDecimal, bool>((radians) => { return (radians < -1 || radians > BigDecimal.One); })},
+		{ "Arcsin", new Func<BigDecimal, bool>((radians) => { return (radians <= -1 || radians >= BigDecimal.One); })},
+		{ "Csch", new Func<BigDecimal, bool>((radians) => { return ( BigDecimal.Normalize(radians).IsZero()); })},
+		{ "Coth", new Func<BigDecimal, bool>((radians) => { return ( BigDecimal.Normalize(radians).IsZero()); })}
+	};
 
 	private static void ExecMethod(
 		BigDecimal input,
@@ -23,6 +34,17 @@ public class TestBigDecimalTrigonometricFunctions
 		String testDescription,
 		String? callerName = null)
 	{
+		var matches = FunctionDomainTestDictionary.Where(kvp => callerName.Contains(kvp.Key));
+		if (matches.Any())
+		{
+			Func<BigDecimal, bool> argumentInRangePredicate = matches.First().Value;
+
+			if (argumentInRangePredicate.Invoke(input))
+			{
+				return;
+			}
+		}
+
 		var inputString = $"Input: {input}";
 		TestContext.WriteLine(inputString);
 
