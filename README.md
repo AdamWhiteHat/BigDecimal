@@ -6,7 +6,7 @@ Like other floating point number implementations, it stores a Mantissa and an Ex
 The difference is, these values are of type BigInteger, and so can be arbitrary precision.
 <br /><br />
   :new: Now supports logarithms and trigonometric functions:
-LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth, Sech, Csch, Arcsin, Arccos, Arctan, Arccot, Arccsc
+LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth, Sech, Csch, Arcsin, Arccos, Arctan, Arccot, Arcsec, Arccsc
 <br /><br />
   :arrow_down: [Download the latest package from NuGet](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) if you just want the compiled binaries. You can either include the nuget package in your project outright, or extract the assembly .dll from the nuget package. (Explaination: A .nupkg file is just a .zip file renamed. Use 7zip to extract the binaries from it.): 
 <br /><br />
