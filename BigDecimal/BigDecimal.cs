@@ -194,7 +194,7 @@ namespace ExtendedNumerics
 		public Boolean IsZero() => this.Mantissa.IsZero;
 
 		/// <summary>This method returns true if the BigDecimal is greater than zero, false otherwise.</summary>
-		public Boolean IsPositve() => !this.IsZero() && !this.IsNegative();
+		public Boolean IsPositive() => !this.IsZero() && !this.IsNegative();
 
 		/// <summary>This method returns true if the BigDecimal is less than zero, false otherwise.</summary>
 		public Boolean IsNegative() => this.Mantissa.Sign < 0;
@@ -923,7 +923,10 @@ namespace ExtendedNumerics
 		}
 
 		/// <summary>Truncates the BigDecimal at the decimal point. Equivalent to using Floor.</summary>
-		public static BigDecimal Truncate(BigDecimal value) => Floor(value);
+		public static BigDecimal Truncate(BigDecimal value)
+		{
+			return (value.Sign == -1) ? Ceiling(value) : Floor(value);
+		}
 
 		/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
 		public static BigInteger Round(BigDecimal value) => Round(value, MidpointRounding.AwayFromZero);
