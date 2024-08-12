@@ -11,7 +11,7 @@ namespace ExtendedNumerics
 	/// <para>Arbitrary precision decimal. All operations are exact, except for division.</para>
 	/// <para>Division never determines more digits than the given precision.</para>
 	/// <para>Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at gmail.com)</para>
-	/// <para>Modified and extended by Adam White (https://csharpcodewhisperer.blogspot.com/)</para>
+	/// <para>Modified and extended by Adam White (https://github.com/AdamWhiteHat)</para>
 	/// <para>Further modified by Rick Harker, Rick.Rick.Harker@gmail.com</para>
 	/// </summary>
 	public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
@@ -1640,24 +1640,26 @@ namespace ExtendedNumerics
 		/// <returns>The natural (base <see langword="e" />) logarithm of the specified number.</returns>
 		public static BigDecimal Ln(BigDecimal argument, int precision)
 		{
-			BigDecimal x = new BigDecimal(argument.Mantissa, argument.Exponent);
-
-			BigDecimal result = 0;
-			while (x > ChunkSize)
+			if (argument.Equals(BigDecimal.One))
 			{
-				var cbrt = Round(NthRoot(x, 3, precision));
-
-				x /= (cbrt * cbrt);
-				var temp1 = Ln(cbrt, precision);
-				result += temp1;
-				result += temp1;
+				return BigDecimal.Zero;
 			}
 
-			result += LogNatural(x, precision);
+			int sign = argument.Sign;
+			BigDecimal input = BigDecimal.Abs(argument);
 
-			return result;
+			if (input <= 0.66d || input >= 1.33d)
+			{
+				BigDecimal cubeRoot = BigDecimal.NthRoot(input, 3, precision);
+				BigDecimal lnCubeRoot = Ln(cubeRoot, precision + 1);
+
+				return sign * (lnCubeRoot * 3); // Because ln(a * b) = ln(a) + ln(b)
+			}
+			else
+			{
+				return sign * LogNatural(input, precision);
+			}
 		}
-		private static BigDecimal ChunkSize = 1_000_000_000;
 
 		/// <summary>
 		/// Internal implementation of the natural log function to arbitrary precision.
@@ -1667,42 +1669,14 @@ namespace ExtendedNumerics
 		/// <returns>The natural (base <see langword="e" />) logarithm of the specified number.</returns>
 		internal static BigDecimal LogNatural(BigDecimal argument, int precision)
 		{
-			BigDecimal targetPrecision = TrigonometricHelper.GetPrecisionTarget(precision);
-			BigDecimal two = new BigDecimal(2);
-			BigDecimal x = new BigDecimal(argument.Mantissa, argument.Exponent);
+			BigDecimal rads = argument - 1;
+			BigDecimal sumStart = 0;
+			BigInteger counterStart = 1;
+			BigInteger jump = 1;
+			BigInteger multiplier = -1;
+			bool factorialDenominator = false;
 
-			bool firstRound = true;
-			BigDecimal nextGuess = 0;
-			BigDecimal currentGuess = 14;
-			BigDecimal difference = 1;
-
-			int counter = 0;
-			do
-			{
-				BigDecimal expGuess = Exp(currentGuess);
-
-				BigDecimal num = x - expGuess;
-				BigDecimal denom = x + expGuess;
-
-				BigDecimal quotient = two * (num / denom);
-
-				nextGuess = currentGuess + quotient;
-
-				if (firstRound)
-				{
-					firstRound = false;
-				}
-				else
-				{
-					difference = nextGuess - currentGuess;
-				}
-
-				currentGuess = nextGuess;
-				counter++;
-			}
-			while (Abs(difference) > targetPrecision);
-
-			return currentGuess;
+			return TrigonometricHelper.TaylorSeriesSum(rads, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
 		}
 
 		#endregion
@@ -1719,7 +1693,7 @@ namespace ExtendedNumerics
 		public static BigDecimal LogN(int @base, BigDecimal argument, int precision)
 		{
 			// Use change of base formula: logn(b, a) = ln(a) / ln(b)
-			return Ln(argument, precision) / Ln(@base, precision);
+			return Ln(argument, precision + 1) / Ln(@base, precision + 1);
 		}
 
 		/// <summary>
