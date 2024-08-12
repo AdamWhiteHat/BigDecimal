@@ -289,7 +289,7 @@ namespace ExtendedNumerics
 		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Decimal input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(Decimal input) => Parse(input.ToString("G17"));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		/// <param name="input">A string that contains a number to convert.</param>
