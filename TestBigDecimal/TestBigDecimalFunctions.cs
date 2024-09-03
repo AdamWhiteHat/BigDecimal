@@ -265,6 +265,37 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestRoundingWithPrecision()
+		{
+			Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
+			Test(7.56m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
+
+			Test(-7.54m, 1, RoundingStrategy.AwayFromZero, "-7.5");
+			Test(-7.56m, 1, RoundingStrategy.AwayFromZero, "-7.6");
+			Test(-7.55m, 1, RoundingStrategy.AwayFromZero, "-7.6");
+
+			Test(7.54m, 1, RoundingStrategy.TowardZero, "7.5");
+			Test(7.56m, 1, RoundingStrategy.TowardZero, "7.6");
+			Test(7.55m, 1, RoundingStrategy.TowardZero, "7.5");
+
+			Test(-7.54m, 1, RoundingStrategy.TowardZero, "-7.5");
+			Test(-7.56m, 1, RoundingStrategy.TowardZero, "-7.6");
+			Test(-7.55m, 1, RoundingStrategy.TowardZero, "-7.5");
+
+			Test(-7.551m, 2, RoundingStrategy.AwayFromZero, "-7.55");
+			Test(-7.559m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+			Test(-7.555m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+		}
+
+		private static void Test(decimal value, int precision, RoundingStrategy roundingStrategy, string expected)
+		{
+			BigDecimal actual = BigDecimal.Round(value, precision, roundingStrategy);
+
+			Assert.AreEqual(expected, actual.ToString(), $"Value: {value}\tRounding: {Enum.GetName(typeof(RoundingStrategy), roundingStrategy)}\tExpected: {expected}\tActual: {actual}");
+		}
+
+		[Test]
 		public void TestGetWholeValue()
 		{
 			var value1 = new BigDecimal(BigInteger.Parse("22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853"), -49);

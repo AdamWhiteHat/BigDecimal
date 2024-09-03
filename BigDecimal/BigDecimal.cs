@@ -960,6 +960,71 @@ namespace ExtendedNumerics
 			return wholePart;
 		}
 
+		public static BigDecimal Round(BigDecimal value, int precision, RoundingStrategy roundingStrategy)
+		{
+			if (precision < 0)
+			{
+				var roundingMethod = (Func<BigDecimal, int, BigDecimal>)BigDecimal.Round;
+				throw new ArithmeticException($"This rounding function does not accept negative precision values. Perhaps you were thinking of {roundingMethod.Method.GetMethodSignature()} ?");
+			}
+
+			if (value == BigDecimal.Zero)
+			{
+				return BigDecimal.Zero;
+			}
+
+			int sign = value.Sign;
+
+			bool roundUp = true;
+			if (roundingStrategy == RoundingStrategy.AwayFromZero)
+			{
+				if (sign == -1)
+				{
+					roundUp = false;
+				}
+			}
+			else if (roundingStrategy == RoundingStrategy.TowardZero)
+			{
+				if (sign == 1)
+				{
+					roundUp = false;
+				}
+			}
+
+			BigDecimal absValue = BigDecimal.Abs(value);
+
+			BigDecimal precisionTarget = new BigDecimal(mantissa: BigInteger.One, exponent: -precision);
+			BigDecimal halfPrecision = new BigDecimal(mantissa: new BigInteger(5), exponent: -(precision + 1));
+			BigDecimal truncated = BigDecimal.Round(absValue, precision);
+
+			BigDecimal midpoint = truncated + halfPrecision;
+
+			if (absValue == midpoint)
+			{
+				if (sign == -1)
+				{
+					if (!roundUp)
+					{
+						return (truncated + precisionTarget) * sign;
+					}
+				}
+				else // sign = 1
+				{
+					if (roundUp)
+					{
+						return (truncated + precisionTarget) * sign;
+					}
+				}
+			}
+			else if (absValue > midpoint)
+			{
+				return (truncated + precisionTarget) * sign;
+			}
+
+			return truncated * sign;
+		}
+
+
 		/// <summary>
 		/// Rounds a BigDecimal to the given number of digits to the right of the decimal point.
 		/// Pass a negative precision value to round (zero) digits to the left of the decimal point in a manner that mimics Excel's ROUNDDOWN function.
