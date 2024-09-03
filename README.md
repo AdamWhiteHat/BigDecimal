@@ -1,23 +1,43 @@
 # BigDecimal
-
 BigDecimal is an arbitrary precision floating point number class.
+
+
 
 Like other floating point number implementations, it stores a Mantissa and an Exponent.
 The difference is, these values are of type BigInteger, and so can be arbitrary precision.
-<br /><br />
+
+
+
+
   :new: Now supports logarithms and trigonometric functions:
 LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth, Sech, Csch, Arcsin, Arccos, Arctan, Arccot, Arcsec, Arccsc
-<br /><br />
+
+
+
+
   :arrow_down: [Download the latest package from NuGet](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) if you just want the compiled binaries. You can either include the nuget package in your project outright, or extract the assembly .dll from the nuget package. (Explaination: A .nupkg file is just a .zip file renamed. Use 7zip to extract the binaries from it.): 
-<br /><br />
+
+
+
+
   :interrobang:	[See the Documentation Wiki Page](https://github.com/AdamWhiteHat/BigDecimal/wiki/Documentation) for important information on correct and accurate usage, tips and other information.
-<br /><br />
+
+
+
+
   :left_speech_bubble: [Visit the community discussion forums](https://github.com/AdamWhiteHat/BigDecimal/discussions) if you have a question or want to start a discussion relevant to the this project. 
-<br /><br />
+
+
+
+
   :cockroach: [View out open issues](https://github.com/AdamWhiteHat/BigDecimal/issues) if you are experiencing a bug or have an idea for a new feature. You can also discuss new feature ideas in the [discussion](https://github.com/AdamWhiteHat/BigDecimal/discussions) forums first. An 'issue' for the new feature can be created from a discussion at any time.
 
  
-<br /><br />
+
+
+
+
+
 
 Example usage:
 ```csharp
