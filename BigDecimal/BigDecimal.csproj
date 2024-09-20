@@ -32,7 +32,7 @@
 
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">2025</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1004</MinorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1005</MinorVersion>
 		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>

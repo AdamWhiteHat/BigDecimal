@@ -16,22 +16,15 @@ namespace ExtendedNumerics
 	/// </summary>
 	public readonly record struct BigDecimal : IComparable, IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
 	{
-		private const String NullString = "(null)";
-
 		static BigDecimal()
 		{
-			Pi = Parse(
-				"3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196", CultureInfo.InvariantCulture);
-
+			Pi = Parse("3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535940812848111745028410270193852110555964462294895493038196", CultureInfo.InvariantCulture);
 			π = Pi;
-
-			E = Parse(
-				"2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383", CultureInfo.InvariantCulture);
+			// TODO: Replace finite E constant with an arbitrarty precision taylor series sum.
+			E = Parse("2.71828182845904523536028747135266249775724709369995957496696762772407663035354759457138217852516642749193200305992181741359662904357290033429526059563073813232862794349076323382988075319525101901157383", CultureInfo.InvariantCulture);
 		}
 
-		/// <summary>
-		/// Private Constructor. This one bypasses <see cref="AlwaysTruncate"/> and <see cref="AlwaysNormalize"/> check and behavior.
-		/// </summary>
+		/// <summary>Private Constructor. This one bypasses <see cref="AlwaysTruncate"/> and <see cref="AlwaysNormalize"/> check and behavior.</summary>
 		/// <param name="tuple"></param>
 		private BigDecimal(Tuple<BigInteger, Int32> tuple)
 		{
@@ -39,6 +32,7 @@ namespace ExtendedNumerics
 			this.Exponent = tuple.Item2;
 		}
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a fraction, specified as a numerator and a denominator.</summary>
 		public BigDecimal(BigInteger numerator, BigInteger denominator)
 		{
 			BigDecimal quotient = Divide(new BigDecimal(numerator), new BigDecimal(denominator));
@@ -46,6 +40,7 @@ namespace ExtendedNumerics
 			this.Exponent = quotient.Exponent;
 		}
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a mantissa and an exponent.</summary>
 		public BigDecimal(BigInteger mantissa, Int32 exponent = 0)
 		{
 			this.Mantissa = mantissa;
@@ -69,10 +64,13 @@ namespace ExtendedNumerics
 			}
 		}
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a Int32.</summary>
 		public BigDecimal(Int32 value) : this(new BigInteger(value)) { }
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a BigInteger.</summary>
 		public BigDecimal(BigInteger value) : this(value, 0) { }
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a Single.</summary>
 		public BigDecimal(Single value)
 		{
 			if (Single.IsInfinity(value))
@@ -90,6 +88,7 @@ namespace ExtendedNumerics
 			this.Exponent = results.Exponent;
 		}
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a Double.</summary>
 		public BigDecimal(Double value)
 		{
 			if (Double.IsInfinity(value))
@@ -107,6 +106,7 @@ namespace ExtendedNumerics
 			this.Exponent = results.Exponent;
 		}
 
+		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a Decimal.</summary>
 		public BigDecimal(Decimal value)
 		{
 			BigDecimal results = Parse(value);
@@ -114,19 +114,19 @@ namespace ExtendedNumerics
 			this.Exponent = results.Exponent;
 		}
 
-		/// <summary>Gets a value that represents the number 0 (zero).</summary>
+		/// <summary>Gets a value that represents the number 10 (ten).</summary>
 		public static BigDecimal Ten => 10;
 
-		/// <summary>Gets a value that represents the number 1 ().</summary>
+		/// <summary>Gets a value that represents the number 1 (one).</summary>
 		public static BigDecimal One => 1;
 
 		/// <summary>Gets a value that represents the number 0 (zero).</summary>
 		public static BigDecimal Zero => 0;
 
-		/// <summary>Gets a value that represents the number 0.5.</summary>
+		/// <summary>Gets a value that represents the number 0.5 (one half).</summary>
 		public static BigDecimal OneHalf => 0.5d;
 
-		/// <summary>Gets a value that represents the number -1 .</summary>
+		/// <summary>Gets a value that represents the number -1 (negative one).</summary>
 		public static BigDecimal MinusOne => -1;
 
 		/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
@@ -138,19 +138,14 @@ namespace ExtendedNumerics
 		/// <summary>Gets a value that represents the number Pi.</summary>
 		public static BigDecimal π { get; }
 
-		private static BigInteger TenInt { get; } = new BigInteger(10);
-
-		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
-
 		/// <summary>
-		/// Sets the desired precision of all BigDecimal instances, in terms of the number of .
-		/// 
-		/// 
-		/// If AlwaysTruncate is set to true all operations are affected.</summary>
+		/// Sets the desired precision of all BigDecimal instances, in terms of the number of digits to the right of the decimal.
+		/// If AlwaysTruncate is set to true all operations are affected.
+		/// </summary>
 		public static Int32 Precision { get; set; } = 5000;
 
 		/// <summary>
-		/// Specifies whether the significant digits should be truncated to the given precision after each operation.	
+		/// Specifies whether the significant digits should be truncated to the given precision after each operation.
 		/// Setting this to true will tend to accumulate errors at the precision boundary after several arithmetic operations.
 		/// Therefore, you should prefer using <see cref="Round(BigDecimal, int)"/> explicitly when you need it instead, 
 		/// such st at the end of a series of operations, especially if you are expecting the result to be truncated at the precision length.
@@ -179,8 +174,7 @@ namespace ExtendedNumerics
 		/// <summary>The length of the BigDecimal value (Equivalent to SignifigantDigits).</summary>
 		public Int32 Length => GetSignifigantDigits(this.Mantissa) + this.Exponent;
 
-		private static Int32 GetSignifigantDigits(BigInteger value) => value.GetSignifigantDigits();
-
+		/// <summary> Returns the number of digits to the right of the decimal point. Same thing as the output of <see cref="PlacesRightOfDecimal"/></summary>
 		public Int32 DecimalPlaces => PlacesRightOfDecimal(this);
 
 		/// <summary>
@@ -188,7 +182,6 @@ namespace ExtendedNumerics
 		/// Equivalent to the Truncate function for a float.
 		/// </summary>
 		public BigInteger WholeValue => this.GetWholePart();
-
 
 		/// <summary>This method returns true if the BigDecimal is equal to zero, false otherwise.</summary>
 		public Boolean IsZero() => this.Mantissa.IsZero;
@@ -199,36 +192,101 @@ namespace ExtendedNumerics
 		/// <summary>This method returns true if the BigDecimal is less than zero, false otherwise.</summary>
 		public Boolean IsNegative() => this.Mantissa.Sign < 0;
 
+		private static BigInteger TenInt { get; } = new BigInteger(10);
 		private static BigDecimal MaxBigDecimalForDecimal => (BigDecimal)Decimal.MaxValue;
-
 		private static BigDecimal MaxBigDecimalForSingle => (BigDecimal)Single.MaxValue;
-
 		private static BigDecimal MaxBigDecimalForDouble => (BigDecimal)Double.MaxValue;
-
 		private static BigDecimal MaxBigDemicalForInt32 => (BigDecimal)Int32.MaxValue;
-
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
+		private static Int32 GetSignifigantDigits(BigInteger value) => value.GetSignifigantDigits();
+		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
 
+		/// <summary>
+		/// Compares the current instance to a second <see cref="BigDecimal"/> and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the other value.
+		/// </summary>
+		/// <param name="other">The other value to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the other value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the other value.
+		/// A return value of greater than zero means this instance follows the other value in the sort order.
+		/// </returns>
 		public Int32 CompareTo(BigDecimal other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
+		/// <summary>
+		/// Compares the current instance to a <see cref="Decimal"/> floating point value and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the <see cref="Decimal"/> value.
+		/// </summary>
+		/// <param name="other">The <see cref="Decimal"/> value to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the <see cref="Decimal"/> value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the <see cref="Decimal"/> value.
+		/// A return value of greater than zero means this instance follows the <see cref="Decimal"/> value in the sort order.
+		/// </returns>
 		public Int32 CompareTo(Decimal other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
+		/// <summary>
+		/// Compares the current instance to a double-precision floatinig-point value and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the double-precision floatinig-point value.
+		/// </summary>
+		/// <param name="other">The double-precision floatinig-point value to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the double-precision floatinig-point value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the double-precision floatinig-point value.
+		/// A return value of greater than zero means this instance follows the double-precision floatinig-point value in the sort order.
+		/// </returns>
 		public Int32 CompareTo(Double other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
+		/// <summary>
+		/// Compares the current instance to a single-precision floatinig-point value and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the single-precision floatinig-point value.
+		/// </summary>
+		/// <param name="other">The single-precision floatinig-point value to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the single-precision floatinig-point value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the single-precision floatinig-point value.
+		/// A return value of greater than zero means this instance follows the single-precision floatinig-point value in the sort order.
+		/// </returns>
 		public Int32 CompareTo(Single other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
+		/// <summary>
+		/// Compares the current instance to a nullable <see cref="Int32"/> value and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the nullable <see cref="Int32"/> value.
+		/// </summary>
+		/// <param name="other">The nullable <see cref="Int32"/> value to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the nullable <see cref="Int32"/> value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the nullable <see cref="Int32"/> value.
+		/// A return value of greater than zero means this instance follows the nullable <see cref="Int32"/> value in the sort order.
+		/// </returns>
 		public Int32 CompareTo(Int32? other) =>
 			other is null || (this > other) ? SortingOrder.After :
 			this < other ? SortingOrder.Before : SortingOrder.Same;
 
+		/// <summary>
+		/// Compares the current instance to a 32-bit signed integer and returns
+		/// an integer that indicates whether the current instance precedes, follows, or
+		/// occurs in the same position in the sort order as the 32-bit signed integer.
+		/// </summary>
+		/// <param name="other">The 32-bit signed integer to compare with this instance.</param>
+		/// <returns>
+		/// A return value of less than zero means this instance precedes the 32-bit signed integer in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the 32-bit signed integer.
+		/// A return value of greater than zero means this instance follows the 32-bit signed integer in the sort order.
+		/// </returns>
 		public Int32 CompareTo(Int32 other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
@@ -238,7 +296,7 @@ namespace ExtendedNumerics
 		/// an integer that indicates whether the current instance precedes, follows, or
 		/// occurs in the same position in the sort order as the other object.
 		/// </summary>
-		/// <param name="obj"> An object to compare with this instance.</param>	
+		/// <param name="obj"> An object to compare with this instance.</param>
 		/// <returns>
 		/// A return value of less than zero means this instance precedes obj in the sort order.
 		/// A return value of zero means  this instance occurs in the same position in the sort order as obj.
@@ -253,33 +311,80 @@ namespace ExtendedNumerics
 
 		public Boolean Equals(BigDecimal? other) => Equals(this, other);
 
-		/// <summary>Static equality test.</summary>
-		/// <param name="left"></param>
-		/// <param name="right"></param>
-		/// <returns></returns>
+		/// <summary>
+		/// Determines if two instances of BigDecimal are equal. 
+		/// The precise behavior of this method depends on the values of the static members <see cref="AlwaysTruncate"/> and <see cref="AlwaysNormalize"/>.
+		/// If <see cref="AlwaysTruncate"/> or <see cref="AlwaysNormalize"/> is true, then both values are rounded at <see cref="Precision"/> 
+		/// or normalized with <see cref="Normalize(BigDecimal)"/>, respectively.
+		/// Then their mantissas and exponents are compared.
+		/// If <see cref="AlwaysTruncate"/> is false, then their mantissas and exponents are compared exactly as they are, to as many digits as is tracked by their instances
+		/// (which may well exceed <see cref="Precision"/> and will be unlikely to have the same number of digits,
+		/// unless the same number of multiplications and divisionsn were performed on them).
+		/// If <see cref="AlwaysTruncate"/> is false, it is recommended that you use the overload of <see cref="Equals(BigDecimal?, BigDecimal?, int)"/> that takes a precision parameter,
+		/// or you round both values off to some the level of precision that you care about first before calling this method.
+		/// </summary>
+		/// <returns>True if the two numbers are equal.</returns>
 		public static Boolean Equals(BigDecimal? left, BigDecimal? right)
 		{
-			if (left is null || right is null)
+			if (left == null || right == null)
 			{
-				return false;
+				return (left == null && right == null);
 			}
 
 			BigDecimal l = left.Value;
 			BigDecimal r = right.Value;
+			if (AlwaysNormalize)
+			{
+				l = Normalize(l);
+				r = Normalize(r);
+			}
 			if (AlwaysTruncate)
 			{
 				l = Round(l, Precision);
 				r = Round(r, Precision);
 			}
+
+			return l.Sign.Equals(r.Sign) && l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa);
+		}
+
+		/// <summary>
+		/// Determines if two instances of BigDecimal are equal, up to <paramref name="precision"/> digits.
+		/// The precise behavior of this method depends on the value of <see cref="AlwaysTruncate"/>.
+		/// If <see cref="AlwaysTruncate"/> is true, then both arguments will first be rounded to <paramref name="precision"/> or <see cref="Precision"/> decimal places, 
+		/// which ever is smaller. Then they will be checked for equivalency. 
+		/// If <see cref="AlwaysTruncate"/> is false, then this method will behave as expected.
+		/// </summary>
+		/// <param name="precision">
+		/// The number of digits to the right of the decimal place to perform the comparison to.  Any digitx beyond this, will be ignored. 
+		/// <see cref="Precision"/> supercedes this parameter, if <see cref="AlwaysTruncate"/> is true. 
+		/// If <see cref="AlwaysTruncate"/> is true and <see cref="Precision"/> is smaller than <paramref name="precision"/>, then this parameter is effectively ignored.
+		/// </param>
+		/// <returns>True if the two numbers are equal, up to <paramref name="precision"/>.</returns>
+		public static Boolean Equals(BigDecimal? left, BigDecimal? right, int precision)
+		{
+			if (left == null || right == null)
+			{
+				return (left == null && right == null);
+			}
+
+			BigDecimal l = left.Value;
+			BigDecimal r = right.Value;
 			if (AlwaysNormalize)
 			{
 				l = Normalize(l);
 				r = Normalize(r);
 			}
 
-			return l.Mantissa.Equals(r.Mantissa)
-				&& l.Exponent.Equals(r.Exponent)
-				&& l.Sign.Equals(r.Sign);
+			int prec = precision;
+			if (AlwaysTruncate)
+			{
+				prec = Math.Min(prec, Precision);
+			}
+
+			l = Round(l, prec);
+			r = Round(r, prec);
+
+			return l.Sign.Equals(r.Sign) && l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa);
 		}
 
 		/// <summary>Converts the string representation of a float to the BigDecimal equivalent.</summary>
@@ -293,7 +398,10 @@ namespace ExtendedNumerics
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		/// <param name="input">A string that contains a number to convert.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A BigDecimal equivalent of the supplied string representation of a decimal number,
+		/// or zero if the input string was null, empty or whitespace.
+		/// </returns>
 		public static BigDecimal Parse(String input)
 		{
 			return Parse(input, BigDecimalNumberFormatInfo);
@@ -304,7 +412,10 @@ namespace ExtendedNumerics
 		/// </summary>
 		/// <param name="input">A string that contains a number to convert.</param>
 		/// <param name="provider">An object that provides culture-specific formatting information about value.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// A BigDecimal equivalent of the supplied string representation of a decimal number in the specified culture-specific format,
+		/// or zero if the input string was null, empty or whitespace.
+		/// </returns>
 		public static BigDecimal Parse(String input, IFormatProvider provider)
 		{
 			if (provider is null)
@@ -374,7 +485,10 @@ namespace ExtendedNumerics
 		/// <param name="result">When this method returns, this out parameter contains the BigDecimal equivalent
 		/// to the number that is contained in value, or default(BigDecimal) if the conversion fails.
 		/// The conversion fails if the value parameter is null or is not of the correct format.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// True if parsing was successful and the out parameter contains the parsed value.
+		/// False if parsing failed and the out parameter contains default(BigDecimal).
+		/// </returns>
 		public static bool TryParse(String input, out BigDecimal result)
 		{
 			return TryParse(input, BigDecimalNumberFormatInfo, out result);
@@ -382,14 +496,18 @@ namespace ExtendedNumerics
 
 		/// <summary>
 		/// Tries to convert the string representation of a number in a specified style and culture-specific format
-		/// to its BigDecimal equivalent, and returns a value that indicates whether the conversion succeeded.
+		/// to its BigDecimal equivalent and passing the result to the out parameter if successfull.
+		/// Returns a boolean value that indicates whether the conversion was successful.
 		/// </summary>
 		/// <param name="input">The string representation of a number.</param>
 		/// <param name="provider">An object that supplies culture-specific formatting information about value.</param>
 		/// <param name="result">When this method returns, this out parameter contains the BigDecimal equivalent
 		/// to the number that is contained in value, or default(BigDecimal) if the conversion fails.
 		/// The conversion fails if the value parameter is null or is not of the correct format.</param>
-		/// <returns></returns>
+		/// <returns>
+		/// True if parsing was successful and the out parameter contains the parsed value.
+		/// False if parsing failed and the out parameter contains default(BigDecimal).
+		/// </returns>
 		public static bool TryParse(String input, IFormatProvider provider, out BigDecimal result)
 		{
 			try
@@ -405,11 +523,11 @@ namespace ExtendedNumerics
 			return false;
 		}
 
+		/// <summary> Returns the number of digits to the right of the decimal point.</summary>
 		public static Int32 NumberOfDigits(BigInteger value) => (Int32)Math.Ceiling(BigInteger.Log10(value * value.Sign));
 
 		/// <summary>Removes any trailing zeros on the mantissa, adjusts the exponent, and returns a new <see cref="BigDecimal" />.</summary>
 		/// <param name="value"></param>
-
 		public static BigDecimal Normalize(BigDecimal value)
 		{
 			if (value.Mantissa.IsZero)
@@ -506,30 +624,44 @@ namespace ExtendedNumerics
 			return result;
 		}
 
+
+		/// <summary>Performs an explicit conversion of a <see cref=""/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(BigInteger value) => new BigDecimal(value, 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Byte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Byte value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="SByte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(SByte value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="UInt32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt32 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Int32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int32 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="UInt16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt16 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Int16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int16 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="UInt64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt64 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Int64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int64 value) => new BigDecimal(new BigInteger(value), 0);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Single"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Single value) => Parse(value);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Decimal value) => Parse(value);
 
+		/// <summary>Performs an explicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Double value) => Parse(value);
 
+		/// <summary>Performs an explicit conversion of a <see cref="BigDecimal"/> value to a <see cref="BigInteger"/> value.</summary>
 		public static explicit operator BigInteger(BigDecimal value)
 		{
 			var floored = Floor(value);
@@ -598,28 +730,40 @@ namespace ExtendedNumerics
 
 		public static BigDecimal operator %(BigDecimal left, BigDecimal right) => Mod(left, right);
 
+		/// <summary>Returns the value of the <see cref="BigDecimal"/> operand. (The sign of the operand is unchanged.)</summary>
 		public static BigDecimal operator +(BigDecimal value) => value;
 
+		/// <summary>Negates a specified <see cref="BigDecimal"/> value. </summary>
 		public static BigDecimal operator -(BigDecimal value) => Negate(value);
 
+		/// <summary>Increments a <see cref="BigDecimal"/> value by 1.</summary>
 		public static BigDecimal operator ++(BigDecimal value) => Add(value, 1);
 
+		/// <summary>Decrements a <see cref="BigDecimal"/> value by 1.</summary>
 		public static BigDecimal operator --(BigDecimal value) => Subtract(value, 1);
 
+		/// <summary>Adds two specified <see cref="BigDecimal"/> values.</summary >
 		public static BigDecimal operator +(BigDecimal left, BigDecimal right) => Add(left, right);
 
+		/// <summary>Subtracts two specified <see cref="BigDecimal"/> values.</summary >
 		public static BigDecimal operator -(BigDecimal left, BigDecimal right) => Subtract(left, right);
 
+		/// <summary>Multiplies two specified <see cref="BigDecimal"/> values.</summary >
 		public static BigDecimal operator *(BigDecimal left, BigDecimal right) => Multiply(left, right);
 
+		/// <summary>Divides two specified <see cref="BigDecimal"/> values.</summary >
 		public static BigDecimal operator /(BigDecimal dividend, BigDecimal divisor) => Divide(dividend, divisor);
 
+		/// <summary>Returns a value that indicates whether a <see cref="BigDecimal"/> value is less than another <see cref="BigDecimal"/> value.</summary>
 		public static Boolean operator <(BigDecimal left, BigDecimal right) => left.Exponent > right.Exponent ? AlignExponent(left, right) < right.Mantissa : left.Mantissa < AlignExponent(right, left);
 
+		/// <summary>Returns a value that indicates whether a <see cref="BigDecimal"/> value is greater than another <see cref="BigDecimal"/> value.</summary>
 		public static Boolean operator >(BigDecimal left, BigDecimal right) => left.Exponent > right.Exponent ? AlignExponent(left, right) > right.Mantissa : left.Mantissa > AlignExponent(right, left);
 
+		/// <summary>Returns a value that indicates whether a <see cref="BigDecimal"/> value is less than or equal to another <see cref="BigDecimal"/> value.</summary>
 		public static Boolean operator <=(BigDecimal left, BigDecimal right) => left.Exponent > right.Exponent ? AlignExponent(left, right) <= right.Mantissa : left.Mantissa <= AlignExponent(right, left);
 
+		/// <summary>Returns a value that indicates whether a <see cref="BigDecimal"/> value is greater than or equal to another <see cref="BigDecimal"/> value.</summary>
 		public static Boolean operator >=(BigDecimal left, BigDecimal right) => left.Exponent > right.Exponent ? AlignExponent(left, right) >= right.Mantissa : left.Mantissa >= AlignExponent(right, left);
 
 		/// <summary>Returns the smaller of two BigDecimal values.</summary>
@@ -849,12 +993,13 @@ namespace ExtendedNumerics
 		}
 		private static double ExpChunk = 2.0d;
 
+		/// <summary>Returns the square root of the supplied <see cref="BigDecimal"/> to the given number of places..</summary>
 		public static BigDecimal SquareRoot(BigDecimal input, Int32 decimalPlaces)
 		{
 			return NthRoot(input, 2, decimalPlaces);
 		}
 
-		/// <summary> Returns the Nth root of the supplied input decimal to the given number of places. </summary>
+		/// <summary> Returns the Nth root of the supplied input decimal to the given number of places.</summary>
 		/// <returns></returns>
 		public static BigDecimal NthRoot(BigDecimal input, Int32 root, Int32 decimalPlaces)
 		{
@@ -960,6 +1105,7 @@ namespace ExtendedNumerics
 			return wholePart;
 		}
 
+		/// <summary>Rounds a BigDecimal value off at the specified level of precision. A parameter specifies how to round the value if it is midway between two values.</summary>
 		public static BigDecimal Round(BigDecimal value, int precision, RoundingStrategy roundingStrategy)
 		{
 			if (precision < 0)
@@ -1749,6 +1895,40 @@ namespace ExtendedNumerics
 		#region Arbitrary Base Logarithm
 
 		/// <summary>
+		/// Returns the logarithm of an argument in an arbitrary base to the number of digits specified in <see cref="Precision"/>.
+		/// </summary>
+		/// <param name="base">The base of the logarithm.</param>
+		/// <param name="argument">The argument to take the logarithm of.</param>
+		/// <returns>The logarithm of the argument in the specified base to the number of digits specified in <see cref="Precision"/>..</returns>
+		public static BigDecimal Log(BigDecimal argument, int @base)
+		{
+			return Log(argument, @base, Precision);
+		}
+
+		/// <summary>
+		/// Returns the logarithm of an argument in an arbitrary base.
+		/// </summary>
+		/// <param name="base">The base of the logarithm.</param>
+		/// <param name="argument">The argument to take the logarithm of.</param>
+		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+		/// <returns>The logarithm of the argument in the specified base.</returns>
+		public static BigDecimal Log(BigDecimal argument, int @base, int precision)
+		{
+			return LogN(@base, argument, precision + 1);
+		}
+
+		/// <summary>
+		/// Returns the logarithm of an argument in an arbitrary base to the number of digits specified in <see cref="Precision"/>.
+		/// </summary>
+		/// <param name="base">The base of the logarithm.</param>
+		/// <param name="argument">The argument to take the logarithm of.</param>
+		/// <returns>The logarithm of the argument in the specified base to the number of digits specified in <see cref="Precision"/>..</returns>
+		public static BigDecimal LogN(int @base, BigDecimal argument)
+		{
+			return LogN(@base, argument, Precision);
+		}
+
+		/// <summary>
 		/// Returns the logarithm of an argument in an arbitrary base.
 		/// </summary>
 		/// <param name="base">The base of the logarithm.</param>
@@ -1759,6 +1939,16 @@ namespace ExtendedNumerics
 		{
 			// Use change of base formula: logn(b, a) = ln(a) / ln(b)
 			return Ln(argument, precision + 1) / Ln(@base, precision + 1);
+		}
+
+		/// <summary>
+		/// Returns the base-2 logarithm of an argument to the number of digits specified in <see cref="Precision"/>.
+		/// </summary>
+		/// <param name="argument">The argument to take the base-2 logarithm of.</param>
+		/// /// <returns>The base 2 logarithm of the argument to the number of digits specified in <see cref="Precision"/>.</returns>
+		public static BigDecimal Log2(BigDecimal argument)
+		{
+			return Log2(argument, Precision);
 		}
 
 		/// <summary>
@@ -1776,6 +1966,16 @@ namespace ExtendedNumerics
 		/// Returns the base-10 logarithm of an argument.
 		/// </summary>
 		/// <param name="argument">The argument to take the base-10 logarithm of.</param>
+		/// <returns>The base 10 logarithm of the argument.</returns>
+		public static BigDecimal Log10(BigDecimal argument)
+		{
+			return Log10(argument, Precision);
+		}
+
+		/// <summary>
+		/// Returns the base-10 logarithm of an argument.
+		/// </summary>
+		/// <param name="argument">The argument to take the base-10 logarithm of.</param>
 		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
 		/// <returns>The base 10 logarithm of the argument.</returns>
 		public static BigDecimal Log10(BigDecimal argument, int precision)
@@ -1787,10 +1987,13 @@ namespace ExtendedNumerics
 
 		#endregion
 
+		/// <summary>Returns the hash code for the current <see cref="BigDecimal"/> object.</summary>
 		public override Int32 GetHashCode() => new Tuple<BigInteger, Int32>(this.Mantissa, this.Exponent).GetHashCode();
 
+		/// <summary>Converts the numeric value of the current <see cref="BigDecimal"/> object to its equivalent string representation.</summary>
 		public override String ToString() => this.ToString(BigDecimalNumberFormatInfo);
 
+		/// <summary>Converts the numeric value of the current <see cref="BigDecimal"/> object to its equivalent string representation by using the specified culture-specific formatting information.</summary>
 		public String ToString(IFormatProvider provider) => ToString(this.Mantissa, this.Exponent, provider);
 
 		private static String ToString(BigInteger mantissa, Int32 exponent, IFormatProvider? provider = null)
@@ -1847,9 +2050,7 @@ namespace ExtendedNumerics
 			return result;
 		}
 
-		/// <summary>Allow the BigDecimal to be formatted with the E notation.</summary>
-		/// <param name="bigDecimal"></param>
-		/// <returns></returns>
+		/// <summary>Converts the numeric value of the specified <see cref="BigDecimal"/> object to its equivalent string representation in scientific E notation.</summary>
 		public static String ToScientificENotation(BigDecimal bigDecimal)
 		{
 			// 1.238E456 1.238E-456
