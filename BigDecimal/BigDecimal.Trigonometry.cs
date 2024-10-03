@@ -29,8 +29,8 @@ namespace ExtendedNumerics
 			BigInteger productOfOddNumbers = 1;
 
 			// skip integer part
-			BigInteger nextR = @base * (r - productOfOddNumbers * outputBuffer);
-			outputBuffer = @base * (3 * magnitude + r) / productOfOddNumbers - @base * outputBuffer;
+			BigInteger nextR = @base * (r - ( productOfOddNumbers * outputBuffer ));
+			outputBuffer = ( ( @base * (( 3 * magnitude ) + r) ) / productOfOddNumbers ) - ( @base * outputBuffer );
 			magnitude *= @base;
 
 			int counter = 1;
@@ -38,21 +38,21 @@ namespace ExtendedNumerics
 			{
 				r = nextR;
 				BigInteger nextDigitThreshold = productOfOddNumbers * outputBuffer;
-				if (4 * magnitude + r - productOfOddNumbers < nextDigitThreshold)
+				if (( ( ( 4 * magnitude ) + r ) - productOfOddNumbers ) < nextDigitThreshold)
 				{
 					mantissa *= 10;
 					mantissa += outputBuffer;
 					exponent = counter * -1;
 					counter++;
 					nextR = @base * (r - nextDigitThreshold);
-					outputBuffer = @base * (3 * magnitude + r) / productOfOddNumbers - @base * outputBuffer;
+					outputBuffer = ( ( @base * (( 3 * magnitude ) + r) ) / productOfOddNumbers ) - ( @base * outputBuffer );
 					magnitude *= @base;
 				}
 				else
 				{
 					productOfOddNumbers *= twiceKplus1;
-					nextR = (2 * magnitude + r) * twiceKplus1;
-					outputBuffer = (magnitude * (7 * k) + 2 + r * twiceKplus1) / productOfOddNumbers;
+					nextR = (( 2 * magnitude ) + r) * twiceKplus1;
+					outputBuffer = (( magnitude * (7 * k) ) + 2 + ( r * twiceKplus1 )) / productOfOddNumbers;
 					magnitude *= k;
 					twiceKplus1 += 2;
 					++k;
@@ -470,7 +470,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -1 &lt; x &lt; 1.</exception>
 		public static BigDecimal Arcsin(BigDecimal radians, int precision)
 		{
-			if (radians < -1 || radians > One)
+			if (( radians < -1 ) || ( radians > One ))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arcsin), "-1 < x < 1"));
 			}
@@ -498,7 +498,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -1 &lt; x &lt; 1.</exception>
 		public static BigDecimal Arccos(BigDecimal radians, int precision)
 		{
-			if (radians < -1 || radians > One)
+			if (( radians < -1 ) || ( radians > One ))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arccos), "-1 < x < 1"));
 			}
@@ -604,7 +604,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -∞ &lt; x &lt;= -1 ∪ 1 &lt;= x &lt; ∞.</exception>
 		public static BigDecimal Arcsec(BigDecimal radians, int precision)
 		{
-			if (radians > -1 && radians < 1)
+			if (( radians > -1 ) && ( radians < 1 ))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arcsec), "-∞ < x <= -1 ∪ 1 <= x < ∞"));
 			}
@@ -628,7 +628,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -∞ &lt; x &lt;= -1 ∪ 1 &lt;= x &lt; ∞.</exception>
 		public static BigDecimal Arccsc(BigDecimal radians, int precision)
 		{
-			if (radians > -1 && radians < 1)
+			if (( radians > -1 ) && ( radians < 1 ))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arccsc), "-∞ < x <= -1 ∪ 1 <= x < ∞"));
 			}
@@ -688,7 +688,7 @@ namespace ExtendedNumerics
 			int sign = argument.Sign;
 			BigDecimal input = BigDecimal.Abs(argument);
 
-			if (input <= 0.66d || input >= 1.33d)
+			if (( input <= 0.66d ) || ( input >= 1.33d ))
 			{
 				BigDecimal cubeRoot = BigDecimal.NthRoot(input, 3, precision);
 				BigDecimal lnCubeRoot = Ln(cubeRoot, precision + 1);
