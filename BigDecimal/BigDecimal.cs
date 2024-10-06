@@ -861,6 +861,12 @@ namespace ExtendedNumerics
 		/// <summary>Divides two BigDecimal values.</summary>
 		public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor)
 		{
+			return Divide(divisor, divisor, Precision);
+		}
+
+		/// <summary>Divides two BigDecimal values.</summary>
+		public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor, int precision)
+		{
 			if (divisor == Zero)
 			{
 				throw new DivideByZeroException(nameof(divisor));
@@ -885,7 +891,7 @@ namespace ExtendedNumerics
 						break;
 					}
 				}
-				else if (GetSignifigantDigits(mantissa) >= Precision)
+				else if (GetSignifigantDigits(mantissa) >= precision)
 				{
 					break;
 				}
