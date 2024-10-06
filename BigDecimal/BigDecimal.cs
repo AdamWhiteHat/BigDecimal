@@ -140,7 +140,7 @@ namespace ExtendedNumerics
 		/// Sets the desired precision of all BigDecimal instances, in terms of the number of digits to the right of the decimal.
 		/// If AlwaysTruncate is set to true all operations are affected.
 		/// </summary>
-		public static Int32 Precision { get; set; } = 5000;
+		public static Int32 Precision { get; set; } = 100;
 
 		/// <summary>
 		/// Specifies whether the significant digits should be truncated to the given precision after each operation.

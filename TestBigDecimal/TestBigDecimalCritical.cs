@@ -354,7 +354,6 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected2, actual2, "#: 2");
 			Assert.AreEqual(expected3, actual3, "#: 3");
 			Assert.AreEqual(expected4, actual4, "#: 4");
-			Assert.AreEqual(5000, BigDecimal.Precision, "Restore Precision to 5000");
 		}
 
 		[Test]
@@ -446,9 +445,7 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected8, actual8, $"Test Truncate On All Arithmetic Operations  - #8: ");
 			Assert.AreEqual(expected9, actual9, $"Test Truncate On All Arithmetic Operations  - #9: ");
 			Assert.AreEqual(expected10, actual10, $"Test Truncate On All Arithmetic Operations - #10: ");
-			Assert.AreEqual(expected11, actual11, $"Test Truncate On All Arithmetic Operations - #11: ");
-
-			Assert.AreEqual(5000, BigDecimal.Precision, "Restore Precision to 5000");
+			Assert.AreEqual(expected11, actual11, $"Test Truncate On All Arithmetic Operations - #11: ");						
 		}
 	}
 

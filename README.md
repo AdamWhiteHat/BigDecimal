@@ -1,12 +1,61 @@
 # BigDecimal
-BigDecimal is an arbitrary precision floating point number class.
+BigDecimal is an arbitrary precision floating point number type/class.
+
+It stores a **Mantissa** and an **Exponent**.
+The Mantissa is of type BigInteger, enabling BigDecimal to have arbitrary precision.
+BigDecimal is a base-10 floating point number, like System.Decimal is. This is unlike System.Double, which is a base-2 floating point number.
+
+**NOTE: BREAKING CHANGE FOR VER. 3000.0.0:**
+The default Precision value for the library has been changed from 5000 to 100. This should provide a much more reasonable default value for the vast majority of the users. 5000 digits of precision by default was a poor choice, is likely more precision than anyone needs, and resulted in performance issues after a couple of multiplications (assuming BigDecimal.AlwaysTruncate is false, which is the default).
+
+## QUICK START
+Here is what you need to know:
+You will want to configure BigDecimal to obtain the behavior that you want.
+This is done via two static fields of BigDecimal:
+- `BigDecimal.Precision`
+- `BigDecimal.AlwaysTruncate`
+
+You set them like this (these are the default values being set here, BTW):
+```csharp
+BigDecimal.Precision = 100;
+BigDecimal.AlwaysTruncate = false;
+```
+
+### BigDecimal.Precision
+
+This is the default precision that BigDecimal uses for all BigDecimal instances. 
+The value is specified in the number of digits to the right of the decimal place that you want.
 
 
 
-Like other floating point number implementations, it stores a Mantissa and an Exponent.
-The difference is, these values are of type BigInteger, and so can be arbitrary precision.
+The default value is `100`.
 
 
+
+
+### BigDecimal.AlwaysTruncate
+
+
+
+
+This value specifies whether or not BigDecimal will round the value of a BigDecimal to `BigDecimal.Precision` places after every arithmetic operation.
+
+
+
+The default value is `false`.
+
+
+
+
+Setting this setting to `true` keeps the values constrained to only `BigDecimal.Precision` digits. This limits the ammound of memory used and keeps the arithmetic performant. 
+
+However, the number has the potential to lose precision as you go, depending on how you use it.
+
+The dynamics of if and when BigDecimals lose precision with this setting enabled isn't nessisarily complicated, but it does require some discussion. 
+
+[See the documentation](https://github.com/AdamWhiteHat/BigDecimal/wiki/Documentation#using-bigdecimal) for a more in depth discussion on this topic.
+
+---
 
 
   :new: Now supports logarithms and trigonometric functions:
@@ -30,7 +79,7 @@ LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth
 
 
 
-  :cockroach: [View out open issues](https://github.com/AdamWhiteHat/BigDecimal/issues) if you are experiencing a bug or have an idea for a new feature. You can also discuss new feature ideas in the [discussion](https://github.com/AdamWhiteHat/BigDecimal/discussions) forums first. An 'issue' for the new feature can be created from a discussion at any time.
+  :cockroach: [View open issues](https://github.com/AdamWhiteHat/BigDecimal/issues) if you are experiencing a bug or have an idea for a new feature. You can also discuss new feature ideas in the [discussion](https://github.com/AdamWhiteHat/BigDecimal/discussions) forums first. An 'issue' for the new feature can be created from a discussion at any time.
 
  
 
@@ -43,7 +92,7 @@ Example usage:
 ```csharp
 Console.WriteLine(BigDecimal.Precision);
 // 5000
-BigDecimal.Precision = 200; // Tone down the precision for this demo.
+BigDecimal.Precision = 200; // Set the precision for this demo to 200 digits.
 Console.WriteLine(BigDecimal.Precision);
 // 200
 
