@@ -861,7 +861,7 @@ namespace ExtendedNumerics
 		/// <summary>Divides two BigDecimal values.</summary>
 		public static BigDecimal Divide(BigDecimal dividend, BigDecimal divisor)
 		{
-			return Divide(divisor, divisor, Precision);
+			return Divide(dividend, divisor, Precision);
 		}
 
 		/// <summary>Divides two BigDecimal values.</summary>
