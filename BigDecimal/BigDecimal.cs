@@ -171,10 +171,10 @@ namespace ExtendedNumerics
 
 		/// <summary>Gets the number of significant digits in <see cref="BigDecimal"/>.
 		///Essentially tells you the number of digits in the mantissa.</summary>
-		public Int32 SignifigantDigits => GetSignifigantDigits(this.Mantissa);
+		public Int32 SignificantDigits => GetSignificantDigits(this.Mantissa);
 
-		/// <summary>The length of the BigDecimal value (Equivalent to SignifigantDigits).</summary>
-		public Int32 Length => GetSignifigantDigits(this.Mantissa) + this.Exponent;
+		/// <summary>The length of the BigDecimal value (Equivalent to <see cref="SignificantDigits"/>).</summary>
+		public Int32 Length => GetSignificantDigits(this.Mantissa) + this.Exponent;
 
 		/// <summary> Returns the number of digits to the right of the decimal point. Same thing as the output of <see cref="PlacesRightOfDecimal"/></summary>
 		public Int32 DecimalPlaces => PlacesRightOfDecimal(this);
@@ -204,7 +204,7 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDecimalForDouble => (BigDecimal)Double.MaxValue;
 		private static BigDecimal MaxBigDemicalForInt32 => (BigDecimal)Int32.MaxValue;
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
-		private static Int32 GetSignifigantDigits(BigInteger value) => value.GetSignifigantDigits();
+		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
 		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
 
 		#endregion
@@ -650,40 +650,40 @@ namespace ExtendedNumerics
 
 		#region Conversions & Casts
 
-		/// <summary>Performs an explicit conversion of a <see cref=""/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="BigInteger"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(BigInteger value) => new BigDecimal(value, 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Byte"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Byte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Byte value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="SByte"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="SByte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(SByte value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt32"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt32 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int32"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int32 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt16"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt16 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int16"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int16 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt64"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt64 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int64"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int64 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Single"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Single"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Single value) => Parse(value);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Decimal value) => Parse(value);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Double value) => Parse(value);
 
 		/// <summary>Performs an explicit conversion of a <see cref="BigDecimal"/> value to a <see cref="BigInteger"/> value.</summary>
@@ -886,12 +886,12 @@ namespace ExtendedNumerics
 				}
 				else if (remainder == lastRemainder)
 				{
-					if (GetSignifigantDigits(mantissa) >= divisor.SignifigantDigits)
+					if (GetSignificantDigits(mantissa) >= divisor.SignificantDigits)
 					{
 						break;
 					}
 				}
-				else if (GetSignifigantDigits(mantissa) >= precision)
+				else if (GetSignificantDigits(mantissa) >= precision)
 				{
 					break;
 				}
@@ -1368,7 +1368,7 @@ namespace ExtendedNumerics
 
 			string mantissa = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
 
-			int exponent = bigDecimal.Exponent + (bigDecimal.SignifigantDigits - 1);
+			int exponent = bigDecimal.Exponent + (bigDecimal.SignificantDigits - 1);
 			int point = 1;
 			if (bigDecimal.Mantissa.Sign == -1)
 			{

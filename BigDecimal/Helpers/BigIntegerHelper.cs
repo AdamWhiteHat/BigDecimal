@@ -6,7 +6,7 @@ using ExtendedNumerics.Properties;
 
 namespace ExtendedNumerics.Helpers
 {
-	public static partial class BigIntegerHelper
+	public static class BigIntegerHelper
 	{
 		public static BigInteger GCD(this IEnumerable<BigInteger> numbers) => numbers.Aggregate(GCD);
 
@@ -50,7 +50,7 @@ namespace ExtendedNumerics.Helpers
 			}
 		}
 
-		public static Int32 GetSignifigantDigits(this BigInteger value)
+		public static Int32 GetSignificantDigits(this BigInteger value)
 		{
 			if (value.IsZero)
 			{
