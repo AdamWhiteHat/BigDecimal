@@ -650,40 +650,40 @@ namespace ExtendedNumerics
 
 		#region Conversions & Casts
 
-		/// <summary>Performs an explicit conversion of a <see cref=""/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="BigInteger"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(BigInteger value) => new BigDecimal(value, 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Byte"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Byte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Byte value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="SByte"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="SByte"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(SByte value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt32"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt32 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int32"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int32"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int32 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt16"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt16 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int16"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int16"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int16 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="UInt64"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="UInt64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(UInt64 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Int64"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Int64"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Int64 value) => new BigDecimal(new BigInteger(value), 0);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Single"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Single"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Single value) => Parse(value);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Decimal value) => Parse(value);
 
-		/// <summary>Performs an explicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
+		/// <summary>Performs an implicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Double value) => Parse(value);
 
 		/// <summary>Performs an explicit conversion of a <see cref="BigDecimal"/> value to a <see cref="BigInteger"/> value.</summary>
