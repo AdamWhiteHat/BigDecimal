@@ -171,10 +171,10 @@ namespace ExtendedNumerics
 
 		/// <summary>Gets the number of significant digits in <see cref="BigDecimal"/>.
 		///Essentially tells you the number of digits in the mantissa.</summary>
-		public Int32 SignifigantDigits => GetSignifigantDigits(this.Mantissa);
+		public Int32 SignificantDigits => GetSignificantDigits(this.Mantissa);
 
-		/// <summary>The length of the BigDecimal value (Equivalent to SignifigantDigits).</summary>
-		public Int32 Length => GetSignifigantDigits(this.Mantissa) + this.Exponent;
+		/// <summary>The length of the BigDecimal value (Equivalent to <see cref="SignificantDigits"/>).</summary>
+		public Int32 Length => GetSignificantDigits(this.Mantissa) + this.Exponent;
 
 		/// <summary> Returns the number of digits to the right of the decimal point. Same thing as the output of <see cref="PlacesRightOfDecimal"/></summary>
 		public Int32 DecimalPlaces => PlacesRightOfDecimal(this);
@@ -204,7 +204,7 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDecimalForDouble => (BigDecimal)Double.MaxValue;
 		private static BigDecimal MaxBigDemicalForInt32 => (BigDecimal)Int32.MaxValue;
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
-		private static Int32 GetSignifigantDigits(BigInteger value) => value.GetSignifigantDigits();
+		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
 		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
 
 		#endregion
@@ -886,12 +886,12 @@ namespace ExtendedNumerics
 				}
 				else if (remainder == lastRemainder)
 				{
-					if (GetSignifigantDigits(mantissa) >= divisor.SignifigantDigits)
+					if (GetSignificantDigits(mantissa) >= divisor.SignificantDigits)
 					{
 						break;
 					}
 				}
-				else if (GetSignifigantDigits(mantissa) >= precision)
+				else if (GetSignificantDigits(mantissa) >= precision)
 				{
 					break;
 				}
@@ -1368,7 +1368,7 @@ namespace ExtendedNumerics
 
 			string mantissa = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
 
-			int exponent = bigDecimal.Exponent + (bigDecimal.SignifigantDigits - 1);
+			int exponent = bigDecimal.Exponent + (bigDecimal.SignificantDigits - 1);
 			int point = 1;
 			if (bigDecimal.Mantissa.Sign == -1)
 			{
