@@ -1,4 +1,7 @@
 # BigDecimal
+[![NuGet Version](https://img.shields.io/nuget/v/ExtendedNumerics.BigDecimal?label=NuGet%20Version&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FExtendedNumerics.BigDecimal%2F)](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) [![Downloads](https://img.shields.io/nuget/dt/ExtendedNumerics.BigDecimal?logo=%23004880&label=Downloads&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FExtendedNumerics.BigDecimal)](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal)
+
+
 BigDecimal is an arbitrary precision floating point number type/class.
 
 It stores a **Mantissa** and an **Exponent**.
