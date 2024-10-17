@@ -10,9 +10,9 @@ namespace ExtendedNumerics
 	/// <summary>
 	/// <para>Arbitrary precision decimal. All operations are exact, except for division.</para>
 	/// <para>Division never determines more digits than the given precision.</para>
-	/// <para>Based on code by Jan Christoph Bernack (http://stackoverflow.com/a/4524254 or jc.bernack at gmail.com)</para>
-	/// <para>Modified and extended by Adam White (https://github.com/AdamWhiteHat)</para>
-	/// <para>Further modified by Rick Harker, Rick.Rick.Harker@gmail.com</para>
+	/// <para>Based on code by Jan Christoph Bernack (https://gist.github.com/JcBernack/0b4eef59ca97ee931a2f45542b9ff06d)</para>
+	/// <para>Modified, extended and maintained by Adam White (https://github.com/AdamWhiteHat or adamwhitehat 𝚊𝚝 outlook 𝖽𝗈𝗍 com)</para>
+	/// <para>Contributions by Rick Harker (Rick.Rick.Harker 𝖺𝗍 gmail 𝚍𝚘𝚝 com) and Protiguous (https://github.com/Protiguous)</para>
 	/// </summary>
 	public readonly partial record struct BigDecimal : IComparable, IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
 	{
