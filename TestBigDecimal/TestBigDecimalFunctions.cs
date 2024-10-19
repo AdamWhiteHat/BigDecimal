@@ -381,22 +381,22 @@ namespace TestBigDecimal
 		{
 			const Int32 expected1 = 19;
 			var number1 = new BigDecimal(12345678901234567890, -10);
-			var result1 = number1.SignifigantDigits;
+			var result1 = number1.SignificantDigits;
 			Assert.AreEqual(expected1, result1);
 
 			const Int32 expected2 = 9;
 			var number2 = new BigDecimal(123456789, 1);
-			var result2 = number2.SignifigantDigits;
+			var result2 = number2.SignificantDigits;
 			Assert.AreEqual(expected2, result2);
 
 			const Int32 expected3 = 19;
 			var number3 = new BigDecimal(BigInteger.Parse("-12345678901234567890"), -10);
-			var result3 = number3.SignifigantDigits;
+			var result3 = number3.SignificantDigits;
 			Assert.AreEqual(expected3, result3);
 
 			const Int32 expected4 = 9;
 			var number4 = new BigDecimal(-123456789, 1);
-			var result4 = number4.SignifigantDigits;
+			var result4 = number4.SignificantDigits;
 			Assert.AreEqual(expected4, result4);
 		}
 

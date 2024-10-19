@@ -14,11 +14,11 @@ namespace TestBigDecimal
 
 			result.AppendLine($"{bigDecimal.ToString()}");
 			result.AppendLine("{");
-			result.AppendLine($"	Mantessa: {bigDecimal.Mantissa}");
+			result.AppendLine($"	Mantissa: {bigDecimal.Mantissa}");
 			result.AppendLine($"	Exponent: {bigDecimal.Exponent}");
 			result.AppendLine($"	DecimalIndex: {bigDecimal.GetDecimalIndex()}");
 			result.AppendLine($"	Length: {bigDecimal.Length}");
-			result.AppendLine($"	SignifigantDigits: {bigDecimal.SignifigantDigits}");
+			result.AppendLine($"	SignifigantDigits: {bigDecimal.SignificantDigits}");
 			result.AppendLine("}");
 
 			return result.ToString();

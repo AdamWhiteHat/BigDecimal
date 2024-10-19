@@ -242,30 +242,30 @@ namespace ExtendedNumerics
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
 		/// <summary>
-		/// Compares the current instance to a double-precision floatinig-point value and returns
+		/// Compares the current instance to a double-precision floating-point value and returns
 		/// an integer that indicates whether the current instance precedes, follows, or
-		/// occurs in the same position in the sort order as the double-precision floatinig-point value.
+		/// occurs in the same position in the sort order as the double-precision floating-point value.
 		/// </summary>
-		/// <param name="other">The double-precision floatinig-point value to compare with this instance.</param>
+		/// <param name="other">The double-precision floating-point value to compare with this instance.</param>
 		/// <returns>
-		/// A return value of less than zero means this instance precedes the double-precision floatinig-point value in the sort order.
-		/// A return value of zero means  this instance occurs in the same position in the sort order as the double-precision floatinig-point value.
-		/// A return value of greater than zero means this instance follows the double-precision floatinig-point value in the sort order.
+		/// A return value of less than zero means this instance precedes the double-precision floating-point value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the double-precision floating-point value.
+		/// A return value of greater than zero means this instance follows the double-precision floating-point value in the sort order.
 		/// </returns>
 		public Int32 CompareTo(Double other) =>
 			this < other ? SortingOrder.Before :
 			this > other ? SortingOrder.After : SortingOrder.Same;
 
 		/// <summary>
-		/// Compares the current instance to a single-precision floatinig-point value and returns
+		/// Compares the current instance to a single-precision floating-point value and returns
 		/// an integer that indicates whether the current instance precedes, follows, or
-		/// occurs in the same position in the sort order as the single-precision floatinig-point value.
+		/// occurs in the same position in the sort order as the single-precision floating-point value.
 		/// </summary>
-		/// <param name="other">The single-precision floatinig-point value to compare with this instance.</param>
+		/// <param name="other">The single-precision floating-point value to compare with this instance.</param>
 		/// <returns>
-		/// A return value of less than zero means this instance precedes the single-precision floatinig-point value in the sort order.
-		/// A return value of zero means  this instance occurs in the same position in the sort order as the single-precision floatinig-point value.
-		/// A return value of greater than zero means this instance follows the single-precision floatinig-point value in the sort order.
+		/// A return value of less than zero means this instance precedes the single-precision floating-point value in the sort order.
+		/// A return value of zero means  this instance occurs in the same position in the sort order as the single-precision floating-point value.
+		/// A return value of greater than zero means this instance follows the single-precision floating-point value in the sort order.
 		/// </returns>
 		public Int32 CompareTo(Single other) =>
 			this < other ? SortingOrder.Before :
@@ -333,7 +333,7 @@ namespace ExtendedNumerics
 		/// Then their mantissas and exponents are compared.
 		/// If <see cref="AlwaysTruncate"/> is false, then their mantissas and exponents are compared exactly as they are, to as many digits as is tracked by their instances
 		/// (which may well exceed <see cref="Precision"/> and will be unlikely to have the same number of digits,
-		/// unless the same number of multiplications and divisionsn were performed on them).
+		/// unless the same number of multiplications and divisions were performed on them).
 		/// If <see cref="AlwaysTruncate"/> is false, it is recommended that you use the overload of <see cref="Equals(BigDecimal?, BigDecimal?, int)"/> that takes a precision parameter,
 		/// or you round both values off to some the level of precision that you care about first before calling this method.
 		/// </summary>
@@ -369,8 +369,8 @@ namespace ExtendedNumerics
 		/// If <see cref="AlwaysTruncate"/> is false, then this method will behave as expected.
 		/// </summary>
 		/// <param name="precision">
-		/// The number of digits to the right of the decimal place to perform the comparison to.  Any digitx beyond this, will be ignored. 
-		/// <see cref="Precision"/> supercedes this parameter, if <see cref="AlwaysTruncate"/> is true. 
+		/// The number of digits to the right of the decimal place to perform the comparison to.  Any digits beyond this, will be ignored. 
+		/// <see cref="Precision"/> supersedes this parameter, if <see cref="AlwaysTruncate"/> is true. 
 		/// If <see cref="AlwaysTruncate"/> is true and <see cref="Precision"/> is smaller than <paramref name="precision"/>, then this parameter is effectively ignored.
 		/// </param>
 		/// <returns>True if the two numbers are equal, up to <paramref name="precision"/>.</returns>
@@ -514,7 +514,7 @@ namespace ExtendedNumerics
 
 		/// <summary>
 		/// Tries to convert the string representation of a number in a specified style and culture-specific format
-		/// to its BigDecimal equivalent and passing the result to the out parameter if successfull.
+		/// to its BigDecimal equivalent and passing the result to the out parameter if successful.
 		/// Returns a boolean value that indicates whether the conversion was successful.
 		/// </summary>
 		/// <param name="input">The string representation of a number.</param>
@@ -783,7 +783,7 @@ namespace ExtendedNumerics
 		/// <summary>Divides two specified <see cref="BigDecimal"/> values.</summary >
 		public static BigDecimal operator /(BigDecimal dividend, BigDecimal divisor) => Divide(dividend, divisor);
 
-		#region Comparason Operators
+		#region Comparison Operators
 
 		/// <summary>Returns a value that indicates whether a <see cref="BigDecimal"/> value is less than another <see cref="BigDecimal"/> value.</summary>
 		public static Boolean operator <(BigDecimal left, BigDecimal right) => left.Exponent > right.Exponent ? AlignExponent(left, right) < right.Mantissa : left.Mantissa < AlignExponent(right, left);

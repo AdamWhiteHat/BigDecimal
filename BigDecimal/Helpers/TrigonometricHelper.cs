@@ -12,7 +12,7 @@ namespace ExtendedNumerics.Helpers
 		/// <summary>
 		/// Common function to generate the target value to compare against to see if
 		/// an operation has reached sufficient precision.
-		/// The point of this method instead of having it inline is that we have only
+		/// The point of this method instead of having it in-line is that we have only
 		/// one place to change if we need to increase the value we are adding to
 		/// precision to get adjustedPrecision.
 		/// </summary>

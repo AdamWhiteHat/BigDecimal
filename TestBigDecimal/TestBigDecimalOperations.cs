@@ -634,7 +634,7 @@ namespace TestBigDecimal
 			var actual = squared.NthRoot(2, out _);
 
 			Assert.AreEqual(expected, actual, "sqrt(66347680104305943841) = 8145408529");
-			TestContext.WriteLine($"And {squared} squaredroot is {actual}.");
+			TestContext.WriteLine($"And {squared} squared root is {actual}.");
 		}
 
 		[Test]

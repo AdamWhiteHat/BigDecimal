@@ -50,11 +50,11 @@ The default value is `false`.
 
 
 
-Setting this setting to `true` keeps the values constrained to only `BigDecimal.Precision` digits. This limits the ammound of memory used and keeps the arithmetic performant. 
+Setting this setting to `true` keeps the values constrained to only `BigDecimal.Precision` digits. This limits the amount of memory used and keeps the arithmetic performant. 
 
 However, the number has the potential to lose precision as you go, depending on how you use it.
 
-The dynamics of if and when BigDecimals lose precision with this setting enabled isn't nessisarily complicated, but it does require some discussion. 
+The dynamics of if and when BigDecimals lose precision with this setting enabled isn't necessarily complicated, but it does require some discussion. 
 
 [See the documentation](https://github.com/AdamWhiteHat/BigDecimal/wiki/Documentation#using-bigdecimal) for a more in depth discussion on this topic.
 
@@ -67,7 +67,7 @@ LogN, Ln, Log2, Log10, Exp, Sin, Cos, Tan, Cot, Sec, Csc, Sinh, Cosh, Tanh, Coth
 
 
 
-  :arrow_down: [Download the latest package from NuGet](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) if you just want the compiled binaries. You can either include the nuget package in your project outright, or extract the assembly .dll from the nuget package. (Explaination: A .nupkg file is just a .zip file renamed. Use 7zip to extract the binaries from it.): 
+  :arrow_down: [Download the latest package from NuGet](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) if you just want the compiled binaries. You can either include the NuGet package in your project outright, or extract the assembly .dll from the nuget package. (Explaination: A .nupkg file is just a .zip file renamed. Use 7zip to extract the binaries from it.): 
 
 
 

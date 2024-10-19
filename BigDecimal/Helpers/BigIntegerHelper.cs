@@ -187,7 +187,7 @@ namespace ExtendedNumerics.Helpers
 		}
 
 		/// <summary>
-		/// ttempt to parse a fraction from a String.
+		/// Attempt to parse a fraction from a String.
 		/// </summary>
 		/// <example>" 1234.45 / 346.456 "</example>
 		/// <param name="numberString"></param>
