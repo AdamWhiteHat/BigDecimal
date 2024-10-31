@@ -25,8 +25,8 @@ namespace TestBigDecimal
 			int savePrecision = BigDecimal.Precision;
 			BigDecimal.Precision = 10;
 
-			string test = TestBigDecimalHelper.PrepareValue(" 12.1 / 36.3 ", this.Format);
-			var val = TestBigDecimalHelper.PrepareValue("0.3333333333", this.Format);
+			string test = " 12.1 / 36.3 ".PrepareValue(this.Format);
+			var val = "0.3333333333".PrepareValue(this.Format);
 			var expected = BigDecimal.Parse(val);
 
 			var parsed = test.TryParseFraction(out var result);

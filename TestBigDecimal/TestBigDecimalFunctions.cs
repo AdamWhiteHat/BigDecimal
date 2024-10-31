@@ -13,12 +13,12 @@ namespace TestBigDecimal
 
 	[TestFixture]
 	[Culture("en-US,ru-RU")]
-	public class TestBigDecimalFunctions
+	public static class TestBigDecimalFunctions
 	{
-		private NumberFormatInfo Format { get { return Thread.CurrentThread.CurrentCulture.NumberFormat; } }
+		internal static NumberFormatInfo NumberFormat { get; } = Thread.CurrentThread.CurrentCulture.NumberFormat;
 
 		[Test]
-		public void TestGCD()
+		public static void TestGCD()
 		{
 			var expected = BigDecimal.Parse("10");
 
@@ -30,14 +30,14 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestMin()
+		public static void TestMin()
 		{
 			string expected = "30303";
 
 			var left = BigDecimal.Parse(expected);
 			var right1 = BigDecimal.Parse(expected);
 
-			var val = TestBigDecimalHelper.PrepareValue("30303.5", this.Format);
+			var val = "30303.5".PrepareValue(NumberFormat);
 			var right2 = BigDecimal.Parse(val);
 			var right3 = BigDecimal.Parse("30304");
 
@@ -51,16 +51,16 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestMax()
+		public static void TestMax()
 		{
-			var expected = TestBigDecimalHelper.PrepareValue("30304.1", this.Format);
+			var expected = "30304.1".PrepareValue(NumberFormat);
 
 			var left1 = BigDecimal.Parse("30304");
 
-			var val2 = TestBigDecimalHelper.PrepareValue("-30304.2", this.Format);
+			var val2 = "-30304.2".PrepareValue(NumberFormat);
 			var left2 = BigDecimal.Parse(val2);
 
-			var val3 = TestBigDecimalHelper.PrepareValue("30304.01", this.Format);
+			var val3 = "30304.01".PrepareValue(NumberFormat);
 			var left3 = BigDecimal.Parse(val3);
 			var right = BigDecimal.Parse(expected);
 
@@ -74,7 +74,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestGetLength()
+		public static void TestGetLength()
 		{
 			var expected = BigDecimal.Parse("2268507702394854741827137539360680923314");
 			var value = new BigDecimal(BigInteger.Parse("22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853"), -49);
@@ -83,7 +83,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestGetSign()
+		public static void TestGetSign()
 		{
 			BigDecimal zero1 = 0;
 			Assert.AreEqual(0, zero1.Sign, "0");
@@ -136,19 +136,19 @@ namespace TestBigDecimal
 			BigDecimal largeNegative = BigDecimal.Parse(largeNegativeString);
 			Assert.AreEqual(BigInteger.MinusOne.Sign, largeNegative.Sign, largeNegativeString);
 
-			string highPrecisionNegativeString = TestBigDecimalHelper.PrepareValue("-2.2685077023948547418271375393606809233149150201282920942551781108927727789384397020382853", this.Format);
+			string highPrecisionNegativeString = "-2.2685077023948547418271375393606809233149150201282920942551781108927727789384397020382853".PrepareValue(NumberFormat);
 			BigDecimal highPrecisionNegative = BigDecimal.Parse(highPrecisionNegativeString);
 			Assert.AreEqual(BigInteger.MinusOne.Sign, highPrecisionNegative.Sign, highPrecisionNegativeString);
 
-			string smallNegativeString = TestBigDecimalHelper.PrepareValue("-0.000000000000000000000000000022680000000000000000000000000000150201282920942551781108927727789384397020382853", this.Format);
+			string smallNegativeString = "-0.000000000000000000000000000022680000000000000000000000000000150201282920942551781108927727789384397020382853".PrepareValue(NumberFormat);
 			BigDecimal smallNegative = BigDecimal.Parse(smallNegativeString);
 			Assert.AreEqual(BigInteger.MinusOne.Sign, smallNegative.Sign, smallNegativeString);
 		}
 
 		[Test]
-		public void TestGoldenIrrational()
+		public static void TestGoldenIrrational()
 		{
-			var val = TestBigDecimalHelper.PrepareValue("1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374847540880753868917521266338622235369317931800607667263544333890865959395829056383226613199282902678806752087668925017116962070322210432162695486262963136144381497587012203408058879544547492461856953648644492", this.Format);
+			var val = "1.6180339887498948482045868343656381177203091798057628621354486227052604628189024497072072041893911374847540880753868917521266338622235369317931800607667263544333890865959395829056383226613199282902678806752087668925017116962070322210432162695486262963136144381497587012203408058879544547492461856953648644492".PrepareValue(NumberFormat);
 			var goldenRatio = BigDecimal.Parse(val);
 
 			TestContext.Write("GoldenRatio: ");
@@ -156,13 +156,13 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestLeastCommonDivisor()
+		public static void TestLeastCommonDivisor()
 		{
 			var expected = "45319990731015";
 
-			BigDecimal actual = BigIntegerHelper.LCM(new BigInteger[] {
-			3, 5, 7, 11, 13, 101, 307, 311, 313
-		});
+			BigDecimal actual = BigIntegerHelper.LCM([
+				3, 5, 7, 11, 13, 101, 307, 311, 313
+			]);
 
 			// 15015, lcm(3, 5, 7, 11, 13, 101, 307, 311, 313) = 45319990731015 lcm(4973, 4292, 4978, 4968, 4297, 4287) = 2822891742340306560
 
@@ -170,12 +170,12 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRounding()
+		public static void TestRounding()
 		{
 			var up = new BigDecimal(0.50001d);
 			var down = new BigDecimal(0.49m);
 
-			var val = TestBigDecimalHelper.PrepareValue("1.5", this.Format);
+			var val = "1.5".PrepareValue(NumberFormat);
 			var oneAndAhalf = BigDecimal.Parse(val);
 
 			var negEightPointFive = new BigDecimal(-8.5d);
@@ -215,7 +215,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRounding_NegativePrecision001()
+		public static void TestRounding_NegativePrecision001()
 		{
 			BigDecimal a = BigDecimal.Parse("31415.92654");
 
@@ -266,7 +266,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRoundingWithPrecision()
+		public static void TestRoundingWithPrecision()
 		{
 			Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
 			Test(7.56m, 1, RoundingStrategy.AwayFromZero, "7.6");
@@ -297,7 +297,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestGetWholeValue()
+		public static void TestGetWholeValue()
 		{
 			var value1 = new BigDecimal(BigInteger.Parse("22685077023948547418271375393606809233149150201282920942551781108927727789384397020382853"), -49);
 			BigDecimal result1 = value1.WholeValue;
@@ -328,7 +328,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestGetFractionalPart()
+		public static void TestGetFractionalPart()
 		{
 			BigDecimal parsed1 = new BigDecimal(BigInteger.Parse("31415926535"), -10);
 			BigDecimal parsed2 = new BigDecimal(BigInteger.Parse("-31415926535"), -10);
@@ -339,14 +339,14 @@ namespace TestBigDecimal
 			BigDecimal parsed7 = new BigDecimal(3, -1);
 			BigDecimal parsed8 = new BigDecimal(-3, -1);
 
-			var expected1 = TestBigDecimalHelper.PrepareValue("0.1415926535", this.Format);
-			var expected2 = TestBigDecimalHelper.PrepareValue("0.1415926535", this.Format);
-			var expected3 = TestBigDecimalHelper.PrepareValue("0.000031415926535", this.Format);
-			var expected4 = TestBigDecimalHelper.PrepareValue("0.000031415926535", this.Format);
+			var expected1 = "0.1415926535".PrepareValue(NumberFormat);
+			var expected2 = "0.1415926535".PrepareValue(NumberFormat);
+			var expected3 = "0.000031415926535".PrepareValue(NumberFormat);
+			var expected4 = "0.000031415926535".PrepareValue(NumberFormat);
 			var expected5 = "0";
 			var expected6 = "0";
-			var expected7 = TestBigDecimalHelper.PrepareValue("0.3", this.Format);
-			var expected8 = TestBigDecimalHelper.PrepareValue("0.3", this.Format);
+			var expected7 = "0.3".PrepareValue(NumberFormat);
+			var expected8 = "0.3".PrepareValue(NumberFormat);
 
 			var result1 = parsed1.GetFractionalPart();
 			var result2 = parsed2.GetFractionalPart();
@@ -377,7 +377,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestSignifigantDigits()
+		public static void TestSignifigantDigits()
 		{
 			const Int32 expected1 = 19;
 			var number1 = new BigDecimal(12345678901234567890, -10);
@@ -401,7 +401,7 @@ namespace TestBigDecimal
 		}
 
 		[Test(TestOf = typeof(BigDecimal))]
-		public void TestPlacesRightOfDecimal()
+		public static void TestPlacesRightOfDecimal()
 		{
 			MethodInfo placesRightOfDecimal = typeof(BigDecimal).GetMethod("PlacesRightOfDecimal", BindingFlags.NonPublic | BindingFlags.Static);
 
@@ -429,17 +429,17 @@ namespace TestBigDecimal
 			var expected0 = "1";
 			var expected11 = "20";
 
-			var result1 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed1 });
-			var result2 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed2 });
-			var result3 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed3 });
-			var result4 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed4 });
-			var result5 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed5 });
-			var result6 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed6 });
-			var result7 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed7 });
-			var result8 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed8 });
-			var result9 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed9 });
-			var result0 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed0 });
-			var result11 = placesRightOfDecimal.Invoke(obj: null, new object[] { parsed11 });
+			var result1 = placesRightOfDecimal.Invoke(obj: null, [parsed1]);
+			var result2 = placesRightOfDecimal.Invoke(obj: null, [parsed2]);
+			var result3 = placesRightOfDecimal.Invoke(obj: null, [parsed3]);
+			var result4 = placesRightOfDecimal.Invoke(obj: null, [parsed4]);
+			var result5 = placesRightOfDecimal.Invoke(obj: null, [parsed5]);
+			var result6 = placesRightOfDecimal.Invoke(obj: null, [parsed6]);
+			var result7 = placesRightOfDecimal.Invoke(obj: null, [parsed7]);
+			var result8 = placesRightOfDecimal.Invoke(obj: null, [parsed8]);
+			var result9 = placesRightOfDecimal.Invoke(obj: null, [parsed9]);
+			var result0 = placesRightOfDecimal.Invoke(obj: null, [parsed0]);
+			var result11 = placesRightOfDecimal.Invoke(obj: null, [parsed11]);
 
 			var actual1 = result1.ToString();
 			var actual2 = result2.ToString();
@@ -466,15 +466,15 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected11, actual11, $"PlacesRightOfDecimal - #11: {parsed11}");
 		}
 
-		[Test]
-		public void TestApproximateE()
+		[Test(TestOf = typeof(BigDecimal))]
+		public static void TestApproximateE()
 		{
-			BigDecimal.Precision = 1000;
+			int precision = 1000;
+			BigDecimal.Precision = precision;
 			//BigDecimal.AlwaysTruncate = true;
 
-			int precision = 1000;
 			// This value comes from a different application; precise calculator
-			string expected = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264800168477411853742345442437107539077744992069551702761838606261331384583000752044933826560297606737113200709328709127443747047230696977209310141692836819025515108657463772111252389784425056953696770785449969967946864454905987931636889230098793127736178215424999229576351482208269895193668033182528869398496465105820939239829488793320362509443117301238197068416140397019837679320683282376464804295311802328782509819455815301756717361332069811250996181881593041690351598888519345807273866738589422879228499892086805825749279610484198444363463244968487560233624827041978623209002160990235304369941849146314093431738143640546253152096183690888707016768396424378140592714563549061303107208510383750510115747704171898610687396965521267154688957035035";
+			const string expected = "2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427427466391932003059921817413596629043572900334295260595630738132328627943490763233829880753195251019011573834187930702154089149934884167509244761460668082264800168477411853742345442437107539077744992069551702761838606261331384583000752044933826560297606737113200709328709127443747047230696977209310141692836819025515108657463772111252389784425056953696770785449969967946864454905987931636889230098793127736178215424999229576351482208269895193668033182528869398496465105820939239829488793320362509443117301238197068416140397019837679320683282376464804295311802328782509819455815301756717361332069811250996181881593041690351598888519345807273866738589422879228499892086805825749279610484198444363463244968487560233624827041978623209002160990235304369941849146314093431738143640546253152096183690888707016768396424378140592714563549061303107208510383750510115747704171898610687396965521267154688957035035";
 
 			Stopwatch timer = Stopwatch.StartNew();
 
@@ -489,7 +489,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestApproximatePi()
+		public static void TestApproximatePi()
 		{
 			BigDecimal.Precision = 1000;
 			//BigDecimal.AlwaysTruncate = true;

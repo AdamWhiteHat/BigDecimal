@@ -24,7 +24,7 @@ namespace TestBigDecimal
 			return result.ToString();
 		}
 
-		public static string PrepareValue(string value, NumberFormatInfo numberFormatInfo)
+		public static string PrepareValue(this string value, NumberFormatInfo numberFormatInfo)
 		{
 			if (numberFormatInfo.NumberDecimalSeparator != ".")
 			{
@@ -32,6 +32,11 @@ namespace TestBigDecimal
 			}
 
 			return value;
+		}
+		
+		public static string PrepareValue(this BigDecimal value, NumberFormatInfo numberFormatInfo)
+		{
+			return value.ToString().Replace(".", numberFormatInfo.NumberDecimalSeparator);
 		}
 	}
 }

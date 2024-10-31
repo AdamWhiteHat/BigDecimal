@@ -5,31 +5,81 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 [TestFixture]
 [Culture("en-US,ru-RU")]
 [NonParallelizable]
-public class TestBigDecimalTrigonometricFunctions
+public static class TestBigDecimalTrigonometricFunctions
 {
-	private static Dictionary<string, Func<BigDecimal, bool>> FunctionDomainTestDictionary = new Dictionary<string, Func<BigDecimal, bool>>
+	private static readonly Dictionary<string, Func<BigDecimal, bool>> FunctionDomainTestDictionary = new Dictionary<string, Func<BigDecimal, bool>>
 	{
-		{ "Arccsc", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
-		{ "Arcsec", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
-		{ "Arccos", new Func<BigDecimal, bool>((radians) => { return (radians < -1 || radians > BigDecimal.One); })},
-		{ "Arcsin", new Func<BigDecimal, bool>((radians) => { return (radians <= -1 || radians >= BigDecimal.One); })},
-		{ "Csch", new Func<BigDecimal, bool>((radians) => { return ( BigDecimal.Normalize(radians).IsZero()); })},
-		{ "Coth", new Func<BigDecimal, bool>((radians) => { return ( BigDecimal.Normalize(radians).IsZero()); })}
+		{ "Arccsc", (radians) => radians > BigDecimal.MinusOne && radians < BigDecimal.One },
+		{ "Arcsec", (radians) => radians > BigDecimal.MinusOne && radians < BigDecimal.One },
+		{ "Arccos", (radians) => radians < BigDecimal.MinusOne || radians > BigDecimal.One },
+		{ "Arcsin", (radians) => radians <= BigDecimal.MinusOne || radians >= BigDecimal.One },
+		{ "Csch", (radians) => BigDecimal.Normalize(radians).IsZero() },
+		{ "Coth", (radians) => BigDecimal.Normalize(radians).IsZero() }
 	};
 
+	private static readonly Dictionary<char, string> BoldedNumeralDictionary = new Dictionary<char, string>()
+	{
+		{'-',"-"},
+		{'.',"."},
+		{'0',"𝟬"},
+		{'1',"𝟭"},
+		{'2',"𝟮"},
+		{'3',"𝟯"},
+		{'4',"𝟰"},
+		{'5',"𝟱"},
+		{'6',"𝟲"},
+		{'7',"𝟳"},
+		{'8',"𝟴"},
+		{'9',"𝟵"}
+	};
+
+	private static TimeSpan LogNaturalTimeElapsed = TimeSpan.Zero;
+
+	private static readonly Stopwatch LogNaturalTimer = Stopwatch.StartNew();
+
+	internal static Int32 Precision = 50;
+
+	private static int CharactersMatchCount(string expected, string actual)
+	{
+		int index = 0;
+		int counter = 0;
+		bool seenDecimalPoint = false;
+		foreach (char c in expected)
+		{
+			if (c != actual[index])
+			{
+				break;
+			}
+
+			if (seenDecimalPoint)
+			{
+				counter++;
+			}
+			else
+			{
+				if (c == '.')
+				{
+					seenDecimalPoint = true;
+					counter = 0;
+				}
+			}
+
+			index++;
+		}
+		return counter;
+	}
+
 	private static void ExecMethod(
-		BigDecimal input,
+							BigDecimal input,
 		Func<BigDecimal, Int32, BigDecimal> testFunc,
 		Func<Double, Double> comparisonFunc,
 		Int32 precision,
@@ -135,10 +185,61 @@ public class TestBigDecimalTrigonometricFunctions
 		}
 	}
 
-	protected static Int32 Precision = 50;
+	private static string HightlightDiffControl(string expected, string actual)
+	{
+		int index = 0;
+		int maxLength = Math.Min(actual.Length, expected.Length);
 
-	protected static void Test_TrigFunction(
-		Func<BigDecimal, Int32, BigDecimal> testFunc,
+		bool matchSoFar = true;
+		StringBuilder result = new StringBuilder();
+		StringBuilder result2 = new StringBuilder();
+		foreach (char c in actual)
+		{
+			char? cmp = index < maxLength ? expected[index] : null;
+			if (matchSoFar && cmp.HasValue && c == cmp)
+			{
+				result.Append(BoldedNumeralDictionary[c]);
+				result2.Append('▀');
+			}
+			else
+			{
+				matchSoFar = false;
+				result.Append(' ');
+			}
+
+			index++;
+		}
+		return result.ToString() + Environment.NewLine + result2.ToString();
+	}
+
+	private static void Test_Single(Tuple<string, string> questionAnswerValue, int precision)
+	{
+		BigDecimal input = BigDecimal.Parse(questionAnswerValue.Item1);
+		string expected = questionAnswerValue.Item2;
+
+		LogNaturalTimer.Restart();
+		BigDecimal result1 = BigDecimal.Ln(input, precision);
+		LogNaturalTimeElapsed = LogNaturalTimeElapsed.Add(LogNaturalTimer.Elapsed);
+
+		string actual = result1.ToString().Substring(0, expected.Length);
+
+		int matchCount = CharactersMatchCount(expected, actual);
+		string diffString = HightlightDiffControl(expected, actual);
+
+		Console.WriteLine($"-------- {nameof(BigDecimal)}.{nameof(BigDecimal.Ln)} --------");
+		Console.WriteLine($"   Input: {input}");
+		Console.WriteLine($"Expected: {expected}");
+		Console.WriteLine($"  Actual: {actual}");
+		Console.WriteLine($"          {diffString.Replace(Environment.NewLine, Environment.NewLine + "          ")}");
+		Console.WriteLine($"Match Count: {matchCount}");
+		Console.WriteLine($"");
+
+		// 48 out of the 50 digits to the right of the decimal point must be correct.
+		Assert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{diffString}");
+	}
+
+	internal static void Test_TrigFunction(
+				Func<BigDecimal, Int32, BigDecimal> testFunc,
 		Func<Double, Double> comparisonFunc,
 		Int32 matchDigits,
 		Int32 precision,
@@ -151,7 +252,7 @@ public class TestBigDecimalTrigonometricFunctions
 		var halfPi = TrigonometricHelper.HalfPi;
 
 		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-		var val = TestBigDecimalHelper.PrepareValue("0.00123", format);
+		var val = "0.00123".PrepareValue(format);
 		var perturbation = BigDecimal.Parse(val);
 
 		var negHalfPi = -halfPi;
@@ -244,7 +345,7 @@ public class TestBigDecimalTrigonometricFunctions
 		TestContext.WriteLine("");
 		TestContext.WriteLine(" Misc --");
 
-		val = TestBigDecimalHelper.PrepareValue("22.123", format);
+		val = "22.123".PrepareValue(format);
 		ExecMethod(sign * BigDecimal.Parse(val), testFunc, comparisonFunc, precision, 5, sgn + val, callerName);
 
 		/*
@@ -260,7 +361,7 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[OneTimeSetUp]
-	public void SetUp()
+	public static void SetUp()
 	{
 		Precision = 50;
 		BigDecimal.Precision = Precision;
@@ -424,6 +525,77 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
+	public static void Test_Ln()
+	{
+		var argument = BigDecimal.Parse("65536");
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = "11.09035488895912495067571394333082508920800214976".PrepareValue(format);
+
+		var result = BigDecimal.Ln(argument, Precision);
+
+		var actual = new String(result.ToString().Take(Precision).ToArray());
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
+	}
+
+	[Test]
+	public static void Test_Ln_ChunkValue()
+	{
+		var argument = BigDecimal.Parse("13763555136");
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+
+		var expected = "23.34529000352234960050576234615311770969963762614".PrepareValue(format);
+
+		var result = BigDecimal.Ln(argument, Precision);
+
+		var actual = new String(result.ToString().Take(Precision).ToArray());
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
+	}
+
+	[Test]
+	public static void Test_Log10()
+	{
+		var argument = BigDecimal.Parse("2");
+
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = "0.301029995663981195213738894724493026768189881462".PrepareValue(format);
+
+		var result = BigDecimal.Log10(argument, Precision);
+
+		var actual = new String(result.ToString().Take(Precision).ToArray());
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log10));
+	}
+
+	[Test]
+	public static void Test_Log2()
+	{
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var val = "46340.95002".PrepareValue(format);
+
+		var argument = BigDecimal.Parse(val);
+		var expected = "15.50000000025398948770312730360932446932123539424".PrepareValue(format);
+
+		var result = BigDecimal.Log2(argument, Precision);
+
+		var actual = new String(result.ToString().Take(Precision).ToArray());
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log2));
+	}
+
+	[Test]
+	public static void Test_LogN()
+	{
+		var @base = 3;
+		var argument = BigDecimal.Parse("65536");
+
+		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
+		var expected = "10.09487605714331899359243382948417366879337024211".PrepareValue(format);
+
+		var result = BigDecimal.LogN(@base, argument, Precision);
+
+		var actual = new String(result.ToString().Take(Precision).ToArray());
+		Assert.AreEqual(expected, actual, nameof(BigDecimal.LogN));
+	}
+
+	[Test]
 	public static void Test_LogNatural()
 	{
 		int precision = 50;
@@ -431,8 +603,8 @@ public class TestBigDecimalTrigonometricFunctions
 		BigDecimal.AlwaysTruncate = false;
 		BigDecimal.AlwaysNormalize = false;
 
-		Tuple<string, string>[] questionAnswerValues = new Tuple<string, string>[]
-		{
+		Tuple<string, string>[] questionAnswerValues =
+		[
 			new Tuple<string, string>("0.000000001",   "-20.72326583694641115616192309215927786840991339765895678"),
 			new Tuple<string, string>("0.000777", "-7.16007020759662666323925507670903264742195605720039"),
 			new Tuple<string, string>("0.073155", "-2.61517480115201143841773779457374933266203002783292"),
@@ -459,7 +631,7 @@ public class TestBigDecimalTrigonometricFunctions
 			new Tuple<string, string>("314159.265358900100002000010000001", "12.65765535081937641690487638590342471261727645762702"),
 			new Tuple<string, string>("31415926535.8900100002000010000001", "24.17058081578960483699483365932524575062278390077089"),
 			new Tuple<string, string>("1409368056606849087457015313568.21404846132236496737", "69.42069420694206942069420694206942069420694206942069")
-		};
+		];
 
 		LogNaturalTimeElapsed = TimeSpan.Zero;
 		Console.WriteLine($"Beginning of test...");
@@ -472,181 +644,6 @@ public class TestBigDecimalTrigonometricFunctions
 		Console.WriteLine($"");
 		Console.WriteLine($"LogNatural Total Elapsed Milliseconds: {LogNaturalTimeElapsed.TotalMilliseconds} ms");
 		Console.WriteLine($"");
-	}
-
-	private static Stopwatch LogNaturalTimer = Stopwatch.StartNew();
-	private static TimeSpan LogNaturalTimeElapsed = TimeSpan.Zero;
-
-	private static void Test_Single(Tuple<string, string> questionAnswerValue, int precision)
-	{
-		BigDecimal input = BigDecimal.Parse(questionAnswerValue.Item1);
-		string expected = questionAnswerValue.Item2;
-
-		LogNaturalTimer.Restart();
-		BigDecimal result1 = BigDecimal.Ln(input, precision);
-		LogNaturalTimeElapsed = LogNaturalTimeElapsed.Add(LogNaturalTimer.Elapsed);
-
-		string actual = result1.ToString().Substring(0, expected.Length);
-
-		int matchCount = CharactersMatchCount(expected, actual);
-		string diffString = HightlightDiffControl(expected, actual);
-
-		Console.WriteLine($"-------- {nameof(BigDecimal)}.{nameof(BigDecimal.Ln)} --------");
-		Console.WriteLine($"   Input: {input}");
-		Console.WriteLine($"Expected: {expected}");
-		Console.WriteLine($"  Actual: {actual}");
-		Console.WriteLine($"          {diffString.Replace(Environment.NewLine, Environment.NewLine + "          ")}");
-		Console.WriteLine($"Match Count: {matchCount}");
-		Console.WriteLine($"");
-
-		// 48 out of the 50 digits to the right of the decimal point must be correct.
-		Assert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{diffString}");
-	}
-
-	private static int CharactersMatchCount(string expected, string actual)
-	{
-		int index = 0;
-		int counter = 0;
-		bool seenDecimalPoint = false;
-		foreach (char c in expected)
-		{
-			if (c != actual[index])
-			{
-				break;
-			}
-
-			if (seenDecimalPoint)
-			{
-				counter++;
-			}
-			else
-			{
-				if (c == '.')
-				{
-					seenDecimalPoint = true;
-					counter = 0;
-				}
-			}
-
-			index++;
-		}
-		return counter;
-	}
-
-
-	private static Dictionary<char, string> BoldedNumeralDictionary = new Dictionary<char, string>()
-	{
-		{'-',"-"},
-		{'.',"."},
-		{'0',"𝟬"},
-		{'1',"𝟭"},
-		{'2',"𝟮"},
-		{'3',"𝟯"},
-		{'4',"𝟰"},
-		{'5',"𝟱"},
-		{'6',"𝟲"},
-		{'7',"𝟳"},
-		{'8',"𝟴"},
-		{'9',"𝟵"}
-	};
-
-	private static string HightlightDiffControl(string expected, string actual)
-	{
-		int index = 0;
-		int maxLength = Math.Min(actual.Length, expected.Length);
-
-		bool matchSoFar = true;
-		StringBuilder result = new StringBuilder();
-		StringBuilder result2 = new StringBuilder();
-		foreach (char c in actual)
-		{
-			char? cmp = (index < maxLength) ? expected[index] : null;
-			if (matchSoFar && cmp.HasValue && c == cmp)
-			{
-				result.Append(BoldedNumeralDictionary[c]);
-				result2.Append('▀');
-			}
-			else
-			{
-				matchSoFar = false;
-				result.Append(' ');
-			}
-
-			index++;
-		}
-		return result.ToString() + Environment.NewLine + result2.ToString();
-	}
-
-	[Test]
-	public static void Test_Ln()
-	{
-		var argument = BigDecimal.Parse("65536");
-		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-		var expected = TestBigDecimalHelper.PrepareValue("11.09035488895912495067571394333082508920800214976", format);
-
-		var result = BigDecimal.Ln(argument, Precision);
-
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
-	}
-
-
-	[Test]
-	public static void Test_Ln_ChunkValue()
-	{
-		var argument = BigDecimal.Parse("13763555136");
-		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-
-		var expected = TestBigDecimalHelper.PrepareValue("23.34529000352234960050576234615311770969963762614", format);
-
-		var result = BigDecimal.Ln(argument, Precision);
-
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
-	}
-
-	[Test]
-	public static void Test_Log10()
-	{
-		var argument = BigDecimal.Parse("2");
-
-		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-		var expected = TestBigDecimalHelper.PrepareValue("0.301029995663981195213738894724493026768189881462", format);
-
-		var result = BigDecimal.Log10(argument, Precision);
-
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log10));
-	}
-
-	[Test]
-	public static void Test_Log2()
-	{
-		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-		var val = TestBigDecimalHelper.PrepareValue("46340.95002", format);
-
-		var argument = BigDecimal.Parse(val);
-		var expected = TestBigDecimalHelper.PrepareValue("15.50000000025398948770312730360932446932123539424", format);
-
-		var result = BigDecimal.Log2(argument, Precision);
-
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log2));
-	}
-
-	[Test]
-	public static void Test_LogN()
-	{
-		var @base = 3;
-		var argument = BigDecimal.Parse("65536");
-
-		var format = Thread.CurrentThread.CurrentCulture.NumberFormat;
-		var expected = TestBigDecimalHelper.PrepareValue("10.09487605714331899359243382948417366879337024211", format);
-
-		var result = BigDecimal.LogN(@base, argument, Precision);
-
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.LogN));
 	}
 
 	[Test]
