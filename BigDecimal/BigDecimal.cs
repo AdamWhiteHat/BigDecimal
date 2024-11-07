@@ -1282,9 +1282,12 @@ namespace ExtendedNumerics
 		public static BigDecimal Floor(BigDecimal value)
 		{
 			BigDecimal result = value.WholeValue;
-			if ((result != value.Mantissa) && (value <= 0))
+			if (result != value)
 			{
-				result -= 1;
+				if (value < BigDecimal.Zero)
+				{
+					result -= BigDecimal.One;
+				}
 			}
 			return result;
 		}

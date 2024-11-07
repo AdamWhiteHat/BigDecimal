@@ -379,6 +379,32 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestFloor005()
+		{
+			float start_compare = -2629440f;
+			BigDecimal start_test = BigDecimal.Parse("-2629440");
+
+			BigDecimal actualFloor = BigDecimal.Floor(start_test);
+
+			float expectedFloor = (float)Math.Floor(start_compare);
+
+			Assert.AreEqual(expectedFloor.ToString(), actualFloor.ToString());
+		}
+
+		[Test]
+		public void TestCeiling005()
+		{
+			float start_compare = -2629440f;
+			BigDecimal start_test = BigDecimal.Parse("-2629440");
+
+			BigDecimal actualCeil = BigDecimal.Ceiling(start_test);
+
+			float expectedCeil = (float)Math.Ceiling(start_compare);
+
+			Assert.AreEqual(expectedCeil.ToString(), actualCeil.ToString());
+		}
+
+		[Test]
 		public void TestMod1()
 		{
 
@@ -451,6 +477,40 @@ namespace TestBigDecimal
 			Assert.AreEqual(expectedString, actualString, $"{dividend} % {divisor} = {actual}");
 
 			TestContext.WriteLine($"{dividend} % {divisor} = {actual}");
+		}
+
+		[Test]
+		public void TestMod6()
+		{
+			BigDecimal NumberBDParse = BigDecimal.Parse("-157766400");
+			TestContext.WriteLine($"{NumberBDParse}");
+			BigDecimal actual = NumberBDParse % 60;
+			TestContext.WriteLine(actual);
+			Assert.AreEqual("0", actual.ToString(), "BigDecimal.Parse"); // ???
+
+			TestContext.WriteLine("---");
+
+			BigDecimal NumberBD = -157766400;
+			TestContext.WriteLine($"{NumberBD}");
+			actual = NumberBD % 60;
+			TestContext.WriteLine(actual);
+			Assert.AreEqual("0", actual.ToString(), "BigDecimal implicit cast to decimal or double"); // 60 (incorrect)
+
+			TestContext.WriteLine("---");
+
+			BigInteger NumberBI = -157766400;
+			TestContext.WriteLine($"{NumberBI}");
+			BigInteger actual2 = NumberBI % 60;
+			TestContext.WriteLine(actual2);
+			Assert.AreEqual("0", actual2.ToString(), "BigInteger"); // 0 (correct)
+
+			TestContext.WriteLine("---");
+
+			float NumberFL = -157766400;
+			TestContext.WriteLine($"{NumberFL}");
+			float actual3 = NumberFL % 60;
+			TestContext.WriteLine(actual3);
+			Assert.AreEqual("0", Math.Abs(actual3).ToString(), "float"); // 0 (correct)
 		}
 
 		[Test]
