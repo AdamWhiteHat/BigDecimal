@@ -103,9 +103,10 @@ namespace ExtendedNumerics
 		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a Decimal.</summary>
 		public BigDecimal(Decimal value)
 		{
-			BigDecimal results = Parse(value);
-			this.Mantissa = results.Mantissa;
-			this.Exponent = results.Exponent;
+			Int32 exponent = ((Decimal.GetBits(value)[3] & DecimalScaleMask) >> 16);
+			decimal value_scaled = value * (decimal)Math.Pow(10, exponent);
+			this.Mantissa = new BigInteger(value_scaled);
+			this.Exponent = -exponent;
 		}
 
 		#endregion
@@ -205,6 +206,7 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDemicalForInt32 => (BigDecimal)Int32.MaxValue;
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
 		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
+		private const Int32 DecimalScaleMask = 0x00FF0000;
 		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
 
 		#endregion
@@ -412,7 +414,7 @@ namespace ExtendedNumerics
 		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Decimal input) => Parse(input.ToString("G17"));
+		public static BigDecimal Parse(Decimal input) => new BigDecimal(input);
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		/// <param name="input">A string that contains a number to convert.</param>
@@ -681,7 +683,7 @@ namespace ExtendedNumerics
 		public static implicit operator BigDecimal(Single value) => Parse(value);
 
 		/// <summary>Performs an implicit conversion of a <see cref="Decimal"/> value to a <see cref="BigDecimal"/> value.</summary>
-		public static implicit operator BigDecimal(Decimal value) => Parse(value);
+		public static implicit operator BigDecimal(Decimal value) => new BigDecimal(value);
 
 		/// <summary>Performs an implicit conversion of a <see cref="Double"/> value to a <see cref="BigDecimal"/> value.</summary>
 		public static implicit operator BigDecimal(Double value) => Parse(value);

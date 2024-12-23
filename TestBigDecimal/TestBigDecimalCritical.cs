@@ -75,6 +75,22 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestConstructor_Decimal001()
+		{
+			string expected = "79193.074346525013163981460149";
+			decimal d = 79193.074346525013163981460149m;
+			BigDecimal bd = new BigDecimal(d);
+			string actual = bd.ToString();
+
+			TestContext.WriteLine($"string         :    {expected}");
+			TestContext.WriteLine($"decimal        :    {d}");
+			TestContext.WriteLine($"ToString(\"G17\"):    {d.ToString("G17")}"); 
+			TestContext.WriteLine($"BigDecimal     :    {bd}");
+			TestContext.WriteLine();
+			Assert.AreEqual(expected, actual, $"{expected} != {actual}");
+		}
+
+		[Test]
 		public void TestConstructor_Float()
 		{
 			string expected1 = "0.3486328";
