@@ -465,7 +465,7 @@ namespace ExtendedNumerics
 		/// <summary>Arbitrary precision inverse sine function.</summary>
 		/// <param name="radians">An angle, measured in radians, in the domain of -1 &lt; x &lt; 1</param>
 		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
-		/// <exception cref="ArgumentOutOfRangeException">The domain of <paramref name="Arcsin" /> is -1 &lt; x &lt; 1</exception>
+		/// <exception cref="ArgumentOutOfRangeException">The domain of <paramref name="radians" /> is -1 &lt; x &lt; 1</exception>
 		/// <returns>The inverse sine of <paramref name="radians"/>, in radians.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -1 &lt; x &lt; 1.</exception>
 		public static BigDecimal Arcsin(BigDecimal radians, int precision)
