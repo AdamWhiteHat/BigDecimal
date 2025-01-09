@@ -446,6 +446,10 @@ namespace ExtendedNumerics
 		/// </returns>
 		public static BigDecimal Parse(string input, IFormatProvider? provider)
 		{
+#if NET8_0_OR_GREATER
+			return Parse(input.AsSpan(), provider);
+#else
+
 			provider ??= BigDecimalNumberFormatInfo;
 
 			NumberFormatInfo numberFormatProvider = NumberFormatInfo.GetInstance(provider);
@@ -501,6 +505,7 @@ namespace ExtendedNumerics
 				result = Normalize(result);
 			}
 			return result;
+#endif
 		}
 
 #if NET8_0_OR_GREATER
