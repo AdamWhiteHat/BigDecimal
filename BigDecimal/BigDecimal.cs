@@ -408,13 +408,13 @@ namespace ExtendedNumerics
 		#region Parse
 
 		/// <summary>Converts the string representation of a float to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Single input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(float input) => Parse(input.ToString("R"));
 
 		/// <summary>Converts the string representation of a double to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(double input) => Parse(input.ToString("R"));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Decimal input) => new BigDecimal(input);
+		public static BigDecimal Parse(decimal input) => new(input);
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		/// <param name="input">A string that contains a number to convert.</param>
@@ -422,10 +422,18 @@ namespace ExtendedNumerics
 		/// A BigDecimal equivalent of the supplied string representation of a decimal number,
 		/// or zero if the input string was null, empty or whitespace.
 		/// </returns>
-		public static BigDecimal Parse(String input)
+		public static BigDecimal Parse(string input)
 		{
 			return Parse(input, BigDecimalNumberFormatInfo);
 		}
+
+#if NET8_0_OR_GREATER
+		/// <inheritdoc cref="Parse(string)"/>
+		public static BigDecimal Parse(ReadOnlySpan<char> input)
+		{
+			return Parse(input, BigDecimalNumberFormatInfo);
+		}
+#endif
 
 		/// <summary>
 		/// Converts the string representation of a decimal in a specified culture-specific format to its BigDecimal equivalent.
@@ -436,57 +444,54 @@ namespace ExtendedNumerics
 		/// A BigDecimal equivalent of the supplied string representation of a decimal number in the specified culture-specific format,
 		/// or zero if the input string was null, empty or whitespace.
 		/// </returns>
-		public static BigDecimal Parse(String input, IFormatProvider provider)
+		public static BigDecimal Parse(string input, IFormatProvider? provider)
 		{
-			if (provider is null)
-			{
-				provider = BigDecimalNumberFormatInfo;
-			}
+			provider ??= BigDecimalNumberFormatInfo;
 
 			NumberFormatInfo numberFormatProvider = NumberFormatInfo.GetInstance(provider);
 
 			input = input.Trim();
-			if (String.IsNullOrEmpty(input))
+			if (string.IsNullOrEmpty(input))
 			{
-				return BigInteger.Zero;
+				return Zero;
 			}
 
-			var exponent = 0;
-			var isNegative = false;
+			int exponent = 0;
+			bool isNegative = false;
 
 			if (input.StartsWith(numberFormatProvider.NegativeSign, StringComparison.OrdinalIgnoreCase))
 			{
 				isNegative = true;
-				input = input.TrimStart([numberFormatProvider.NegativeSign.Single()]);
+				input = input.Substring(numberFormatProvider.NegativeSign.Length);
 			}
 
-			var posE = input.LastIndexOf('E') + 1;
+			int posE = input.LastIndexOf("E", StringComparison.OrdinalIgnoreCase) + 1;
 			if (posE > 0)
 			{
-				var sE = input.Substring(posE);
+				string sE = input.Substring(posE);
 
-				if (Int32.TryParse(sE, out exponent))
+				if (int.TryParse(sE, out exponent))
 				{
-					//Trim off the exponent
+					// Trim off the exponent
 					input = input.Substring(0, posE - 1);
 				}
 			}
 
 			if (input.Contains(numberFormatProvider.NumberDecimalSeparator))
 			{
-				var decimalPlace = input.IndexOf(numberFormatProvider.NumberDecimalSeparator, StringComparison.Ordinal);
+				int decimalPlace = input.IndexOf(numberFormatProvider.NumberDecimalSeparator);
 
 				exponent += (decimalPlace + 1) - input.Length;
-				input = input.Replace(numberFormatProvider.NumberDecimalSeparator, String.Empty);
+				input = input.Replace(numberFormatProvider.NumberDecimalSeparator, string.Empty);
 			}
 
-			var mantissa = BigInteger.Parse(input, numberFormatProvider);
+			BigInteger mantissa = BigInteger.Parse(input, numberFormatProvider);
 			if (isNegative)
 			{
 				mantissa = BigInteger.Negate(mantissa);
 			}
 
-			BigDecimal result = new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
+			BigDecimal result = new(new Tuple<BigInteger, int>(mantissa, exponent));
 			if (AlwaysTruncate)
 			{
 				result = Round(result, Precision);
@@ -497,6 +502,68 @@ namespace ExtendedNumerics
 			}
 			return result;
 		}
+
+#if NET8_0_OR_GREATER
+		/// <inheritdoc cref="Parse(string, IFormatProvider?)"/>
+		public static BigDecimal Parse(ReadOnlySpan<char> input, IFormatProvider? provider)
+		{
+			provider ??= BigDecimalNumberFormatInfo;
+
+			NumberFormatInfo numberFormatProvider = NumberFormatInfo.GetInstance(provider);
+
+			input = input.Trim();
+			if (input.IsEmpty)
+			{
+				return Zero;
+			}
+
+			int exponent = 0;
+			bool isNegative = false;
+
+			if (input.StartsWith(numberFormatProvider.NegativeSign, StringComparison.OrdinalIgnoreCase))
+			{
+				isNegative = true;
+				input = input.Slice(numberFormatProvider.NegativeSign.Length);
+			}
+
+			int posE = input.LastIndexOf('E') + 1;
+			if (posE > 0)
+			{
+				ReadOnlySpan<char> sE = input.Slice(posE);
+
+				if (int.TryParse(sE, out exponent))
+				{
+					// Trim off the exponent
+					input = input.Slice(0, posE - 1);
+				}
+			}
+
+			if (input.Contains(numberFormatProvider.NumberDecimalSeparator.AsSpan(), StringComparison.Ordinal))
+			{
+				int decimalPlace = input.IndexOf(numberFormatProvider.NumberDecimalSeparator);
+
+				exponent += (decimalPlace + 1) - input.Length;
+				input = input.ToString().Replace(numberFormatProvider.NumberDecimalSeparator, string.Empty);
+			}
+
+			BigInteger mantissa = BigInteger.Parse(input, numberFormatProvider);
+			if (isNegative)
+			{
+				mantissa = BigInteger.Negate(mantissa);
+			}
+
+			BigDecimal result = new(new Tuple<BigInteger, int>(mantissa, exponent));
+			if (AlwaysTruncate)
+			{
+				result = Round(result, Precision);
+			}
+			if (AlwaysNormalize)
+			{
+				result = Normalize(result);
+			}
+			return result;
+		}
+#endif
 
 		/// <summary>
 		/// Tries to convert the string representation of a number to its BigDecimal equivalent, and returns a value that indicates whether the conversion succeeded.
@@ -509,10 +576,18 @@ namespace ExtendedNumerics
 		/// True if parsing was successful and the out parameter contains the parsed value.
 		/// False if parsing failed and the out parameter contains default(BigDecimal).
 		/// </returns>
-		public static bool TryParse(String input, out BigDecimal result)
+		public static bool TryParse(string input, out BigDecimal result)
 		{
 			return TryParse(input, BigDecimalNumberFormatInfo, out result);
 		}
+
+#if NET8_0_OR_GREATER
+		/// <inheritdoc cref="TryParse(string, out BigDecimal)"/>
+		public static bool TryParse(ReadOnlySpan<char> input, out BigDecimal result)
+		{
+			return TryParse(input, BigDecimalNumberFormatInfo, out result);
+		}
+#endif
 
 		/// <summary>
 		/// Tries to convert the string representation of a number in a specified style and culture-specific format
@@ -528,7 +603,7 @@ namespace ExtendedNumerics
 		/// True if parsing was successful and the out parameter contains the parsed value.
 		/// False if parsing failed and the out parameter contains default(BigDecimal).
 		/// </returns>
-		public static bool TryParse(String input, IFormatProvider provider, out BigDecimal result)
+		public static bool TryParse(string input, IFormatProvider? provider, out BigDecimal result)
 		{
 			try
 			{
@@ -538,12 +613,30 @@ namespace ExtendedNumerics
 			}
 			catch
 			{
+				result = default;
+				return false;
 			}
-			result = default(BigDecimal);
-			return false;
 		}
 
-		#endregion
+#if NET8_0_OR_GREATER
+		/// <inheritdoc cref="TryParse(string, IFormatProvider?, out BigDecimal)"/>
+		public static bool TryParse(ReadOnlySpan<char> input, IFormatProvider? provider, out BigDecimal result)
+		{
+			try
+			{
+				BigDecimal output = Parse(input, provider);
+				result = output;
+				return true;
+			}
+			catch
+			{
+				result = default;
+				return false;
+			}
+		}
+#endif
+
+#endregion
 
 		#region Get Decimal Parts
 
