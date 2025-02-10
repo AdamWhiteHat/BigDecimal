@@ -14,6 +14,13 @@
 		<RootNamespace>TestBigDecimal</RootNamespace>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3000</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">2</PatchVersion>
+		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
+	</PropertyGroup>
+
 	<Choose>
 		<When Condition="'$(Configuration)'=='Debug'">
 			<PropertyGroup>
@@ -43,6 +50,8 @@
 
 	<PropertyGroup>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\BigDecimalPrivate.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -50,8 +59,8 @@
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 		<PackageReference Include="NUnit" Version="3.14.0" />
 		<PackageReference Include="NUnit3TestAdapter" Version="4.1.0" />
-	</ItemGroup>
+	</ItemGroup>	
 	<ItemGroup>
 		<ProjectReference Include="..\BigDecimal\BigDecimal.csproj" />
-	</ItemGroup>
+	</ItemGroup>	
 </Project>

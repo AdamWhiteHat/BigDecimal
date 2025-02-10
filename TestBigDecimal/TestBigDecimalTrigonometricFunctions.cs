@@ -489,18 +489,17 @@ public class TestBigDecimalTrigonometricFunctions
 		string actual = result1.ToString().Substring(0, expected.Length);
 
 		int matchCount = CharactersMatchCount(expected, actual);
-		string diffString = HightlightDiffControl(expected, actual);
 
 		Console.WriteLine($"-------- {nameof(BigDecimal)}.{nameof(BigDecimal.Ln)} --------");
 		Console.WriteLine($"   Input: {input}");
 		Console.WriteLine($"Expected: {expected}");
 		Console.WriteLine($"  Actual: {actual}");
-		Console.WriteLine($"          {diffString.Replace(Environment.NewLine, Environment.NewLine + "          ")}");
+		Common.HightlightDiffControl(expected, actual, 10);
 		Console.WriteLine($"Match Count: {matchCount}");
 		Console.WriteLine($"");
 
 		// 48 out of the 50 digits to the right of the decimal point must be correct.
-		Assert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{diffString}");
+		Assert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}");
 	}
 
 	private static int CharactersMatchCount(string expected, string actual)
@@ -531,50 +530,6 @@ public class TestBigDecimalTrigonometricFunctions
 			index++;
 		}
 		return counter;
-	}
-
-
-	private static Dictionary<char, string> BoldedNumeralDictionary = new Dictionary<char, string>()
-	{
-		{'-',"-"},
-		{'.',"."},
-		{'0',"𝟬"},
-		{'1',"𝟭"},
-		{'2',"𝟮"},
-		{'3',"𝟯"},
-		{'4',"𝟰"},
-		{'5',"𝟱"},
-		{'6',"𝟲"},
-		{'7',"𝟳"},
-		{'8',"𝟴"},
-		{'9',"𝟵"}
-	};
-
-	private static string HightlightDiffControl(string expected, string actual)
-	{
-		int index = 0;
-		int maxLength = Math.Min(actual.Length, expected.Length);
-
-		bool matchSoFar = true;
-		StringBuilder result = new StringBuilder();
-		StringBuilder result2 = new StringBuilder();
-		foreach (char c in actual)
-		{
-			char? cmp = (index < maxLength) ? expected[index] : null;
-			if (matchSoFar && cmp.HasValue && c == cmp)
-			{
-				result.Append(BoldedNumeralDictionary[c]);
-				result2.Append('▀');
-			}
-			else
-			{
-				matchSoFar = false;
-				result.Append(' ');
-			}
-
-			index++;
-		}
-		return result.ToString() + Environment.NewLine + result2.ToString();
 	}
 
 	[Test]
