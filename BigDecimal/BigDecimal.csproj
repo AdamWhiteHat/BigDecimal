@@ -26,6 +26,7 @@
 		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic trigonometry logarithms numerics numbers biginteger bigdecimal hyperbolic inverse trigonometric sine cosine tangent secant circular angles sin cos tan mantissa exponent floating point base10 csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedNumerics.BigDecimal/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/AdamWhiteHat/BigDecimal</RepositoryUrl>
+		<PackageIcon>real.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
@@ -33,7 +34,7 @@
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3000</MajorVersion>
 		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">3</PatchVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">4</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -74,6 +75,14 @@
 			</PropertyGroup>
 		</When>
 	</Choose>
+
+	<ItemGroup>
+	  <None Remove="Properties\Images\real.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Properties\Images\real.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<None Include="..\README.md">
