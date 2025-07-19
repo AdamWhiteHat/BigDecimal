@@ -84,7 +84,7 @@ namespace TestBigDecimal
 
 			TestContext.WriteLine($"string         :    {expected}");
 			TestContext.WriteLine($"decimal        :    {d}");
-			TestContext.WriteLine($"ToString(\"G17\"):    {d.ToString("G17")}"); 
+			TestContext.WriteLine($"ToString(\"G17\"):    {d.ToString("G17")}");
 			TestContext.WriteLine($"BigDecimal     :    {bd}");
 			TestContext.WriteLine();
 			Assert.AreEqual(expected, actual, $"{expected} != {actual}");
@@ -329,6 +329,7 @@ namespace TestBigDecimal
 		public void TestAlwaysTruncate()
 		{
 			var savePrecision = BigDecimal.Precision;
+			bool saveAlwaysTruncate = BigDecimal.AlwaysTruncate;
 			var expected1 = TestBigDecimalHelper.PrepareValue("3.1415926535", this.Format);
 			var expected2 = TestBigDecimalHelper.PrepareValue("-3.1415926535", this.Format);
 			var expected3 = TestBigDecimalHelper.PrepareValue("-0.0000031415", this.Format);
@@ -339,32 +340,27 @@ namespace TestBigDecimal
 			var actual3 = "";
 			var actual4 = "";
 
-			try
-			{
-				BigDecimal.Precision = 10;
-				BigDecimal.AlwaysTruncate = true;
+			BigDecimal.Precision = 10;
+			BigDecimal.AlwaysTruncate = true;
 
-				var val1 = TestBigDecimalHelper.PrepareValue("3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
-				BigDecimal parsed1 = BigDecimal.Parse(val1);
+			var val1 = TestBigDecimalHelper.PrepareValue("3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
+			BigDecimal parsed1 = BigDecimal.Parse(val1);
 
-				var val2 = TestBigDecimalHelper.PrepareValue("-3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
-				BigDecimal parsed2 = BigDecimal.Parse(val2);
+			var val2 = TestBigDecimalHelper.PrepareValue("-3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
+			BigDecimal parsed2 = BigDecimal.Parse(val2);
 
-				var val3 = TestBigDecimalHelper.PrepareValue("-0.00000314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
-				BigDecimal parsed3 = BigDecimal.Parse(val3);
+			var val3 = TestBigDecimalHelper.PrepareValue("-0.00000314159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808651328230664709384460955058223172535", this.Format);
+			BigDecimal parsed3 = BigDecimal.Parse(val3);
 
-				BigDecimal parsed4 = BigDecimal.Parse("-3");
+			BigDecimal parsed4 = BigDecimal.Parse("-3");
 
-				actual1 = parsed1.ToString();
-				actual2 = parsed2.ToString();
-				actual3 = parsed3.ToString();
-				actual4 = parsed4.ToString();
-			}
-			finally
-			{
-				BigDecimal.Precision = savePrecision;
-				BigDecimal.AlwaysTruncate = false;
-			}
+			actual1 = parsed1.ToString();
+			actual2 = parsed2.ToString();
+			actual3 = parsed3.ToString();
+			actual4 = parsed4.ToString();
+
+			BigDecimal.Precision = savePrecision;
+			BigDecimal.AlwaysTruncate = saveAlwaysTruncate;
 
 			Assert.AreEqual(expected1, actual1, "#: 1");
 			Assert.AreEqual(expected2, actual2, "#: 2");
@@ -461,7 +457,7 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected8, actual8, $"Test Truncate On All Arithmetic Operations  - #8: ");
 			Assert.AreEqual(expected9, actual9, $"Test Truncate On All Arithmetic Operations  - #9: ");
 			Assert.AreEqual(expected10, actual10, $"Test Truncate On All Arithmetic Operations - #10: ");
-			Assert.AreEqual(expected11, actual11, $"Test Truncate On All Arithmetic Operations - #11: ");						
+			Assert.AreEqual(expected11, actual11, $"Test Truncate On All Arithmetic Operations - #11: ");
 		}
 	}
 
