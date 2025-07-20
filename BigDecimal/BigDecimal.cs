@@ -207,7 +207,17 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
 		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
 		private const Int32 DecimalScaleMask = 0x00FF0000;
-		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
+		private static NumberFormatInfo BigDecimalNumberFormatInfo = new System.Globalization.NumberFormatInfo()
+		{
+			NativeDigits = CultureInfo.CurrentCulture.NumberFormat.NativeDigits,
+			PositiveSign = CultureInfo.CurrentCulture.NumberFormat.PositiveSign,
+			NegativeSign = CultureInfo.CurrentCulture.NumberFormat.NegativeSign,
+			NumberNegativePattern = CultureInfo.CurrentCulture.NumberFormat.NumberNegativePattern,
+			NumberGroupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
+			NumberGroupSizes = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes,
+			NumberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator,
+			NumberDecimalDigits = 0
+		};
 
 		#endregion
 
@@ -225,8 +235,8 @@ namespace ExtendedNumerics
 		/// A return value of greater than zero means this instance follows the other value in the sort order.
 		/// </returns>
 		public Int32 CompareTo(BigDecimal other) =>
-			this < other ? SortingOrder.Before :
-			this > other ? SortingOrder.After : SortingOrder.Same;
+				this < other ? SortingOrder.Before :
+				this > other ? SortingOrder.After : SortingOrder.Same;
 
 		/// <summary>
 		/// Compares the current instance to a <see cref="Decimal"/> floating point value and returns
@@ -1368,9 +1378,28 @@ namespace ExtendedNumerics
 				result += zeroString;
 			}
 
+			int decimalPlaces = 0;
+			if (negativeExponent)
+			{
+				decimalPlaces = Math.Abs(exponent);
+			}
+
+			int paddZeros = formatProvider.NumberDecimalDigits - decimalPlaces;
+			if (paddZeros < 0)
+			{
+				paddZeros = 0;
+			}
+			if (paddZeros > 0)
+			{
+				if (!result.Contains(formatProvider.NumberDecimalSeparator))
+				{
+					result += formatProvider.NumberDecimalSeparator;
+				}
+				result += String.Concat(Enumerable.Repeat(formatProvider.NativeDigits[0], paddZeros));
+			}
+
 			if (negativeValue)
 			{
-
 				// Prefix "-"
 				result = result.Insert(0, formatProvider.NegativeSign);
 			}
