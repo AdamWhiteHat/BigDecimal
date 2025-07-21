@@ -723,6 +723,83 @@ namespace ExtendedNumerics
 			return result;
 		}
 
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		/// 2025-06-27: schlebe: add fast and precise exp() function
+		public static BigDecimal Exp_Fast_and_Accurate(BigDecimal x)
+		{
+			BigDecimal x_exp_n = BigDecimal.One;
+			BigDecimal dSum = BigDecimal.One;
+			BigDecimal dFactoriel = BigDecimal.One;
+			int n = 1;
+			int nMax = BigDecimal.Precision;
+			BigDecimal eX = BigDecimal.E;
+			BigDecimal eK = BigDecimal.One;
+			BigDecimal xPrecisionLimit = new BigDecimal(1, -BigDecimal.Precision);
+			BigDecimal z;
+			BigDecimal dSum0 = BigDecimal.Zero;
+			var iPrecision0 = BigDecimal.Precision;
+			int k = (int)BigDecimal.Floor(x);
+
+			z = x - k;
+
+			int iNrDigit = (int)BigDecimal.Floor(new BigDecimal(k) / BigDecimal.Ln(10.0));
+
+			if (x > 0)
+			{
+				BigDecimal.Precision += iNrDigit + 3;
+			}
+			else
+			{
+				BigDecimal.Precision += iNrDigit + 4;
+			}
+
+			//2025-06-12.: schlebe: in VB.net version nExpPrevision is defined in static class
+			// to return number of loop necessary to get specific precision.
+			int nExpPrecision0 = 0;
+
+			if (z > 0)
+			{
+				while (true)
+				{
+					x_exp_n *= z;
+					dFactoriel *= n;
+					dSum += x_exp_n / dFactoriel;
+
+					if (dSum - dSum0 < xPrecisionLimit)
+					{
+						nExpPrecision0 = n;
+						break;
+					}
+
+					dSum0 = dSum;
+					n += 1;
+					if (n > nMax)
+					{
+						//2025-06-30:schlebe: this exception must be defined to inform user
+						// that there is a problem that, normally, must never occur !
+						//throw new ArgumentException(string.Format(LanguageResources.Error_Insuffisiant_Precision), nameof(argument));
+					}
+				}
+			}
+
+			if (x < 0)
+			{
+				eK = Pow_Fast(BigDecimal.E, -k);
+				dSum /= eK;
+			}
+			else
+			{
+				eK = Pow_Fast(BigDecimal.E, k);
+				dSum *= eK;
+			}
+
+			BigDecimal.Precision = iPrecision0;
+			BigDecimal.nExpPrecision = nExpPrecision0;
+			return dSum;
+		}
+
 		/// <summary>
 		/// Returns the natural logarithm of the input.
 		/// </summary>
