@@ -33,8 +33,8 @@
 
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3001</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">1</PatchVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 

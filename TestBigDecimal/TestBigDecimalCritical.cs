@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Numerics;
+using System.Reflection;
 using System.Threading;
 using ExtendedNumerics;
 using NUnit.Framework;
@@ -224,6 +225,26 @@ namespace TestBigDecimal
 
 			var actual = bigDecimal.ToString();
 			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void TestCurrentThreadChangeCulture()
+		{
+			Thread.CurrentThread.CurrentCulture = new CultureInfo("fr_FR");
+			Thread.CurrentThread.CurrentUICulture = new CultureInfo("fr_FR");
+
+			BigDecimal ten = new BigDecimal(10);
+			var result = BigDecimal.Ln(ten);
+			TestContext.WriteLine($"ln({ten}) = {result}");
+
+			BigDecimal threePointOneFour = BigDecimal.Parse("3.14");
+			BigDecimal threeCommaOneFour = BigDecimal.Parse("3,14");
+
+			TestContext.WriteLine($"Parse(\"3.14\") = {threePointOneFour}");
+			TestContext.WriteLine($"Parse(\"3,14\") = {threeCommaOneFour}");
+
+			string expected = "3,14";
+			Assert.AreEqual(expected, threePointOneFour.ToString());
 		}
 
 		[Test]

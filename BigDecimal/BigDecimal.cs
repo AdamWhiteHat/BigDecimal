@@ -418,10 +418,10 @@ namespace ExtendedNumerics
 		#region Parse
 
 		/// <summary>Converts the string representation of a float to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Single input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(Single input) => Parse(input.ToString("R", BigDecimalNumberFormatInfo));
 
 		/// <summary>Converts the string representation of a double to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(Double input) => Parse(input.ToString("R", BigDecimalNumberFormatInfo));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		public static BigDecimal Parse(Decimal input) => new BigDecimal(input);
@@ -574,8 +574,8 @@ namespace ExtendedNumerics
 				return value;
 			}
 
-			var s = value.Mantissa.ToString();
-			var pos = s.LastIndexOf('0', s.Length - 1);
+			var s = value.Mantissa.ToString(BigDecimalNumberFormatInfo);
+			var pos = s.LastIndexOf(BigDecimalNumberFormatInfo.NativeDigits[0][0], s.Length - 1);
 
 			if (pos < (s.Length - 1))
 			{
@@ -584,7 +584,7 @@ namespace ExtendedNumerics
 
 			var c = s[pos];
 
-			while ((pos > 0) && (c == '0'))
+			while ((pos > 0) && (c == BigDecimalNumberFormatInfo.NativeDigits[0][0]))
 			{
 				c = s[--pos]; //scan backwards to find the last not-0.
 			}
@@ -640,7 +640,7 @@ namespace ExtendedNumerics
 		public BigDecimal GetFractionalPart()
 		{
 			var resultString = String.Empty;
-			var decimalString = this.ToString();
+			var decimalString = this.ToString(BigDecimalNumberFormatInfo);
 
 			var valueSplit = decimalString.Split(BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray());
 			if (valueSplit.Length == 1)
@@ -653,7 +653,7 @@ namespace ExtendedNumerics
 				resultString = valueSplit[1];
 			}
 
-			var newmantissa = BigInteger.Parse(resultString.TrimStart('0'));
+			var newmantissa = BigInteger.Parse(resultString.TrimStart(BigDecimalNumberFormatInfo.NativeDigits[0][0]));
 			var result = new BigDecimal(newmantissa, 0 - resultString.Length);
 			return result;
 		}
@@ -714,7 +714,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Double);
 			}
-			return Convert.ToDouble(value.ToString());
+			return Convert.ToDouble(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Single" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -726,7 +726,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Single);
 			}
-			return Convert.ToSingle(value.ToString());
+			return Convert.ToSingle(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Decimal" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -738,7 +738,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Decimal);
 			}
-			return Convert.ToDecimal(value.ToString());
+			return Convert.ToDecimal(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Int32" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -750,7 +750,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Int32);
 			}
-			return Convert.ToInt32(value.ToString());
+			return Convert.ToInt32(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="UInt32" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -762,7 +762,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_UInt32);
 			}
-			return Convert.ToUInt32(value.ToString());
+			return Convert.ToUInt32(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		#endregion
@@ -1281,7 +1281,7 @@ namespace ExtendedNumerics
 		{
 			if (precision < 0)
 			{
-				string integer = value.WholeValue.ToString();
+				string integer = value.WholeValue.ToString(BigDecimalNumberFormatInfo);
 				int len = integer.Length;
 				if (Math.Abs(precision) >= len)
 				{
@@ -1290,7 +1290,7 @@ namespace ExtendedNumerics
 				int diff = len + precision;
 
 				string result = integer.Substring(0, diff);
-				result += new string(Enumerable.Repeat('0', Math.Abs(precision)).ToArray());
+				result += new string(Enumerable.Repeat(BigDecimalNumberFormatInfo.NativeDigits[0][0], Math.Abs(precision)).ToArray());
 				return BigDecimal.Parse(result);
 			}
 			return Round(value, precision, RoundingStrategy.AwayFromZero);
@@ -1343,7 +1343,7 @@ namespace ExtendedNumerics
 			var negativeValue = mantissa.Sign == -1;
 			var negativeExponent = Math.Sign(exponent) == -1;
 
-			var result = BigInteger.Abs(mantissa).ToString();
+			var result = BigInteger.Abs(mantissa).ToString(provider);
 			var absExp = Math.Abs(exponent);
 
 			if (negativeExponent)
@@ -1366,7 +1366,7 @@ namespace ExtendedNumerics
 					}
 				}
 
-				result = result.TrimEnd('0');
+				result = result.TrimEnd(formatProvider.NativeDigits[0][0]);
 				if (result.Last().ToString() == formatProvider.NumberDecimalSeparator)
 				{
 					result = result.Substring(0, result.Length - 1);
@@ -1427,10 +1427,10 @@ namespace ExtendedNumerics
 			}
 
 			//TODO none of this is tested or guaranteed to work yet. Like negatives, or small numbers need the correct logic.
-			string sign = "+";
+			string sign = BigDecimalNumberFormatInfo.PositiveSign;
 			if (Math.Sign(exponent) == -1)
 			{
-				sign = "-";
+				sign = BigDecimalNumberFormatInfo.NegativeSign;
 			}
 			var result = $"{mantissa.Insert(point, BigDecimalNumberFormatInfo.NumberDecimalSeparator)}E{sign}{Math.Abs(exponent)}";
 			return result;
