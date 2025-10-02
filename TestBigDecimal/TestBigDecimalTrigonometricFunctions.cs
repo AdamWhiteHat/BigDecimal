@@ -675,12 +675,14 @@ public class TestBigDecimalTrigonometricFunctions
 
 
 	[Test]
+	[NonParallelizable]
 	public static void OLD_Test_Exp_EdgeCases()
 	{
 		Test_Exp_EdgeCases(BigDecimal.Exp);
 	}
 
 	[Test]
+	[NonParallelizable]
 	public static void NEW_Test_Exp_EdgeCases()
 	{
 		Test_Exp_EdgeCases(BigDecimal.Exp_Fast_and_Accurate);
@@ -728,6 +730,7 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
+	[NonParallelizable]
 	public static void OLD_Test_Exp_Large()
 	{
 		int precision = 355;
@@ -735,6 +738,7 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
+	[NonParallelizable]
 	public static void NEW_Test_Exp_Large()
 	{
 		int precision = 355;
@@ -764,6 +768,8 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
+	[MaxTime(90000)]
+	[NonParallelizable]
 	public static void OLD_Test_Exp_Timing()
 	{
 		int precision = 200;
@@ -771,6 +777,8 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
+	[MaxTime(90000)]
+	[NonParallelizable]
 	public static void NEW_Test_Exp_Timing()
 	{
 		int precision = 200;

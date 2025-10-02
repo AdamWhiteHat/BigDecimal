@@ -805,7 +805,7 @@ namespace ExtendedNumerics
 			}
 
 			BigDecimal.Precision = iPrecision0;
-			//nExpPrecision = nExpPrecision0;
+			//BigDecimal.nExpPrecision = nExpPrecision0;
 			return dSum;
 		}
 
