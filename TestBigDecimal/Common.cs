@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExtendedNumerics;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace TestBigDecimal
 {
@@ -49,7 +50,7 @@ namespace TestBigDecimal
 				string _expected = expected.Substring(0, minimumCorrectDigits);
 				string _actual = actual.Substring(0, minimumCorrectDigits);
 
-				NUnit.Framework.Assert.AreEqual(_expected, _actual);
+				ClassicAssert.AreEqual(_expected, _actual);
 			}
 		}
 	}

@@ -1,25 +1,25 @@
-﻿namespace TestBigDecimal;
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Security.Policy;
 using System.Text;
 using System.Threading;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
+using NUnit.Framework.Legacy;
+using TestBigDecimal;
+
+namespace BigDecimalTests;
 
 [TestFixture]
-[Culture("en-US,ru-RU")]
 [NonParallelizable]
 public class TestBigDecimalTrigonometricFunctions
 {
-	private static Dictionary<string, Func<BigDecimal, bool>> FunctionDomainTestDictionary = new Dictionary<string, Func<BigDecimal, bool>>
+	private static readonly Dictionary<string, Func<BigDecimal, bool>> FunctionDomainTestDictionary = new()
 	{
 		{ "Arccsc", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
 		{ "Arcsec", new Func<BigDecimal, bool>((radians) => { return (radians > -1 && radians < 1); })},
@@ -29,14 +29,23 @@ public class TestBigDecimalTrigonometricFunctions
 		{ "Coth", new Func<BigDecimal, bool>((radians) => { return ( BigDecimal.Normalize(radians).IsZero()); })}
 	};
 
+	private const int Precision = 50;
+
+	[OneTimeSetUp]
+	public void SetUp()
+	{
+		BigDecimal.Precision = 50;
+		BigDecimal.AlwaysTruncate = false;
+	}
+
 	private static void ExecMethod(
 		BigDecimal input,
-		Func<BigDecimal, Int32, BigDecimal> testFunc,
-		Func<Double, Double> comparisonFunc,
-		Int32 precision,
-		Int32 matchDigits,
-		String testDescription,
-		String? callerName = null)
+		Func<BigDecimal, int, BigDecimal> testFunc,
+		Func<double, double> comparisonFunc,
+		int precision,
+		int matchDigits,
+		string testDescription,
+		string? callerName = null)
 	{
 		var matches = FunctionDomainTestDictionary.Where(kvp => callerName.Contains(kvp.Key));
 		if (matches.Any())
@@ -52,10 +61,10 @@ public class TestBigDecimalTrigonometricFunctions
 		var inputString = $"Input: {input}";
 		TestContext.WriteLine(inputString);
 
-		var doubleInput = (Double)input;
+		var doubleInput = (double)input;
 		var doubleExpected = comparisonFunc(doubleInput);
 
-		if (Double.IsNaN(doubleExpected) || Double.IsInfinity(doubleExpected))
+		if (double.IsNaN(doubleExpected) || double.IsInfinity(doubleExpected))
 		{
 			TestContext.WriteLine("SKIPPED: The value of this function for this input is undefined.");
 
@@ -97,7 +106,7 @@ public class TestBigDecimalTrigonometricFunctions
 		var truncatedExpecting = stringExpected.Substring(0, expectedTruncLength);
 		var truncatedActual = stringActual.Substring(0, actualTruncLength);
 
-		Double.TryParse(truncatedActual, out var doubleActual);
+		double.TryParse(truncatedActual, out var doubleActual);
 
 		var testInfo = $"{callerName}: {testDescription}{Environment.NewLine}{inputString}";
 		TestContext.WriteLine($"[{testInfo}]");
@@ -116,7 +125,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 			if (displayString.Length > 65)
 			{
-				displayString = new String(displayString.Take(65).ToArray()) + $"... ({displayString.Length - 65} more digits)";
+				displayString = new string(displayString.Take(65).ToArray()) + $"... ({displayString.Length - 65} more digits)";
 			}
 
 			TestContext.WriteLine($"Expecting: {doubleExpected}");
@@ -127,24 +136,22 @@ public class TestBigDecimalTrigonometricFunctions
 
 		if (testPassed)
 		{
-			Assert.AreEqual(truncatedExpecting, truncatedActual, testInfo);
+			ClassicAssert.AreEqual(truncatedExpecting, truncatedActual, testInfo);
 		}
 		else
 		{
 			var delta = 0.0001;
-			Assert.AreEqual(doubleExpected, doubleActual, delta, testInfo);
+			ClassicAssert.AreEqual(doubleExpected, doubleActual, delta, testInfo);
 		}
 	}
 
-	protected static Int32 Precision = 50;
-
 	protected static void Test_TrigFunction(
-		Func<BigDecimal, Int32, BigDecimal> testFunc,
-		Func<Double, Double> comparisonFunc,
-		Int32 matchDigits,
-		Int32 precision,
-		Int32 sign = 1,
-		[CallerMemberName] String callerName = "")
+		Func<BigDecimal, int, BigDecimal> testFunc,
+		Func<double, double> comparisonFunc,
+		int matchDigits,
+		int precision,
+		int sign = 1,
+		[CallerMemberName] string callerName = "")
 	{
 
 		//var e = BigDecimal.Parse("2.718281828459045235360287471352662497757247093699959574966967627724076630353547594571382178525166427");
@@ -188,7 +195,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var sgn = sign == -1 ? "-" : "";
 
-		var callerNameBanner = " * ".PadRight(3 + leftPad) + String.Join(" * ", Enumerable.Repeat(callerName, repeatTimes)) +
+		var callerNameBanner = " * ".PadRight(3 + leftPad) + string.Join(" * ", Enumerable.Repeat(callerName, repeatTimes)) +
 							   " * ".PadLeft(3 + rightPad);
 
 		TestContext.WriteLine($"<{callerName}>");
@@ -260,14 +267,6 @@ public class TestBigDecimalTrigonometricFunctions
 		TestContext.WriteLine($"</{callerName}>");
 	}
 
-	[OneTimeSetUp]
-	public void SetUp()
-	{
-		Precision = 50;
-		BigDecimal.Precision = Precision;
-		BigDecimal.AlwaysTruncate = false;
-	}
-
 	[Test]
 	public static void Test_Arccos1()
 	{
@@ -275,7 +274,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		return;
 
-		static Double Func(Double x)
+		static double Func(double x)
 		{
 			var input = Math.Abs(x) % 1;
 			var output = Math.Atan(Math.Sqrt(1.0d - Math.Pow(input, 2)) / input);
@@ -296,7 +295,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		return;
 
-		static Double Func(Double x)
+		static double Func(double x)
 		{
 			var input = Math.Abs(x) % 1;
 			var output = Math.Atan(Math.Sqrt(1.0d - Math.Pow(input, 2)) / input);
@@ -318,7 +317,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		return;
 
-		static Double Arccot(Double x) => (Math.PI / 2) - Math.Atan(x);
+		static double Arccot(double x) => (Math.PI / 2) - Math.Atan(x);
 	}
 
 	[Test]
@@ -329,7 +328,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		return;
 
-		static Double Arccsc(Double x) => Math.Asin(1 / x);
+		static double Arccsc(double x) => Math.Asin(1 / x);
 	}
 
 	[Test]
@@ -340,7 +339,7 @@ public class TestBigDecimalTrigonometricFunctions
 
 		return;
 
-		static Double Asin(Double x)
+		static double Asin(double x)
 		{
 			var input = Math.Abs(x) % 1;
 
@@ -378,7 +377,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// cot = cos / sin
-		static Double Cot(Double x) => Math.Cos(x) / Math.Sin(x);
+		static double Cot(double x) => Math.Cos(x) / Math.Sin(x);
 	}
 
 	[Test]
@@ -390,7 +389,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// coth = cosh / sinh
-		static Double Coth(Double x) => Math.Cosh(x) / Math.Sinh(x);
+		static double Coth(double x) => Math.Cosh(x) / Math.Sinh(x);
 	}
 
 	[Test]
@@ -402,7 +401,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// csc = 1 / sin
-		static Double Csc(Double x) => 1.0d / Math.Sin(x);
+		static double Csc(double x) => 1.0d / Math.Sin(x);
 	}
 
 	[Test]
@@ -414,7 +413,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// csch = 1 / sinh
-		static Double Csch(Double x) => 1.0d / Math.Sinh(x);
+		static double Csch(double x) => 1.0d / Math.Sinh(x);
 	}
 
 	[Test]
@@ -432,35 +431,35 @@ public class TestBigDecimalTrigonometricFunctions
 		BigDecimal.AlwaysTruncate = false;
 		BigDecimal.AlwaysNormalize = false;
 
-		Tuple<string, string>[] questionAnswerValues = new Tuple<string, string>[]
-		{
-			new Tuple<string, string>("0.000000001",   "-20.72326583694641115616192309215927786840991339765895678"),
-			new Tuple<string, string>("0.000777", "-7.16007020759662666323925507670903264742195605720039"),
-			new Tuple<string, string>("0.073155", "-2.61517480115201143841773779457374933266203002783292"),
-			new Tuple<string, string>("0.50",     "-0.69314718055994530941723212145817656807550013436025"),
-			new Tuple<string, string>("0.57731",  "-0.54937589504899085530907326478753939476837352807873"),
-			new Tuple<string, string>("0.65",     "-0.43078291609245425738173613457722217087133367822882"),
-			new Tuple<string, string>("0.66",     "-0.41551544396166582316156197302289684265750543113712"),
-			new Tuple<string, string>("0.975311", "-0.02499888448682096802712749612065005723649133082854"),
-			new Tuple<string, string>("1.01575",  "0.01562725588569907632425960516558987307170263378188"),
-			new Tuple<string, string>("1.22605",  "0.20379761971667207412745062140592521363644795989009"),
-			new Tuple<string, string>("1.32835",  "0.28393757054679798984200829263947239665011340940242"),
-			new Tuple<string, string>("1.33",     "0.28517894223366239707839726596230485167226101362344"),
-			new Tuple<string, string>("1.33165",  "0.28641877482725127078618464736645894088507708401364"),
-			new Tuple<string, string>("1.34",     "0.29266961396282000105132120845317090344023006032460"),
-			new Tuple<string, string>("1.499",    "0.40479821912046065192222057024840164526003750773195"),
-			new Tuple<string, string>("1.50",     "0.40546510810816438197801311546434913657199042346249"),
-			new Tuple<string, string>("1.533371", "0.42746857974261091761922170608850145379554792901141"),
-			new Tuple<string, string>("1.7997",   "0.58761998434502004983067406992099718856024990068669"),
-			new Tuple<string, string>("1.997755", "0.69202405008497071018459774938875984871561069648604"),
-			new Tuple<string, string>("2.57",     "0.94390589890712843031581140539252703641252185172939"),
-			new Tuple<string, string>("3.14159265358900100002000010000001", "1.14472988584914799681491911248160367461176901448316"),
-			new Tuple<string, string>("31.41592653589",                     "3.44731497884319336251665815374030592476402235854262"),
-			new Tuple<string, string>("3141.592653589",                     "8.05248516483128473055264106310903433996622533580016"),
-			new Tuple<string, string>("314159.265358900100002000010000001", "12.65765535081937641690487638590342471261727645762702"),
-			new Tuple<string, string>("31415926535.8900100002000010000001", "24.17058081578960483699483365932524575062278390077089"),
-			new Tuple<string, string>("1409368056606849087457015313568.21404846132236496737", "69.42069420694206942069420694206942069420694206942069")
-		};
+		Tuple<string, string>[] questionAnswerValues =
+		[
+			new("0.000000001",   "-20.72326583694641115616192309215927786840991339765895678"),
+			new("0.000777", "-7.16007020759662666323925507670903264742195605720039"),
+			new("0.073155", "-2.61517480115201143841773779457374933266203002783292"),
+			new("0.50",     "-0.69314718055994530941723212145817656807550013436025"),
+			new("0.57731",  "-0.54937589504899085530907326478753939476837352807873"),
+			new("0.65",     "-0.43078291609245425738173613457722217087133367822882"),
+			new("0.66",     "-0.41551544396166582316156197302289684265750543113712"),
+			new("0.975311", "-0.02499888448682096802712749612065005723649133082854"),
+			new("1.01575",  "0.01562725588569907632425960516558987307170263378188"),
+			new("1.22605",  "0.20379761971667207412745062140592521363644795989009"),
+			new("1.32835",  "0.28393757054679798984200829263947239665011340940242"),
+			new("1.33",     "0.28517894223366239707839726596230485167226101362344"),
+			new("1.33165",  "0.28641877482725127078618464736645894088507708401364"),
+			new("1.34",     "0.29266961396282000105132120845317090344023006032460"),
+			new("1.499",    "0.40479821912046065192222057024840164526003750773195"),
+			new("1.50",     "0.40546510810816438197801311546434913657199042346249"),
+			new("1.533371", "0.42746857974261091761922170608850145379554792901141"),
+			new("1.7997",   "0.58761998434502004983067406992099718856024990068669"),
+			new("1.997755", "0.69202405008497071018459774938875984871561069648604"),
+			new("2.57",     "0.94390589890712843031581140539252703641252185172939"),
+			new("3.14159265358900100002000010000001", "1.14472988584914799681491911248160367461176901448316"),
+			new("31.41592653589",                     "3.44731497884319336251665815374030592476402235854262"),
+			new("3141.592653589",                     "8.05248516483128473055264106310903433996622533580016"),
+			new("314159.265358900100002000010000001", "12.65765535081937641690487638590342471261727645762702"),
+			new("31415926535.8900100002000010000001", "24.17058081578960483699483365932524575062278390077089"),
+			new("1409368056606849087457015313568.21404846132236496737", "69.42069420694206942069420694206942069420694206942069")
+		];
 
 		LogNaturalTimeElapsed = TimeSpan.Zero;
 		Console.WriteLine($"Beginning of test...");
@@ -475,7 +474,7 @@ public class TestBigDecimalTrigonometricFunctions
 		Console.WriteLine($"");
 	}
 
-	private static Stopwatch LogNaturalTimer = Stopwatch.StartNew();
+	private static readonly Stopwatch LogNaturalTimer = Stopwatch.StartNew();
 	private static TimeSpan LogNaturalTimeElapsed = TimeSpan.Zero;
 
 	private static void Test_Single(Tuple<string, string> questionAnswerValue, int precision)
@@ -500,7 +499,7 @@ public class TestBigDecimalTrigonometricFunctions
 		Console.WriteLine($"");
 
 		// 48 out of the 50 digits to the right of the decimal point must be correct.
-		Assert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}");
+		ClassicAssert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{actual}");
 	}
 
 	private static int CharactersMatchCount(string expected, string actual)
@@ -533,6 +532,50 @@ public class TestBigDecimalTrigonometricFunctions
 		return counter;
 	}
 
+
+	private static readonly Dictionary<char, string> BoldedNumeralDictionary = new()
+	{
+		{'-',"-"},
+		{'.',"."},
+		{'0',"𝟬"},
+		{'1',"𝟭"},
+		{'2',"𝟮"},
+		{'3',"𝟯"},
+		{'4',"𝟰"},
+		{'5',"𝟱"},
+		{'6',"𝟲"},
+		{'7',"𝟳"},
+		{'8',"𝟴"},
+		{'9',"𝟵"}
+	};
+
+	private static string HightlightDiffControl(string expected, string actual)
+	{
+		int index = 0;
+		int maxLength = Math.Min(actual.Length, expected.Length);
+
+		bool matchSoFar = true;
+		StringBuilder result = new();
+		StringBuilder result2 = new();
+		foreach (char c in actual)
+		{
+			char? cmp = (index < maxLength) ? expected[index] : null;
+			if (matchSoFar && cmp.HasValue && c == cmp)
+			{
+				result.Append(BoldedNumeralDictionary[c]);
+				result2.Append('▀');
+			}
+			else
+			{
+				matchSoFar = false;
+				result.Append(' ');
+			}
+
+			index++;
+		}
+		return result.ToString() + Environment.NewLine + result2.ToString();
+	}
+
 	[Test]
 	public static void Test_Ln()
 	{
@@ -542,8 +585,8 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var result = BigDecimal.Ln(argument, Precision);
 
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
+		var actual = new string(result.ToString().Take(Precision).ToArray());
+		ClassicAssert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
 	}
 
 
@@ -557,8 +600,8 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var result = BigDecimal.Ln(argument, Precision);
 
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
+		var actual = new string(result.ToString().Take(Precision).ToArray());
+		ClassicAssert.AreEqual(expected, actual, nameof(BigDecimal.Ln));
 	}
 
 	[Test]
@@ -571,8 +614,8 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var result = BigDecimal.Log10(argument, Precision);
 
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log10));
+		var actual = new string(result.ToString().Take(Precision).ToArray());
+		ClassicAssert.AreEqual(expected, actual, nameof(BigDecimal.Log10));
 	}
 
 	[Test]
@@ -586,8 +629,8 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var result = BigDecimal.Log2(argument, Precision);
 
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.Log2));
+		var actual = new string(result.ToString().Take(Precision).ToArray());
+		ClassicAssert.AreEqual(expected, actual, nameof(BigDecimal.Log2));
 	}
 
 	[Test]
@@ -601,8 +644,8 @@ public class TestBigDecimalTrigonometricFunctions
 
 		var result = BigDecimal.LogN(@base, argument, Precision);
 
-		var actual = new String(result.ToString().Take(Precision).ToArray());
-		Assert.AreEqual(expected, actual, nameof(BigDecimal.LogN));
+		var actual = new string(result.ToString().Take(Precision).ToArray());
+		ClassicAssert.AreEqual(expected, actual, nameof(BigDecimal.LogN));
 	}
 
 	[Test]
@@ -614,7 +657,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// sec = 1 / cos
-		static Double Sec(Double x) => 1.0d / Math.Cos(x);
+		static double Sec(double x) => 1.0d / Math.Cos(x);
 	}
 
 	[Test]
@@ -626,7 +669,7 @@ public class TestBigDecimalTrigonometricFunctions
 		return;
 
 		// sech = 1 / cosh
-		static Double Sech(Double x) => 1.0d / Math.Cosh(x);
+		static double Sech(double x) => 1.0d / Math.Cosh(x);
 	}
 
 	[Test]
@@ -730,7 +773,7 @@ public class TestBigDecimalTrigonometricFunctions
 		TestContext.WriteLine($"  Actual Exp({valueToTest}): {actual}");
 		Common.HightlightDiffControl(expected, actual.ToString(), 20);
 
-		Debug.Assert.AreEqual(expected, actual.ToString(), 352);
+		ClassicAssert.AreEqual(expected, actual.ToString().Substring(0, 352));
 	}
 
 	[Test]
@@ -835,7 +878,7 @@ public class TestBigDecimalTrigonometricFunctions
 		//TestContext.WriteLine($"  Actual Exp({valueToTest}): {actual.TruncateAt(truncateAt)}");
 		Common.HightlightDiffControl(expected, actual.ToString(), 20);
 
-		Debug.Assert.AreEqual(expected, actual.ToString(), minimumCorrectDigits);
+		ClassicAssert.AreEqual(expected, actual.ToString().Substring(0, minimumCorrectDigits));
 
 		BigDecimal.Precision = savePrecision;
 	}
@@ -1039,7 +1082,7 @@ public class TestBigDecimalTrigonometricFunctions
 		TestContext.WriteLine($"Exponent: {bd_200.Exponent}");
 		TestContext.WriteLine();
 
-		Debug.Assert.AreEqual(expected, bdExpbd.ToString(), 94);
+		ClassicAssert.AreEqual(expected, bdExpbd.ToString().Substring(0, expected.Length));
 	}
 
 	[Test]
@@ -1069,14 +1112,14 @@ public class TestBigDecimalTrigonometricFunctions
 		BigDecimal result8 = BigDecimal.Pow(29192926025390625d, 0.07142857142857142d);
 		string expected8 = "14.999999999999998";
 
-		Assert.AreEqual(expected1, result1.ToString());
-		Assert.AreEqual(expected2, result2.ToString());
-		Assert.AreEqual(expected3, result3.ToString().Substring(0, 16));
-		Assert.AreEqual(expected4, result4.ToString());
-		Assert.AreEqual(expected5, result5.ToString().Substring(0, 16));
-		Assert.AreEqual(expected6, result6.ToString().Substring(0, 16));
-		Assert.AreEqual(expected7, result7.ToString().Substring(0, 16));
-		Assert.AreEqual(expected8, result8.ToString());
+		ClassicAssert.AreEqual(expected1, result1.ToString());
+		ClassicAssert.AreEqual(expected2, result2.ToString());
+		ClassicAssert.AreEqual(expected3, result3.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected4, result4.ToString());
+		ClassicAssert.AreEqual(expected5, result5.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected6, result6.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected7, result7.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected8, result8.ToString());
 	}
 
 	[Test]
@@ -1090,8 +1133,8 @@ public class TestBigDecimalTrigonometricFunctions
 		BigDecimal result3 = BigDecimal.Pow(new BigDecimal(0.25), 2);
 		string expected3 = "0.0625";
 
-		Assert.AreEqual(expected1, result1.ToString());
-		Assert.AreEqual(expected2, result2.ToString());
-		Assert.AreEqual(expected3, result3.ToString());
+		ClassicAssert.AreEqual(expected1, result1.ToString());
+		ClassicAssert.AreEqual(expected2, result2.ToString());
+		ClassicAssert.AreEqual(expected3, result3.ToString());
 	}
 }
