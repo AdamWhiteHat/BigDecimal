@@ -42,7 +42,7 @@ namespace ExtendedNumerics
 			BigDecimal result;
 			if (AlwaysTruncate)
 			{
-				result = Round(this, Precision);
+				result = Truncate(this, Precision);
 				this.Mantissa = result.Mantissa;
 				this.Exponent = result.Exponent;
 			}
@@ -114,19 +114,19 @@ namespace ExtendedNumerics
 		#region Static Members
 
 		/// <summary>Gets a value that represents the number 10 (ten).</summary>
-		public static BigDecimal Ten => 10;
+		public static BigDecimal Ten => new BigDecimal(new Tuple<BigInteger, Int32>(1, 1));
 
 		/// <summary>Gets a value that represents the number 1 (one).</summary>
-		public static BigDecimal One => 1;
+		public static BigDecimal One => new BigDecimal(new Tuple<BigInteger, Int32>(1, 0));
 
 		/// <summary>Gets a value that represents the number 0 (zero).</summary>
-		public static BigDecimal Zero => 0;
+		public static BigDecimal Zero => new BigDecimal(new Tuple<BigInteger, Int32>(0, 0));
 
 		/// <summary>Gets a value that represents the number 0.5 (one half).</summary>
-		public static BigDecimal OneHalf => 0.5d;
+		public static BigDecimal OneHalf => new BigDecimal(new Tuple<BigInteger, Int32>(5, -1));
 
 		/// <summary>Gets a value that represents the number -1 (negative one).</summary>
-		public static BigDecimal MinusOne => -1;
+		public static BigDecimal MinusOne => new BigDecimal(new Tuple<BigInteger, Int32>(-1, 0));
 
 		/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
 		public static BigDecimal E { get { return ApproximateE(Precision); } }
@@ -207,7 +207,17 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
 		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
 		private const Int32 DecimalScaleMask = 0x00FF0000;
-		private static NumberFormatInfo BigDecimalNumberFormatInfo { get { return CultureInfo.CurrentCulture.NumberFormat; } }
+		private static NumberFormatInfo BigDecimalNumberFormatInfo = new System.Globalization.NumberFormatInfo()
+		{
+			NativeDigits = CultureInfo.CurrentCulture.NumberFormat.NativeDigits,
+			PositiveSign = CultureInfo.CurrentCulture.NumberFormat.PositiveSign,
+			NegativeSign = CultureInfo.CurrentCulture.NumberFormat.NegativeSign,
+			NumberNegativePattern = CultureInfo.CurrentCulture.NumberFormat.NumberNegativePattern,
+			NumberGroupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
+			NumberGroupSizes = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes,
+			NumberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator,
+			NumberDecimalDigits = 0
+		};
 
 		#endregion
 
@@ -225,8 +235,8 @@ namespace ExtendedNumerics
 		/// A return value of greater than zero means this instance follows the other value in the sort order.
 		/// </returns>
 		public Int32 CompareTo(BigDecimal other) =>
-			this < other ? SortingOrder.Before :
-			this > other ? SortingOrder.After : SortingOrder.Same;
+				this < other ? SortingOrder.Before :
+				this > other ? SortingOrder.After : SortingOrder.Same;
 
 		/// <summary>
 		/// Compares the current instance to a <see cref="Decimal"/> floating point value and returns
@@ -356,8 +366,8 @@ namespace ExtendedNumerics
 			}
 			if (AlwaysTruncate)
 			{
-				l = Round(l, Precision);
-				r = Round(r, Precision);
+				l = Truncate(l, Precision);
+				r = Truncate(r, Precision);
 			}
 
 			return l.Sign.Equals(r.Sign) && l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa);
@@ -408,10 +418,10 @@ namespace ExtendedNumerics
 		#region Parse
 
 		/// <summary>Converts the string representation of a float to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Single input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(Single input) => Parse(input.ToString("R", BigDecimalNumberFormatInfo));
 
 		/// <summary>Converts the string representation of a double to the BigDecimal equivalent.</summary>
-		public static BigDecimal Parse(Double input) => Parse(input.ToString("R"));
+		public static BigDecimal Parse(Double input) => Parse(input.ToString("R", BigDecimalNumberFormatInfo));
 
 		/// <summary>Converts the string representation of a decimal to the BigDecimal equivalent.</summary>
 		public static BigDecimal Parse(Decimal input) => new BigDecimal(input);
@@ -489,7 +499,7 @@ namespace ExtendedNumerics
 			BigDecimal result = new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
 			if (AlwaysTruncate)
 			{
-				result = Round(result, Precision);
+				result = Truncate(result, Precision);
 			}
 			if (AlwaysNormalize)
 			{
@@ -564,8 +574,8 @@ namespace ExtendedNumerics
 				return value;
 			}
 
-			var s = value.Mantissa.ToString();
-			var pos = s.LastIndexOf('0', s.Length - 1);
+			var s = value.Mantissa.ToString(BigDecimalNumberFormatInfo);
+			var pos = s.LastIndexOf(BigDecimalNumberFormatInfo.NativeDigits[0][0], s.Length - 1);
 
 			if (pos < (s.Length - 1))
 			{
@@ -574,7 +584,7 @@ namespace ExtendedNumerics
 
 			var c = s[pos];
 
-			while ((pos > 0) && (c == '0'))
+			while ((pos > 0) && (c == BigDecimalNumberFormatInfo.NativeDigits[0][0]))
 			{
 				c = s[--pos]; //scan backwards to find the last not-0.
 			}
@@ -630,7 +640,7 @@ namespace ExtendedNumerics
 		public BigDecimal GetFractionalPart()
 		{
 			var resultString = String.Empty;
-			var decimalString = this.ToString();
+			var decimalString = this.ToString(BigDecimalNumberFormatInfo);
 
 			var valueSplit = decimalString.Split(BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray());
 			if (valueSplit.Length == 1)
@@ -643,7 +653,7 @@ namespace ExtendedNumerics
 				resultString = valueSplit[1];
 			}
 
-			var newmantissa = BigInteger.Parse(resultString.TrimStart('0'));
+			var newmantissa = BigInteger.Parse(resultString.TrimStart(BigDecimalNumberFormatInfo.NativeDigits[0][0]));
 			var result = new BigDecimal(newmantissa, 0 - resultString.Length);
 			return result;
 		}
@@ -704,7 +714,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Double);
 			}
-			return Convert.ToDouble(value.ToString());
+			return Convert.ToDouble(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Single" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -716,7 +726,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Single);
 			}
-			return Convert.ToSingle(value.ToString());
+			return Convert.ToSingle(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Decimal" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -728,7 +738,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Decimal);
 			}
-			return Convert.ToDecimal(value.ToString());
+			return Convert.ToDecimal(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="Int32" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -740,7 +750,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_Int32);
 			}
-			return Convert.ToInt32(value.ToString());
+			return Convert.ToInt32(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		/// <summary>Converts <paramref name="value" /> to an <see cref="UInt32" /> if possible, otherwise throws <see cref="OverflowException" /> .</summary>
@@ -752,7 +762,7 @@ namespace ExtendedNumerics
 			{
 				throw new OverflowException(LanguageResources.Overflow_UInt32);
 			}
-			return Convert.ToUInt32(value.ToString());
+			return Convert.ToUInt32(value.ToString(BigDecimalNumberFormatInfo));
 		}
 
 		#endregion
@@ -1130,6 +1140,40 @@ namespace ExtendedNumerics
 			return (value.Sign == -1) ? Ceiling(value) : Floor(value);
 		}
 
+		/// <summary>
+		/// Truncates the BigDecimal at the specified precision (number of digits to the right).
+		/// Accepts negative precision values, which zeros out digits to the left of the decimal point, with the absolute value of precision equaling the number of places to zero.
+		/// A precision value of zero truncates the BigDecimal at the decimal point, returning the integer part only.
+		/// This method is functionally identical to Excel's ROUNDDOWN function.
+		/// </summary>
+		public static BigDecimal Truncate(BigDecimal value, int precision)
+		{
+			if (precision < 0)
+			{
+				return Round(value, precision);
+			}
+			else if (precision == 0)
+			{
+				return new BigDecimal(value.WholeValue);
+			}
+
+			var mantissa = value.Mantissa;
+			var exponent = value.Exponent;
+			var sign = Math.Sign(exponent);
+			var digits = PlacesRightOfDecimal(value);
+			if (digits > precision)
+			{
+				int difference = digits - precision;
+				mantissa = BigInteger.Divide(mantissa, BigInteger.Pow(TenInt, difference));
+
+				if (sign != 0)
+				{
+					exponent -= sign * difference;
+				}
+			}
+			return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
+		}
+
 		/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
 		public static BigInteger Round(BigDecimal value) => Round(value, MidpointRounding.AwayFromZero);
 
@@ -1196,13 +1240,13 @@ namespace ExtendedNumerics
 
 			BigDecimal absValue = BigDecimal.Abs(value);
 
+			var onesDigit = absValue.Mantissa % 10;
+			bool isMidway = onesDigit % 5 == 0;
+
 			BigDecimal precisionTarget = new BigDecimal(mantissa: BigInteger.One, exponent: -precision);
-			BigDecimal halfPrecision = new BigDecimal(mantissa: new BigInteger(5), exponent: -(precision + 1));
-			BigDecimal truncated = BigDecimal.Round(absValue, precision);
+			BigDecimal truncated = Truncate(absValue, precision);
 
-			BigDecimal midpoint = truncated + halfPrecision;
-
-			if (absValue == midpoint)
+			if (onesDigit == 5)
 			{
 				if (sign == -1)
 				{
@@ -1219,7 +1263,7 @@ namespace ExtendedNumerics
 					}
 				}
 			}
-			else if (absValue > midpoint)
+			else if (onesDigit > 5)
 			{
 				return (truncated + precisionTarget) * sign;
 			}
@@ -1229,13 +1273,15 @@ namespace ExtendedNumerics
 
 		/// <summary>
 		/// Rounds a BigDecimal to the given number of digits to the right of the decimal point.
-		/// Pass a negative precision value to round (zero) digits to the left of the decimal point in a manner that mimics Excel's ROUNDDOWN function.
+		/// Pass a negative precision value to zero out abs(precision) many digits to the left of the decimal point, in a manner that mimics Excel's ROUNDDOWN function.
+		/// A zero or greater precision value performs rounding in the standard way.
+		/// Call <see cref="Truncate(BigDecimal, int)"/> for a method that is functionally identical to Excel's ROUNDDOWN function.
 		/// </summary>
 		public static BigDecimal Round(BigDecimal value, Int32 precision)
 		{
 			if (precision < 0)
 			{
-				string integer = value.WholeValue.ToString();
+				string integer = value.WholeValue.ToString(BigDecimalNumberFormatInfo);
 				int len = integer.Length;
 				if (Math.Abs(precision) >= len)
 				{
@@ -1244,29 +1290,10 @@ namespace ExtendedNumerics
 				int diff = len + precision;
 
 				string result = integer.Substring(0, diff);
-				result += new string(Enumerable.Repeat('0', Math.Abs(precision)).ToArray());
+				result += new string(Enumerable.Repeat(BigDecimalNumberFormatInfo.NativeDigits[0][0], Math.Abs(precision)).ToArray());
 				return BigDecimal.Parse(result);
 			}
-			else if (precision == 0)
-			{
-				return new BigDecimal(value.WholeValue);
-			}
-
-			var mantissa = value.Mantissa;
-			var exponent = value.Exponent;
-			var sign = Math.Sign(exponent);
-			var digits = PlacesRightOfDecimal(value);
-			if (digits > precision)
-			{
-				int difference = digits - precision;
-				mantissa = BigInteger.Divide(mantissa, BigInteger.Pow(TenInt, difference));
-
-				if (sign != 0)
-				{
-					exponent -= sign * difference;
-				}
-			}
-			return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
+			return Round(value, precision, RoundingStrategy.AwayFromZero);
 		}
 
 		/// <summary>Rounds a BigDecimal up to the next largest integer value, even if the fractional part is less than one half. Equivalent to obtaining the floor and then adding one.</summary>
@@ -1316,7 +1343,7 @@ namespace ExtendedNumerics
 			var negativeValue = mantissa.Sign == -1;
 			var negativeExponent = Math.Sign(exponent) == -1;
 
-			var result = BigInteger.Abs(mantissa).ToString();
+			var result = BigInteger.Abs(mantissa).ToString(provider);
 			var absExp = Math.Abs(exponent);
 
 			if (negativeExponent)
@@ -1339,7 +1366,7 @@ namespace ExtendedNumerics
 					}
 				}
 
-				result = result.TrimEnd('0');
+				result = result.TrimEnd(formatProvider.NativeDigits[0][0]);
 				if (result.Last().ToString() == formatProvider.NumberDecimalSeparator)
 				{
 					result = result.Substring(0, result.Length - 1);
@@ -1351,9 +1378,28 @@ namespace ExtendedNumerics
 				result += zeroString;
 			}
 
+			int decimalPlaces = 0;
+			if (negativeExponent)
+			{
+				decimalPlaces = Math.Abs(exponent);
+			}
+
+			int paddZeros = formatProvider.NumberDecimalDigits - decimalPlaces;
+			if (paddZeros < 0)
+			{
+				paddZeros = 0;
+			}
+			if (paddZeros > 0)
+			{
+				if (!result.Contains(formatProvider.NumberDecimalSeparator))
+				{
+					result += formatProvider.NumberDecimalSeparator;
+				}
+				result += String.Concat(Enumerable.Repeat(formatProvider.NativeDigits[0], paddZeros));
+			}
+
 			if (negativeValue)
 			{
-
 				// Prefix "-"
 				result = result.Insert(0, formatProvider.NegativeSign);
 			}
@@ -1381,10 +1427,10 @@ namespace ExtendedNumerics
 			}
 
 			//TODO none of this is tested or guaranteed to work yet. Like negatives, or small numbers need the correct logic.
-			string sign = "+";
+			string sign = BigDecimalNumberFormatInfo.PositiveSign;
 			if (Math.Sign(exponent) == -1)
 			{
-				sign = "-";
+				sign = BigDecimalNumberFormatInfo.NegativeSign;
 			}
 			var result = $"{mantissa.Insert(point, BigDecimalNumberFormatInfo.NumberDecimalSeparator)}E{sign}{Math.Abs(exponent)}";
 			return result;

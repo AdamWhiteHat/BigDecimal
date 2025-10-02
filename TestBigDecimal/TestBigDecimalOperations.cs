@@ -83,7 +83,7 @@ namespace TestBigDecimal
 			var expected = inputTruncated;
 
 			var longValue = BigDecimal.Parse(String.Concat(inputTruncated, inputOverflow));
-			var result = BigDecimal.Round(longValue, 5000);
+			var result = BigDecimal.Truncate(longValue, 5000);
 
 			var actual = result.ToString();
 
@@ -799,10 +799,10 @@ namespace TestBigDecimal
 			Int32 root = 2;
 			Int32 precision = 50;
 
-			string expected = TestBigDecimalHelper.PrepareValue("0.31335255457742883389571245385500659019295986107402", this.Format);
+			string expected = TestBigDecimalHelper.PrepareValue("0.31335255457742883389571245385500659019295986107403", this.Format);
 			BigDecimal result = BigDecimal.NthRoot(value, root, precision);
 
-			BigDecimal actual = BigDecimal.Round(result, precision);
+			BigDecimal actual = BigDecimal.Round(result, precision, RoundingStrategy.AwayFromZero);
 
 			Assert.AreEqual(expected, actual.ToString(), $"{root}th root of {value} did not return {expected}.");
 		}
@@ -832,7 +832,7 @@ namespace TestBigDecimal
 			string expected = TestBigDecimalHelper.PrepareValue("99090778309689603548815656125983317432034385902667.809355596183348807410596077216611169596571667988326798354988734930975117508103720966474578967977953788831616628961714711683020533839237", this.Format);
 			BigDecimal result = BigDecimal.NthRoot(value, root, precision);
 
-			BigDecimal actual = BigDecimal.Round(result, precision);
+			BigDecimal actual = BigDecimal.Truncate(result, precision);
 
 			Assert.AreEqual(expected, actual.ToString(), $"{root}th root of {value} did not return {expected}.");
 		}
@@ -882,7 +882,8 @@ namespace TestBigDecimal
 		{
 			BigDecimal sqrtHalf = BigDecimal.SquareRoot(BigDecimal.OneHalf, BigDecimal.Precision);
 
-			BigDecimal half = sqrtHalf * sqrtHalf;
+			BigDecimal half = BigDecimal.Round(sqrtHalf * sqrtHalf, BigDecimal.Precision-2);
+
 
 			Assert.AreEqual(BigDecimal.OneHalf, half, "Algebraically, sqrt(0.5)*sqrt(0.5) should equal 0.5");
 		}

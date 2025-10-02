@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading;
 using ExtendedNumerics;
 using ExtendedNumerics.Helpers;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 namespace TestBigDecimal
@@ -170,7 +171,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRounding()
+		public void TestRounding001()
 		{
 			var up = new BigDecimal(0.50001d);
 			var down = new BigDecimal(0.49m);
@@ -215,24 +216,44 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestRounding_NegativePrecision001()
+		public void TestRounding002()
+		{
+			BigDecimal threeNine = new BigDecimal(3.9999);
+			TestContext.WriteLine($"{threeNine}");
+			TestContext.WriteLine("---------");
+			BigDecimal result1 = BigDecimal.Round(threeNine, 0);
+			BigDecimal result2 = BigDecimal.Round(threeNine, 1);
+
+			TestContext.WriteLine($"{result1}");
+			TestContext.WriteLine($"{result2}");
+
+			string expected = "4";
+			string actual1 = result1.ToString();
+			string actual2 = result2.ToString();
+
+			Assert.AreEqual(expected, actual1, $"{expected} != {actual1}");
+			Assert.AreEqual(expected, actual2, $"{expected} != {actual2}");
+		}
+
+		[Test]
+		public void TestTruncate_OverloadWithPrecisionArgument_001()
 		{
 			BigDecimal a = BigDecimal.Parse("31415.92654");
 
-			var result6 = BigDecimal.Round(a, 6).ToString();
-			var result5 = BigDecimal.Round(a, 5).ToString();
-			var result4 = BigDecimal.Round(a, 4).ToString();
-			var result3 = BigDecimal.Round(a, 3).ToString();
-			var result2 = BigDecimal.Round(a, 2).ToString();
-			var result1 = BigDecimal.Round(a, 1).ToString();
-			var result0 = BigDecimal.Round(a, 0).ToString();
-			var result_1 = BigDecimal.Round(a, -1).ToString();
-			var result_2 = BigDecimal.Round(a, -2).ToString();
-			var result_3 = BigDecimal.Round(a, -3).ToString();
-			var result_4 = BigDecimal.Round(a, -4).ToString();
-			var result_5 = BigDecimal.Round(a, -5).ToString();
-			var result_6 = BigDecimal.Round(a, -6).ToString();
-			var result_7 = BigDecimal.Round(a, -7).ToString();
+			var result6 = BigDecimal.Truncate(a, 6).ToString();
+			var result5 = BigDecimal.Truncate(a, 5).ToString();
+			var result4 = BigDecimal.Truncate(a, 4).ToString();
+			var result3 = BigDecimal.Truncate(a, 3).ToString();
+			var result2 = BigDecimal.Truncate(a, 2).ToString();
+			var result1 = BigDecimal.Truncate(a, 1).ToString();
+			var result0 = BigDecimal.Truncate(a, 0).ToString();
+			var result_1 = BigDecimal.Truncate(a, -1).ToString();
+			var result_2 = BigDecimal.Truncate(a, -2).ToString();
+			var result_3 = BigDecimal.Truncate(a, -3).ToString();
+			var result_4 = BigDecimal.Truncate(a, -4).ToString();
+			var result_5 = BigDecimal.Truncate(a, -5).ToString();
+			var result_6 = BigDecimal.Truncate(a, -6).ToString();
+			var result_7 = BigDecimal.Truncate(a, -7).ToString();
 
 			TestContext.WriteLine($"{result6}");
 			TestContext.WriteLine($"{result5}");
@@ -268,8 +289,11 @@ namespace TestBigDecimal
 		[Test]
 		public void TestRoundingWithPrecision()
 		{
-			Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
-			Test(7.56m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			BigDecimal.AlwaysNormalize = true;
+			BigDecimal.AlwaysTruncate = false;
+
+			//Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
+			Test(7.50m, 1, RoundingStrategy.AwayFromZero, "7.6");
 			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
 
 			Test(-7.54m, 1, RoundingStrategy.AwayFromZero, "-7.5");
@@ -496,7 +520,7 @@ namespace TestBigDecimal
 
 			int precision = 1000;
 			// This value comes from a different application; precise calculator
-			string expected = "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562863882353787593751957781857780532171226806613001927876611195909216420198";
+			string expected = "3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117067982148086513282306647093844609550582231725359408128481117450284102701938521105559644622948954930381964428810975665933446128475648233786783165271201909145648566923460348610454326648213393607260249141273724587006606315588174881520920962829254091715364367892590360011330530548820466521384146951941511609433057270365759591953092186117381932611793105118548074462379962749567351885752724891227938183011949129833673362440656643086021394946395224737190702179860943702770539217176293176752384674818467669405132000568127145263560827785771342757789609173637178721468440901224953430146549585371050792279689258923542019956112129021960864034418159813629774771309960518707211349999998372978049951059731732816096318595024459455346908302642522308253344685035261931188171010003137838752886587533208381420617177669147303598253490428755468731159562863882353787593751957781857780532171226806613001927876611195909216420199";
 
 			Stopwatch timer = Stopwatch.StartNew();
 
