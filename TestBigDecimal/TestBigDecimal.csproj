@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net9.0</TargetFramework>
+		<TargetFrameworks>net472;net48;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<LangVersion>latest</LangVersion>
 		<AnalysisLevel>latest</AnalysisLevel>
@@ -12,6 +12,13 @@
 		<OutputType>Library</OutputType>
 		<Nullable>annotations</Nullable>
 		<RootNamespace>TestBigDecimal</RootNamespace>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3000</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">2</PatchVersion>
+		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
 	</PropertyGroup>
 
 	<Choose>
@@ -43,6 +50,8 @@
 
 	<PropertyGroup>
 		<GenerateAssemblyInfo>False</GenerateAssemblyInfo>
+		<SignAssembly>True</SignAssembly>
+		<AssemblyOriginatorKeyFile>..\BigDecimalPrivate.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -53,5 +62,5 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\BigDecimal\BigDecimal.csproj" />
-	</ItemGroup>
+	</ItemGroup>	
 </Project>

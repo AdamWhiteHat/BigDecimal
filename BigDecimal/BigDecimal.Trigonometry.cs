@@ -29,8 +29,8 @@ namespace ExtendedNumerics
 			BigInteger productOfOddNumbers = 1;
 
 			// skip integer part
-			BigInteger nextR = @base * (r - ( productOfOddNumbers * outputBuffer ));
-			outputBuffer = ( ( @base * (( 3 * magnitude ) + r) ) / productOfOddNumbers ) - ( @base * outputBuffer );
+			BigInteger nextR = @base * (r - (productOfOddNumbers * outputBuffer));
+			outputBuffer = ((@base * ((3 * magnitude) + r)) / productOfOddNumbers) - (@base * outputBuffer);
 			magnitude *= @base;
 
 			int counter = 1;
@@ -38,21 +38,21 @@ namespace ExtendedNumerics
 			{
 				r = nextR;
 				BigInteger nextDigitThreshold = productOfOddNumbers * outputBuffer;
-				if (( ( ( 4 * magnitude ) + r ) - productOfOddNumbers ) < nextDigitThreshold)
+				if ((((4 * magnitude) + r) - productOfOddNumbers) < nextDigitThreshold)
 				{
 					mantissa *= 10;
 					mantissa += outputBuffer;
 					exponent = counter * -1;
 					counter++;
 					nextR = @base * (r - nextDigitThreshold);
-					outputBuffer = ( ( @base * (( 3 * magnitude ) + r) ) / productOfOddNumbers ) - ( @base * outputBuffer );
+					outputBuffer = ((@base * ((3 * magnitude) + r)) / productOfOddNumbers) - (@base * outputBuffer);
 					magnitude *= @base;
 				}
 				else
 				{
 					productOfOddNumbers *= twiceKplus1;
-					nextR = (( 2 * magnitude ) + r) * twiceKplus1;
-					outputBuffer = (( magnitude * (7 * k) ) + 2 + ( r * twiceKplus1 )) / productOfOddNumbers;
+					nextR = ((2 * magnitude) + r) * twiceKplus1;
+					outputBuffer = ((magnitude * (7 * k)) + 2 + (r * twiceKplus1)) / productOfOddNumbers;
 					magnitude *= k;
 					twiceKplus1 += 2;
 					++k;
@@ -465,12 +465,12 @@ namespace ExtendedNumerics
 		/// <summary>Arbitrary precision inverse sine function.</summary>
 		/// <param name="radians">An angle, measured in radians, in the domain of -1 &lt; x &lt; 1</param>
 		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
-		/// <exception cref="ArgumentOutOfRangeException">The domain of <paramref name="radians" /> is -1 &lt; x &lt; 1</exception>
+		/// <exception cref="ArgumentOutOfRangeException">The domain of <see langword="Arcsin" /> is -1 &lt; x &lt; 1</exception>
 		/// <returns>The inverse sine of <paramref name="radians"/>, in radians.</returns>
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -1 &lt; x &lt; 1.</exception>
 		public static BigDecimal Arcsin(BigDecimal radians, int precision)
 		{
-			if (( radians < -1 ) || ( radians > One ))
+			if ((radians < -1) || (radians > One))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arcsin), "-1 < x < 1"));
 			}
@@ -498,7 +498,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -1 &lt; x &lt; 1.</exception>
 		public static BigDecimal Arccos(BigDecimal radians, int precision)
 		{
-			if (( radians < -1 ) || ( radians > One ))
+			if ((radians < -1) || (radians > One))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arccos), "-1 < x < 1"));
 			}
@@ -604,7 +604,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -∞ &lt; x &lt;= -1 ∪ 1 &lt;= x &lt; ∞.</exception>
 		public static BigDecimal Arcsec(BigDecimal radians, int precision)
 		{
-			if (( radians > -1 ) && ( radians < 1 ))
+			if ((radians > -1) && (radians < 1))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arcsec), "-∞ < x <= -1 ∪ 1 <= x < ∞"));
 			}
@@ -628,7 +628,7 @@ namespace ExtendedNumerics
 		/// <exception cref="ArgumentOutOfRangeException">Argument <paramref name="radians"/> outside the domain of -∞ &lt; x &lt;= -1 ∪ 1 &lt;= x &lt; ∞.</exception>
 		public static BigDecimal Arccsc(BigDecimal radians, int precision)
 		{
-			if (( radians > -1 ) && ( radians < 1 ))
+			if ((radians > -1) && (radians < 1))
 			{
 				throw new ArgumentOutOfRangeException(nameof(radians), string.Format(LanguageResources.Arg_TheDomainOf_0_Is_1, nameof(Arccsc), "-∞ < x <= -1 ∪ 1 <= x < ∞"));
 			}
@@ -653,13 +653,74 @@ namespace ExtendedNumerics
 		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
 		public static BigDecimal Exp(BigDecimal x, int precision)
 		{
+			if (x <= 14)
+			{
+				return NaturalExponential(x, precision);
+			}
+
+			int root = 2; // Should remain at two, always.
+						  // Contrary to my expectations, the difference from the exact value to the nearest
+						  // (rounded) integer value (once scaled back up and subtracted from the input--variable b below)
+						  // is smallest for square roots, and grows larger with increasing index of root.
+						  // This difference--again, b below--gets passed to the function NaturalExponential, which calculates the Taylor Series.
+						  // With b too large, we are negating the advantage of splitting up the input value, while still incurring the overhead.
+
+			var a = Round(NthRoot(x, (int)root, precision));
+			var s = Pow(a, root);
+			var b = x - s;
+
+			BigDecimal result = NaturalExponential(a, precision);
+
+			int count = 1;
+			while (count < root)
+			{
+				result = Pow(result, a); // root number of times
+				count++;
+			}
+
+			BigDecimal h = NaturalExponential(BigDecimal.Abs(b), precision);
+
+			if (b.Sign == -1) // By rounding the sqrt approximation up to the next integer, we overshoot the correct result, and b becomes negative.
+			{   // We can still get the correct result by dividing its contribution to the total. 
+				result = BigDecimal.Divide(result, h); // By allowing 
+			}
+			else if (b.Sign == 1)
+			{
+				result = BigDecimal.Multiply(result, h);
+			}
+
+			return result;
+		}
+
+		/// <summary>
+		/// Internal implementation of the  exp function to arbitrary precision.
+		/// </summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		internal static BigDecimal NaturalExponential(BigDecimal x, int precision)
+		{
+			precision += 3;
+			int restorePrecision = -1;
+			if (precision > BigDecimal.Precision)
+			{
+				restorePrecision = BigDecimal.Precision;
+				BigDecimal.Precision = precision;
+			}
+
 			BigDecimal sumStart = 1;
 			BigInteger counterStart = 1;
 			BigInteger jump = 1;
 			BigInteger multiplier = 1;
 			bool factorialDenominator = true;
 
-			return TrigonometricHelper.TaylorSeriesSum(x, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+			BigDecimal result = TrigonometricHelper.TaylorSeriesSum(x, sumStart, counterStart, jump, multiplier, factorialDenominator, precision);
+
+			if (restorePrecision != -1)
+			{
+				BigDecimal.Precision = restorePrecision;
+			}
+			return result;
 		}
 
 		/// <summary>
@@ -678,17 +739,25 @@ namespace ExtendedNumerics
 		/// <param name="argument">The argument to take the natural logarithm of.</param>
 		/// <param name="precision">The desired precision in terms of the number of digits to the right of the decimal.</param>	
 		/// <returns>The natural (base <see langword="e" />) logarithm of the specified number.</returns>
+		/// <exception cref="ArgumentException">Argument cannot be zero.</exception>
 		public static BigDecimal Ln(BigDecimal argument, int precision)
 		{
+			if (argument.Equals(BigDecimal.Zero))
+			{
+				throw new ArgumentException(string.Format(LanguageResources.Arg_CannotBeZero, nameof(argument)), nameof(argument));
+			}
 			if (argument.Equals(BigDecimal.One))
 			{
 				return BigDecimal.Zero;
 			}
 
+			// Because the LogNatural function is implemented using the Taylor Series,
+			// and the Taylor Series' radius of convergence is centered around zero,
+			// we employ some tricks to shift the argument back towards zero if it strays too far. 
 			int sign = argument.Sign;
 			BigDecimal input = BigDecimal.Abs(argument);
 
-			if (( input <= 0.66d ) || ( input >= 1.33d ))
+			if ((input <= 0.66d) || (input >= 1.33d))
 			{
 				BigDecimal cubeRoot = BigDecimal.NthRoot(input, 3, precision);
 				BigDecimal lnCubeRoot = Ln(cubeRoot, precision + 1);

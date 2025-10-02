@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Numerics;
 using ExtendedNumerics.Properties;
@@ -57,7 +58,7 @@ namespace ExtendedNumerics.Helpers
 				return 0;
 			}
 
-			var valueString = value.ToString().TrimEnd('0'); //CONFIRM Is this correct?
+			var valueString = value.ToString().TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NativeDigits[0][0]);
 
 			if (String.IsNullOrEmpty(valueString))
 			{
@@ -215,8 +216,8 @@ namespace ExtendedNumerics.Helpers
 
 			try
 			{
-				var numerator = BigDecimal.Parse(parts[0]);
-				var denominator = BigDecimal.Parse(parts[1]);
+				var numerator = BigDecimal.Parse(parts[0], CultureInfo.CurrentCulture);
+				var denominator = BigDecimal.Parse(parts[1], CultureInfo.CurrentCulture);
 
 				result = BigDecimal.Divide(numerator, denominator);
 				return true;

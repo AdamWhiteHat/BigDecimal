@@ -71,15 +71,14 @@ namespace ExtendedNumerics.Helpers
 		/// The required precision to achieve before returning, in terms of the number of correct digits to the right of the
 		/// decimal point.
 		/// </param>
-		/// <returns></returns>
 		internal static BigDecimal TaylorSeriesSum(
-			BigDecimal radians,
-			BigDecimal sumStart,
-			BigInteger counterStart,
-			BigInteger jump,
-			BigInteger multiplier,
-			bool factorialDenominator,
-			int precision)
+				BigDecimal radians,
+				BigDecimal sumStart,
+				BigInteger counterStart,
+				BigInteger jump,
+				BigInteger multiplier,
+				bool factorialDenominator,
+				int precision)
 		{
 			var targetPrecision = GetPrecisionTarget(precision);
 

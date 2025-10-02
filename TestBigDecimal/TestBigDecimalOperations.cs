@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Numerics;
 using System.Threading;
@@ -79,8 +81,8 @@ public class TestBigDecimalOperations
 
 		var expected = inputTruncated;
 
-		var longValue = BigDecimal.Parse(string.Concat(inputTruncated, inputOverflow));
-		var result = BigDecimal.Round(longValue, 5000);
+		var longValue = BigDecimal.Parse(String.Concat(inputTruncated, inputOverflow));
+		var result = BigDecimal.Truncate(longValue, 5000);
 
 		var actual = result.ToString();
 
@@ -116,7 +118,7 @@ public class TestBigDecimalOperations
 		var input = BigDecimal.Pi;
 		BigDecimal actual = BigDecimal.Ceiling(input);
 
-		string info = $"Ceiling({input.ToString()[..5]}...) = {actual} ({expected})";
+		string info = $"Ceiling({input.ToString().Substring(0, 5)}...) = {actual} ({expected})";
 		TestContext.WriteLine(info);
 		ClassicAssert.AreEqual(expected, actual.ToString(), info);
 	}
@@ -128,7 +130,7 @@ public class TestBigDecimalOperations
 		var input = -BigDecimal.Pi;
 		string actual = BigDecimal.Ceiling(input).ToString();
 
-		string info = $"Ceiling({input.ToString()[..5]}...) = {actual} ({expected})";
+		string info = $"Ceiling({input.ToString().Substring(0, 5)}...) = {actual} ({expected})";
 		TestContext.WriteLine(info);
 		ClassicAssert.AreEqual(expected, actual, info);
 	}
@@ -576,11 +578,11 @@ public class TestBigDecimalOperations
 
 		ClassicAssert.AreEqual(expected1, result1.ToString());
 		ClassicAssert.AreEqual(expected2, result2.ToString());
-		ClassicAssert.AreEqual(expected3, result3.ToString()[..16]);
+		ClassicAssert.AreEqual(expected3, result3.ToString().Substring(0, 16));
 		ClassicAssert.AreEqual(expected4, result4.ToString());
-		ClassicAssert.AreEqual(expected5, result5.ToString()[..16]);
-		ClassicAssert.AreEqual(expected6, result6.ToString()[..16]);
-		ClassicAssert.AreEqual(expected7, result7.ToString()[..16]);
+		ClassicAssert.AreEqual(expected5, result5.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected6, result6.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected7, result7.ToString().Substring(0, 16));
 		ClassicAssert.AreEqual(expected8, result8.ToString());
 	}
 
@@ -850,10 +852,10 @@ public class TestBigDecimalOperations
 		int root = 2;
 		int precision = 50;
 
-		string expected = TestBigDecimalHelper.PrepareValue("0.31335255457742883389571245385500659019295986107402", Format);
+		string expected = TestBigDecimalHelper.PrepareValue("0.31335255457742883389571245385500659019295986107403", this.Format);
 		BigDecimal result = BigDecimal.NthRoot(value, root, precision);
 
-		BigDecimal actual = BigDecimal.Round(result, precision);
+		BigDecimal actual = BigDecimal.Round(result, precision, RoundingStrategy.AwayFromZero);
 
 		ClassicAssert.AreEqual(expected, actual.ToString(), $"{root}th root of {value} did not return {expected}.");
 	}
@@ -883,7 +885,7 @@ public class TestBigDecimalOperations
 		string expected = TestBigDecimalHelper.PrepareValue("99090778309689603548815656125983317432034385902667.809355596183348807410596077216611169596571667988326798354988734930975117508103720966474578967977953788831616628961714711683020533839237", Format);
 		BigDecimal result = BigDecimal.NthRoot(value, root, precision);
 
-		BigDecimal actual = BigDecimal.Round(result, precision);
+		BigDecimal actual = BigDecimal.Truncate(result, precision);
 
 		ClassicAssert.AreEqual(expected, actual.ToString(), $"{root}th root of {value} did not return {expected}.");
 	}
@@ -912,7 +914,7 @@ public class TestBigDecimalOperations
 		BigDecimal actual;
 		TestDelegate testDelegate = new(() => actual = BigDecimal.NthRoot(value, root, precision));
 
-		Assert.Throws<ArgumentException>(testDelegate);
+		ClassicAssert.Throws<ArgumentException>(testDelegate);
 	}
 
 	[Test]
@@ -929,11 +931,22 @@ public class TestBigDecimalOperations
 	}
 
 	[Test]
+	public void TestSqrtRoundTrip()
+	{
+		BigDecimal sqrtHalf = BigDecimal.SquareRoot(BigDecimal.OneHalf, BigDecimal.Precision);
+
+		BigDecimal half = BigDecimal.Round(sqrtHalf * sqrtHalf, BigDecimal.Precision - 2);
+
+
+		ClassicAssert.AreEqual(BigDecimal.OneHalf, half, "Algebraically, sqrt(0.5)*sqrt(0.5) should equal 0.5");
+	}
+
+	[Test]
 	public void TestNthRoot()
 	{
 		BigDecimal value = BigDecimal.Parse("3");
-		int root = 3;
-		int precision = 50;
+		Int32 root = 3;
+		Int32 precision = 50;
 
 		string expected = TestBigDecimalHelper.PrepareValue("1.44224957030740838232163831078010958839186925349935", Format);
 		BigDecimal actual = BigDecimal.NthRoot(value, root, precision);

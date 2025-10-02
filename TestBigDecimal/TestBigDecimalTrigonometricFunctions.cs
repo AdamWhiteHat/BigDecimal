@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -10,6 +11,7 @@ using ExtendedNumerics.Helpers;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Legacy;
+using TestBigDecimal;
 
 namespace BigDecimalTests;
 
@@ -101,8 +103,8 @@ public class TestBigDecimalTrigonometricFunctions
 			actualTruncLength = stringActual.Length;
 		}
 
-		var truncatedExpecting = stringExpected[..expectedTruncLength];
-		var truncatedActual = stringActual[..actualTruncLength];
+		var truncatedExpecting = stringExpected.Substring(0, expectedTruncLength);
+		var truncatedActual = stringActual.Substring(0, actualTruncLength);
 
 		double.TryParse(truncatedActual, out var doubleActual);
 
@@ -484,21 +486,20 @@ public class TestBigDecimalTrigonometricFunctions
 		BigDecimal result1 = BigDecimal.Ln(input, precision);
 		LogNaturalTimeElapsed = LogNaturalTimeElapsed.Add(LogNaturalTimer.Elapsed);
 
-		string actual = result1.ToString()[..expected.Length];
+		string actual = result1.ToString().Substring(0, expected.Length);
 
 		int matchCount = CharactersMatchCount(expected, actual);
-		string diffString = HightlightDiffControl(expected, actual);
 
 		Console.WriteLine($"-------- {nameof(BigDecimal)}.{nameof(BigDecimal.Ln)} --------");
 		Console.WriteLine($"   Input: {input}");
 		Console.WriteLine($"Expected: {expected}");
 		Console.WriteLine($"  Actual: {actual}");
-		Console.WriteLine($"          {diffString.Replace(Environment.NewLine, Environment.NewLine + "          ")}");
+		Common.HightlightDiffControl(expected, actual, 10);
 		Console.WriteLine($"Match Count: {matchCount}");
 		Console.WriteLine($"");
 
 		// 48 out of the 50 digits to the right of the decimal point must be correct.
-		ClassicAssert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{diffString}");
+		ClassicAssert.GreaterOrEqual(matchCount, 48, $"Expected/Actual:{Environment.NewLine}{expected}{Environment.NewLine}{actual}");
 	}
 
 	private static int CharactersMatchCount(string expected, string actual)
@@ -697,5 +698,443 @@ public class TestBigDecimalTrigonometricFunctions
 	{
 		Test_TrigFunction(BigDecimal.Tanh, Math.Tanh, 14, Precision, 1);
 		Test_TrigFunction(BigDecimal.Tanh, Math.Tanh, 14, Precision, -1);
+	}
+
+
+
+	internal class ResultObject
+	{
+		public int Precision { get; set; }
+		public int N_of_ExpN { get; set; }
+		public override string ToString() => $"{Precision}, {N_of_ExpN}";
+	}
+
+
+	[Test]
+	public static void Test_Exp_EdgeCases()
+	{
+		Stopwatch timer = Stopwatch.StartNew();
+
+		BigDecimal exp10 = BigDecimal.Exp(10);
+
+		TimeSpan timeElapsed_10 = timer.Elapsed;
+		TestContext.WriteLine($"Exp(10) - Time Elapsed (ms): {timeElapsed_10.TotalMilliseconds}");
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal exp11 = BigDecimal.Exp(11);
+
+		TimeSpan timeElapsed_11 = timer.Elapsed;
+		TestContext.WriteLine($"Exp(11) - Time Elapsed (ms): {timeElapsed_11.TotalMilliseconds}");
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal exp12 = BigDecimal.Exp(12);
+
+		TimeSpan timeElapsed_12 = timer.Elapsed;
+		TestContext.WriteLine($"Exp(12) - Time Elapsed (ms): {timeElapsed_12.TotalMilliseconds}");
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"Expected Exp({10}): {Expected.ValuesOfExp[10]}");
+		TestContext.WriteLine($"  Actual Exp({10}): {exp10}");
+		Common.HightlightDiffControl(Expected.ValuesOfExp[10], exp10.ToString(), 20);
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"Expected Exp({11}): {Expected.ValuesOfExp[11]}");
+		TestContext.WriteLine($"  Actual Exp({11}): {exp11}");
+		Common.HightlightDiffControl(Expected.ValuesOfExp[11], exp11.ToString(), 20);
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"Expected Exp({12}): {Expected.ValuesOfExp[12]}");
+		TestContext.WriteLine($"  Actual Exp({12}): {exp12}");
+		Common.HightlightDiffControl(Expected.ValuesOfExp[12], exp12.ToString(), 20);
+	}
+
+	[Test]
+	public static void Test_Exp_Large()
+	{
+		int precision = 355;
+
+		BigDecimal valueToTest = 813; // 1973
+
+		Stopwatch timer = Stopwatch.StartNew();
+
+		BigDecimal actual = BigDecimal.Exp(valueToTest, precision);
+
+		TimeSpan timeElapsed_exp = timer.Elapsed;
+		TestContext.WriteLine($"Exp({valueToTest}) - Time Elapsed (ms): {timeElapsed_exp.TotalMilliseconds}");
+
+		string expected = "120618462233518981433238080308535803757557687664846828848443535448779741815217057681027697506649569601439291868793154656577261476254713167816544696153161438135707491747718691667694545847458665277046673289298561918077097160570572162793147114386756467587949281832249428245023200573458995225450885521592507359241589853364093350639258320452351869351505285572.228772209";
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"Expected Exp({valueToTest}): {expected}");
+		TestContext.WriteLine($"  Actual Exp({valueToTest}): {actual}");
+		Common.HightlightDiffControl(expected, actual.ToString(), 20);
+
+		ClassicAssert.AreEqual(expected, actual.ToString().Substring(0, 352));
+	}
+
+	[Test]
+	public static void Test_Exp_Timing()
+	{
+		int precision = 200;
+
+		BigDecimal OneTenth = new BigDecimal(11, -2);
+		BigDecimal One = new BigDecimal(113, -2);
+		BigDecimal Ten = new BigDecimal(111, -1);
+		BigDecimal Twenty = new BigDecimal(214, -1);
+		BigDecimal TwoHundred = new BigDecimal(2011, -1);
+
+		string strOneTenth = $"{OneTenth}";
+		string strOne = $"{One}";
+		string strTen = $"{Ten}";
+		string strTwenty = $"{Twenty}";
+		string strTwoHundred = $"{TwoHundred}";
+
+		Stopwatch timer = Stopwatch.StartNew();
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal.Exp(OneTenth, precision);
+
+		TimeSpan timeElapsed_1_10 = timer.Elapsed;
+		TestContext.WriteLine($"Exp({strOneTenth}) - Time Elapsed (ms): {timeElapsed_1_10.TotalMilliseconds}");
+		TestContext.WriteLine();
+
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal.Exp(One, precision);
+
+		TimeSpan timeElapsed_1 = timer.Elapsed;
+		TestContext.WriteLine($"Exp({strOne}) - Time Elapsed (ms): {timeElapsed_1.TotalMilliseconds}");
+		TestContext.WriteLine();
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal.Exp(Ten, precision);
+
+		TimeSpan timeElapsed_10 = timer.Elapsed;
+		TestContext.WriteLine($"Exp({strTen}) - Time Elapsed (ms): {timeElapsed_10.TotalMilliseconds}");
+		TestContext.WriteLine();
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal.Exp(Twenty, precision);
+
+		TimeSpan timeElapsed_20 = timer.Elapsed;
+		TestContext.WriteLine($"Exp({strTwenty}) - Time Elapsed (ms): {timeElapsed_20.TotalMilliseconds}");
+		TestContext.WriteLine();
+
+		timer.Reset();
+		timer.Start();
+
+		BigDecimal.Exp(TwoHundred, precision);
+
+		TimeSpan timeElapsed_200 = timer.Elapsed;
+		TestContext.WriteLine($"Exp({strTwoHundred}) - Time Elapsed (ms): {timeElapsed_200.TotalMilliseconds}");
+		TestContext.WriteLine();
+	}
+
+	public static void Test_Exp_1011(int precision, int minimumCorrectDigits)
+	{
+		BigDecimal valueToTest = 1011;
+		string expected = "11795631706967431106257568260721165052418669208780627463056386271682463550358281615243401604609427915490736977871001536553653167580626736331516842400752123331182209012286512505603075898850283249210504933496598653773386608180010349926378964239687044699518479654589142697769694489316266803535363535669997608301616494716924943498510232177924309996046591344152647854591693443689927304679068837084128565236405425159892099980215918759545864400126.589108911252832854643467068425822441076055894309627977798308921397204006850026005868932906663258362001654798686230087439212347234353932817803561857750948087363466040372013875880017089820431467652456239183514905552905216567577472414761661275479518819815574615064577702742876563261954130633564844288154413735772184900268161683927069887941863946739210263149971011543245322251049639950750819714535497409650895327643718951562796414333875859164935571124632733571526580436080298067974076793724713503046953482413423252055159193987878999180903172603138472277097851121";
+
+		Test_Exp_Variable(precision, minimumCorrectDigits, valueToTest, expected);
+	}
+
+	public static void Test_Exp_2011(int precision, int minimumCorrectDigits)
+	{
+		BigDecimal valueToTest = 2011;
+		string expected = "2323823329748012862284724519461635711939560569765110356699112127030180484033973095063071499919965288199448948756287133798394499682902037462246237766454879628391773259648467719149972443214873411985429519464819962531782997822916278506973646261971785480143712304203162494968930428639752003764803942015565512940652276121044306831501917578696364968824880352708813969372371518658461046325562298095423146083470918524272244805026769336959711817570542440957951676629381518687976452083498994073690257881699796035450140231255790118784990526505141719814623220214032890748733685240673070408163489016448785761642985195061416769378997675967190710707236340059633603820453410225070331540278035278661756344793194276131411085364783963887102226233316721198151568554382794577241196740812007792353017548086760471957441181119527833301970007176054171439972748742171476694637291770547688322854967781.199815973820403248083653985489213684726396130770592743925176192357540212994182656884498750131746203274680174451505495399603449";
+
+		Test_Exp_Variable(precision, minimumCorrectDigits, valueToTest, expected);
+	}
+
+	public static void Test_Exp_Variable(int precision, int minimumCorrectDigits, BigDecimal valueToTest, string expected)
+	{
+		int savePrecision = BigDecimal.Precision;
+
+		BigDecimal.Precision = precision;
+		int truncateAt = precision + 50;
+
+		Stopwatch timer = Stopwatch.StartNew();
+
+		BigDecimal actual = BigDecimal.Exp(valueToTest, precision);
+
+		TimeSpan timeElapsed_exp = timer.Elapsed;
+		double elapsedDisplay = (timeElapsed_exp.TotalMilliseconds) / 1000d;
+		TestContext.WriteLine($"Exp({valueToTest}): Time_Elapsed: {elapsedDisplay} sec.");
+
+		//TestContext.WriteLine();
+		//TestContext.WriteLine($"Expected Exp({valueToTest}): {expected}");
+		//TestContext.WriteLine($"  Actual Exp({valueToTest}): {actual.TruncateAt(truncateAt)}");
+		Common.HightlightDiffControl(expected, actual.ToString(), 20);
+
+		ClassicAssert.AreEqual(expected, actual.ToString().Substring(0, minimumCorrectDigits));
+
+		BigDecimal.Precision = savePrecision;
+	}
+
+	public static void Test_ForRecursionThreshold(int max = 200)
+	{
+		int n = 11;
+
+		while (n < max)
+		{
+			bool success = LoopInternalTest(n);
+
+			if (!success)
+			{
+				break;
+			}
+
+			n++;
+		}
+	}
+
+	public static bool LoopInternalTest(int n)
+	{
+		string expected = "";
+
+		if (n > 1000)
+		{
+			expected = Expected.ValuesOfExp_Extended[n];
+		}
+		else
+		{
+			expected = Expected.ValuesOfExp[n];
+		}
+
+		int precision = expected.IndexOf('.') + 1;
+
+		Stopwatch timer = Stopwatch.StartNew();
+		BigDecimal actualValue = BigDecimal.Exp(n, precision);
+		TimeSpan timeElapsed_exp = timer.Elapsed;
+		double elapsedDisplay = (timeElapsed_exp.TotalMilliseconds) / 1000d;
+		elapsedDisplay = Math.Round(elapsedDisplay, 2);
+
+		string actual = actualValue.ToString();
+
+		string _expected = expected.Substring(0, precision);
+		string _actual = actual.Substring(0, precision);
+
+		bool success = string.Equals(_expected, _actual);
+
+		string message = "SUCCESS!";
+
+		if (!success)
+		{
+			message = "fail";
+		}
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"   {message}   ");
+		TestContext.WriteLine($" Expected  Exp({n}): {_expected}");
+		TestContext.WriteLine($"  Actual   Exp({n}): {_actual}");
+		TestContext.WriteLine($" Precision         : {precision}");
+		TestContext.WriteLine($"---  Elapsed: {elapsedDisplay} sec ---");
+
+		return success;
+	}
+
+	private static int PrecisionTestRange_Start = 70;
+	private static int PrecisionTestRange_End = 120;
+	private static int PrecisionTestRange_StepSize = 10;
+
+	private static int N_Start = 180;
+	private static int N_Stop = 220;
+	private static int N_StepSize = 5;
+
+	private static int Tolerance = 3;
+	private static int Strikes = 5;
+
+	[Test]
+	public static void Test_Exp_TaylorSeriesAccuracy()
+	{
+		List<ResultObject> results = new List<ResultObject>();
+
+		int precision = PrecisionTestRange_Start;
+		int maxN = -1;
+		while (precision <= PrecisionTestRange_End)
+		{
+			maxN = Internal_Exp_TaylorSeriesAccuracy(precision);
+			results.Add(new ResultObject() { Precision = precision, N_of_ExpN = maxN });
+			precision += PrecisionTestRange_StepSize;
+		}
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"<RESULTS>");
+		TestContext.WriteLine();
+		foreach (ResultObject result in results)
+		{
+			TestContext.WriteLine(result.ToString());
+		}
+		TestContext.WriteLine();
+		TestContext.WriteLine($"</RESULTS>");
+		TestContext.WriteLine();
+	}
+
+	internal static int Internal_Exp_TaylorSeriesAccuracy(int precision)
+	{
+		TestContext.WriteLine();
+		TestContext.WriteLine($"<PRECISION  DIGITS=\"{precision}\" >");
+
+		int outOfRangeCount = 0;
+		int lastCorrectN = -1;
+
+		int n = N_Start;
+		while (n < N_Stop)
+		{
+			int correctDigits = Internal_Exp_N(precision, n);
+
+			if (correctDigits < (precision - Tolerance))
+			{
+				outOfRangeCount++;
+			}
+			else
+			{
+				lastCorrectN = n;
+			}
+
+			if (outOfRangeCount >= Strikes)
+			{
+				break;
+			}
+
+			n += N_StepSize;
+		}
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"</PRECISION> // {precision}");
+		TestContext.WriteLine();
+		TestContext.WriteLine();
+
+		return lastCorrectN;
+	}
+
+	internal static int Internal_Exp_N(int precision, int N)
+	{
+		BigDecimal expN = BigDecimal.Exp(N, precision);
+
+		string actualN = Expected.ValuesOfExp[N];
+
+		TestContext.WriteLine();
+		TestContext.WriteLine($"BigDecimal.Exp({N}): {expN}");
+		TestContext.WriteLine($"  Actual   Exp({N}): {actualN}");
+		int correctDigits = Common.HightlightDiffControl(actualN, expN.ToString(), 20);
+
+		return correctDigits;
+	}
+
+	[Test]
+	public static void Test_Exp_200()
+	{
+		BigDecimal.Precision = 100;
+
+		int twoHundred = 200;
+		double dExp = (double)BigDecimal.Exp(twoHundred);
+		double dPowE = (double)BigDecimal.Pow(Math.E, twoHundred);
+		double dPowEB = (double)BigDecimal.Pow(BigDecimal.E, twoHundred);
+		double mathPow = Math.Pow(Math.E, twoHundred);
+		double mathExp = Math.Exp(twoHundred);
+
+		BigDecimal bd_200 = new BigDecimal(mantissa: 200, exponent: 0);
+
+		BigDecimal bdExpd = BigDecimal.Exp(twoHundred);
+		BigDecimal bdPowEd = BigDecimal.Pow(Math.E, twoHundred);
+		BigDecimal bdPowEBd = BigDecimal.Pow(BigDecimal.E, twoHundred);
+
+
+		Stopwatch timer = Stopwatch.StartNew();
+
+		BigDecimal bdExpbd = BigDecimal.Exp(bd_200);
+
+		TimeSpan timeElapsed_exp = timer.Elapsed;
+		TestContext.WriteLine($"Exp(200) - Time Elapsed (ms): {timeElapsed_exp.TotalMilliseconds}");
+
+		string expected = "722597376812574925817747704218930569735687442852731928403269789123221909361473891661561.9265890";
+
+		TestContext.WriteLine($"(double) BigDecimal.Exp(200):                   {dExp}");
+		TestContext.WriteLine($"(double) BigDecimal.Pow(Math.E, 200):           {dPowE}");
+		TestContext.WriteLine($"(double) BigDecimal.Pow(BigDecimal.E, 200):     {dPowEB}");
+		TestContext.WriteLine($"(double) Math.Pow(Math.E, 200):                 {mathPow}");
+		TestContext.WriteLine($"(double) Math.Exp(200):                         {mathExp}");
+		TestContext.WriteLine();
+		TestContext.WriteLine($"(BigDecimal) BigDecimal.Exp((double)200):               {bdExpd}");
+		TestContext.WriteLine($"(BigDecimal) BigDecimal.Pow(Math.E, (double)200):       {bdPowEd}");
+		TestContext.WriteLine($"(BigDecimal) BigDecimal.Pow(BigDecimal.E, (double)200): {bdPowEBd}");
+		TestContext.WriteLine();
+		TestContext.WriteLine($"(BigDecimal) BigDecimal.Exp((BigDecimal)200):                   {bdExpbd}");
+		TestContext.WriteLine();
+		TestContext.WriteLine($"Actual:                                         722597376812574925817747704218930569735687442852731928403269789123221909361473891661561.926589062570557468402043101429418177110677119368226480983077273278800...");
+		TestContext.WriteLine();
+		TestContext.WriteLine($"BigDecimal(200):");
+		TestContext.WriteLine($"ToString: {bd_200}");
+		TestContext.WriteLine($"Mantissa: {bd_200.Mantissa}");
+		TestContext.WriteLine($"Exponent: {bd_200.Exponent}");
+		TestContext.WriteLine();
+
+		ClassicAssert.AreEqual(expected, bdExpbd.ToString().Substring(0, expected.Length));
+	}
+
+	[Test]
+	public void TestExponentiation1()
+	{
+		double exp = 0.052631578947368421d;
+		double phi = (1.0d + Math.Sqrt(5)) / 2.0d;
+
+		BigDecimal result1 = BigDecimal.Pow(9.0d, 0.5d);
+		BigDecimal result2 = BigDecimal.Pow(16.0d, 0.25d);
+		string expected1 = "3";
+		string expected2 = "2";
+
+		BigDecimal result3 = BigDecimal.Pow(phi, 13);
+		string expected3 = "521.001919378725";
+
+		BigDecimal result4 = BigDecimal.Pow(1162261467, exp);
+		BigDecimal result5 = BigDecimal.Pow(9349, exp);
+		string expected4 = "3";
+		string expected5 = "1.61803398777557";
+
+		BigDecimal result6 = BigDecimal.Pow(1.618034d, 16.000000256d);
+		BigDecimal result7 = BigDecimal.Pow(phi, 20.0000000128d);
+		string expected6 = "2207.00006429941";
+		string expected7 = "15127.0000270679";
+
+		BigDecimal result8 = BigDecimal.Pow(29192926025390625d, 0.07142857142857142d);
+		string expected8 = "14.999999999999998";
+
+		ClassicAssert.AreEqual(expected1, result1.ToString());
+		ClassicAssert.AreEqual(expected2, result2.ToString());
+		ClassicAssert.AreEqual(expected3, result3.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected4, result4.ToString());
+		ClassicAssert.AreEqual(expected5, result5.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected6, result6.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected7, result7.ToString().Substring(0, 16));
+		ClassicAssert.AreEqual(expected8, result8.ToString());
+	}
+
+	[Test]
+	public void TestExponentiation2()
+	{
+		BigDecimal result1 = BigDecimal.Pow(new BigDecimal(16), new BigInteger(16));
+		BigDecimal result2 = BigDecimal.Pow(new BigDecimal(101), new BigInteger(13));
+		string expected1 = "18446744073709551616";
+		string expected2 = "113809328043328941786781301";
+
+		BigDecimal result3 = BigDecimal.Pow(new BigDecimal(0.25), 2);
+		string expected3 = "0.0625";
+
+		ClassicAssert.AreEqual(expected1, result1.ToString());
+		ClassicAssert.AreEqual(expected2, result2.ToString());
+		ClassicAssert.AreEqual(expected3, result3.ToString());
 	}
 }

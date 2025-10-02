@@ -1,4 +1,4 @@
-![BigDecimal Logo](https://github.com/AdamWhiteHat/BigDecimal/blob/main/BigDecimal/Properties/Images/BigDecimalLogo.png)
+![BigDecimal Logo](https://raw.githubusercontent.com/AdamWhiteHat/BigDecimal/main/BigDecimal/Properties/Images/BigDecimalLogo.png)
 # BigDecimal
 [![NuGet Version](https://img.shields.io/nuget/v/ExtendedNumerics.BigDecimal?label=NuGet%20Version&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FExtendedNumerics.BigDecimal%2F)](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal) [![Downloads](https://img.shields.io/nuget/dt/ExtendedNumerics.BigDecimal?logo=%23004880&label=Downloads&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FExtendedNumerics.BigDecimal)](https://www.nuget.org/packages/ExtendedNumerics.BigDecimal)
 
@@ -9,7 +9,11 @@ It stores a **Mantissa** and an **Exponent**.
 The Mantissa is of type BigInteger, enabling BigDecimal to have arbitrary precision.
 BigDecimal is a base-10 floating point number, like System.Decimal is. This is unlike System.Double, which is a base-2 floating point number.
 
-**NOTE: BREAKING CHANGE FOR VER. 3000.0.0:**
+**BREAKING CHANGE NOTICE FOR VER. 3001.0.0:**
+BigDecimal.Round(BigDecimal value, Int32 precision) now exhibits common/standard/normal/expected rounding behavior when the precision argument is zero or greater. Previously, this method truncated at the requested precision. For negative precision values, the behavior remains unaltered.
+For anyone who still needs the old behavior of BigDevimal.Round(BigDecimal value, Int32 precision), use BigDecimal.Truncate(BigDecimal value, int precision) instead. This method is functionally identical to Excel's ROUNDDOWN function.
+
+**BREAKING CHANGE NOTICE FOR VER. 3000.0.0:**
 The default Precision value for the library has been changed from 5000 to 100. This should provide a much more reasonable default value for the vast majority of the users. 5000 digits of precision by default was a poor choice, is likely more precision than anyone needs, and resulted in performance issues after a couple of multiplications (assuming BigDecimal.AlwaysTruncate is false, which is the default).
 
 ## QUICK START

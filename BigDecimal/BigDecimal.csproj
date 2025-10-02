@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0;netstandard2.1;net8.0;net9.0</TargetFrameworks>
+		<TargetFrameworks>net45;net46;net472;net48;netstandard2.0;netstandard2.1;netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net9.0</TargetFrameworks>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<OutputType>Library</OutputType>
 		<Nullable>annotations</Nullable>
@@ -26,14 +26,15 @@
 		<PackageTags>math mathematics arbitrary-precision floating-point decimal arithmetic trigonometry logarithms numerics numbers biginteger bigdecimal hyperbolic inverse trigonometric sine cosine tangent secant circular angles sin cos tan mantissa exponent floating point base10 csharp</PackageTags>
 		<PackageProjectUrl>https://www.nuget.org/packages/ExtendedNumerics.BigDecimal/</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/AdamWhiteHat/BigDecimal</RepositoryUrl>
+		<PackageIcon>real.png</PackageIcon>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<RepositoryType>git</RepositoryType>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3000</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">2</PatchVersion>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3001</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">2</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -76,6 +77,14 @@
 	</Choose>
 
 	<ItemGroup>
+	  <None Remove="Properties\Images\real.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="Properties\Images\real.png" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<None Include="..\README.md">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
@@ -95,6 +104,10 @@
 			<Generator>PublicResXFileCodeGenerator</Generator>
 			<LastGenOutput>LanguageResources.Designer.cs</LastGenOutput>
 		</EmbeddedResource>
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(Configuration)'=='Debug'">
+		<InternalsVisibleTo Include="TestBigDecimal" Key="0024000004800000140200000602000000240000525341310010000001000100ad83dfce0af54c76212bea746ca04f25a8722e715b6ddd63ce203c5f82239c73d0da0cc36f31f84259e6772b00101834d8c478206c923d758bc4b682e686dcb98a7d35abe65cf24142f6ed8c2e58168ce22558853b657ff13c565675c1828dfd001aa98025f6c1c711890a44557f1e47028798216f50e230c85c68877cfef6abec740cf4b0ae78cfeaf1030b0d9385e37b09ecca21c7d5f4f546da40a09bc7bf736eec9c7da12fceacf58a05440c2a79fcb53e437aac5b8a2385a224c82aafdc375708e378bba00d2b0b6498cd497ab7951261ba9e06a4c0c1b92462c7a0feda1241b95a62296f574a6bde3c9485026842e11dc3734bc53bcf5277c4bda57cc07987dab784094ae8b62325231d0830e25c4872de0cff153c4dc8471ab672f4e6019e8fd8ff5162ece91080e6aa07d244f07908cf55fa5e60ad4c49d5b3a568de14b14bfc393179afbfeac2afb84e211e02d90196bacdc53a353bbfadf56764aafde535c2f19aa14acf03846a34a5ac6468fc88d9a14b14aa1025207a7e4d8ed460e4476fd968514fd8269133bbd9ba109e54723e54443b5504808a9eda77b0aa679759a7d9d21d5daa26164f3337852b35ff926bf5ed727ec97f90ebbd31311c605b107989e400b6e4037771ba9a8bcc16c59e466a105b2b06f4c2b49fe7fd97db3ff49da291475c9b1b39cc91770b72303ca27dea3e3dff2b298249d1f292c8" />
 	</ItemGroup>
 
 </Project>
