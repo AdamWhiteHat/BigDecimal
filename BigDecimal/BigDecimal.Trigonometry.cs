@@ -729,17 +729,26 @@ namespace ExtendedNumerics
 		/// 2025-06-27: schlebe: add fast and precise exp() function
 		public static BigDecimal Exp_Fast_and_Accurate(BigDecimal x)
 		{
+			return Exp_Fast_and_Accurate(x, BigDecimal.Precision);
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <param name="precision">The number of digits of precision requested</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		public static BigDecimal Exp_Fast_and_Accurate(BigDecimal x, int precision)
+		{
 			BigDecimal x_exp_n = BigDecimal.One;
 			BigDecimal dSum = BigDecimal.One;
 			BigDecimal dFactoriel = BigDecimal.One;
 			int n = 1;
-			int nMax = BigDecimal.Precision;
+			int nMax = precision;
 			BigDecimal eX = BigDecimal.E;
 			BigDecimal eK = BigDecimal.One;
-			BigDecimal xPrecisionLimit = new BigDecimal(1, -BigDecimal.Precision);
+			BigDecimal xPrecisionLimit = new BigDecimal(1, -precision);
 			BigDecimal z;
 			BigDecimal dSum0 = BigDecimal.Zero;
-			var iPrecision0 = BigDecimal.Precision;
+			var iPrecision0 = precision;
 			int k = (int)BigDecimal.Floor(x);
 
 			z = x - k;
@@ -796,7 +805,7 @@ namespace ExtendedNumerics
 			}
 
 			BigDecimal.Precision = iPrecision0;
-			BigDecimal.nExpPrecision = nExpPrecision0;
+			//nExpPrecision = nExpPrecision0;
 			return dSum;
 		}
 

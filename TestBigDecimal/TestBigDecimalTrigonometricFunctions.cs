@@ -418,10 +418,17 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
-	public static void Test_Exp()
+	public static void OLD_Test_Exp()
 	{
 		Test_TrigFunction(BigDecimal.Exp, Math.Exp, 11, Precision, 1);
 		Test_TrigFunction(BigDecimal.Exp, Math.Exp, 11, Precision, -1);
+	}
+
+	[Test]
+	public static void NEW_Test_Exp()
+	{
+		Test_TrigFunction(BigDecimal.Exp_Fast_and_Accurate, Math.Exp, 11, Precision, 1);
+		Test_TrigFunction(BigDecimal.Exp_Fast_and_Accurate, Math.Exp, 11, Precision, -1);
 	}
 
 	[Test]
@@ -668,11 +675,22 @@ public class TestBigDecimalTrigonometricFunctions
 
 
 	[Test]
-	public static void Test_Exp_EdgeCases()
+	public static void OLD_Test_Exp_EdgeCases()
+	{
+		Test_Exp_EdgeCases(BigDecimal.Exp);
+	}
+
+	[Test]
+	public static void NEW_Test_Exp_EdgeCases()
+	{
+		Test_Exp_EdgeCases(BigDecimal.Exp_Fast_and_Accurate);
+	}
+
+	public static void Test_Exp_EdgeCases(Func<BigDecimal, BigDecimal> exp_func)
 	{
 		Stopwatch timer = Stopwatch.StartNew();
 
-		BigDecimal exp10 = BigDecimal.Exp(10);
+		BigDecimal exp10 = exp_func(10);
 
 		TimeSpan timeElapsed_10 = timer.Elapsed;
 		TestContext.WriteLine($"Exp(10) - Time Elapsed (ms): {timeElapsed_10.TotalMilliseconds}");
@@ -680,7 +698,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal exp11 = BigDecimal.Exp(11);
+		BigDecimal exp11 = exp_func(11);
 
 		TimeSpan timeElapsed_11 = timer.Elapsed;
 		TestContext.WriteLine($"Exp(11) - Time Elapsed (ms): {timeElapsed_11.TotalMilliseconds}");
@@ -688,7 +706,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal exp12 = BigDecimal.Exp(12);
+		BigDecimal exp12 = exp_func(12);
 
 		TimeSpan timeElapsed_12 = timer.Elapsed;
 		TestContext.WriteLine($"Exp(12) - Time Elapsed (ms): {timeElapsed_12.TotalMilliseconds}");
@@ -710,15 +728,27 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
-	public static void Test_Exp_Large()
+	public static void OLD_Test_Exp_Large()
 	{
 		int precision = 355;
+		Test_Exp_Large(BigDecimal.Exp, precision);
+	}
 
+	[Test]
+	public static void NEW_Test_Exp_Large()
+	{
+		int precision = 355;
+		Test_Exp_Large(BigDecimal.Exp_Fast_and_Accurate, precision);
+	}
+
+
+	public static void Test_Exp_Large(Func<BigDecimal, int, BigDecimal> exp_func, int precision)
+	{
 		BigDecimal valueToTest = 813; // 1973
 
 		Stopwatch timer = Stopwatch.StartNew();
 
-		BigDecimal actual = BigDecimal.Exp(valueToTest, precision);
+		BigDecimal actual = exp_func(valueToTest, precision);
 
 		TimeSpan timeElapsed_exp = timer.Elapsed;
 		TestContext.WriteLine($"Exp({valueToTest}) - Time Elapsed (ms): {timeElapsed_exp.TotalMilliseconds}");
@@ -734,10 +764,21 @@ public class TestBigDecimalTrigonometricFunctions
 	}
 
 	[Test]
-	public static void Test_Exp_Timing()
+	public static void OLD_Test_Exp_Timing()
 	{
 		int precision = 200;
+		Test_Exp_Timing(BigDecimal.Exp, precision);
+	}
 
+	[Test]
+	public static void NEW_Test_Exp_Timing()
+	{
+		int precision = 200;
+		Test_Exp_Timing(BigDecimal.Exp_Fast_and_Accurate, precision);
+	}
+
+	public static void Test_Exp_Timing(Func<BigDecimal, int, BigDecimal> exp_func, int precision)
+	{
 		BigDecimal OneTenth = new BigDecimal(11, -2);
 		BigDecimal One = new BigDecimal(113, -2);
 		BigDecimal Ten = new BigDecimal(111, -1);
@@ -755,7 +796,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal.Exp(OneTenth, precision);
+		exp_func(OneTenth, precision);
 
 		TimeSpan timeElapsed_1_10 = timer.Elapsed;
 		TestContext.WriteLine($"Exp({strOneTenth}) - Time Elapsed (ms): {timeElapsed_1_10.TotalMilliseconds}");
@@ -765,7 +806,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal.Exp(One, precision);
+		exp_func(One, precision);
 
 		TimeSpan timeElapsed_1 = timer.Elapsed;
 		TestContext.WriteLine($"Exp({strOne}) - Time Elapsed (ms): {timeElapsed_1.TotalMilliseconds}");
@@ -774,7 +815,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal.Exp(Ten, precision);
+		exp_func(Ten, precision);
 
 		TimeSpan timeElapsed_10 = timer.Elapsed;
 		TestContext.WriteLine($"Exp({strTen}) - Time Elapsed (ms): {timeElapsed_10.TotalMilliseconds}");
@@ -783,7 +824,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal.Exp(Twenty, precision);
+		exp_func(Twenty, precision);
 
 		TimeSpan timeElapsed_20 = timer.Elapsed;
 		TestContext.WriteLine($"Exp({strTwenty}) - Time Elapsed (ms): {timeElapsed_20.TotalMilliseconds}");
@@ -792,7 +833,7 @@ public class TestBigDecimalTrigonometricFunctions
 		timer.Reset();
 		timer.Start();
 
-		BigDecimal.Exp(TwoHundred, precision);
+		exp_func(TwoHundred, precision);
 
 		TimeSpan timeElapsed_200 = timer.Elapsed;
 		TestContext.WriteLine($"Exp({strTwoHundred}) - Time Elapsed (ms): {timeElapsed_200.TotalMilliseconds}");
@@ -984,7 +1025,7 @@ public class TestBigDecimalTrigonometricFunctions
 		string actualN = Expected.ValuesOfExp[N];
 
 		TestContext.WriteLine();
-		TestContext.WriteLine($"BigDecimal.Exp({N}): {expN}");
+		TestContext.WriteLine($"exp_func({N}): {expN}");
 		TestContext.WriteLine($"  Actual   Exp({N}): {actualN}");
 		int correctDigits = Common.HightlightDiffControl(actualN, expN.ToString(), 20);
 
@@ -1019,17 +1060,17 @@ public class TestBigDecimalTrigonometricFunctions
 
 		string expected = "722597376812574925817747704218930569735687442852731928403269789123221909361473891661561.9265890";
 
-		TestContext.WriteLine($"(double) BigDecimal.Exp(200):                   {dExp}");
+		TestContext.WriteLine($"(double) exp_func(200):                   {dExp}");
 		TestContext.WriteLine($"(double) BigDecimal.Pow(Math.E, 200):           {dPowE}");
 		TestContext.WriteLine($"(double) BigDecimal.Pow(BigDecimal.E, 200):     {dPowEB}");
 		TestContext.WriteLine($"(double) Math.Pow(Math.E, 200):                 {mathPow}");
 		TestContext.WriteLine($"(double) Math.Exp(200):                         {mathExp}");
 		TestContext.WriteLine();
-		TestContext.WriteLine($"(BigDecimal) BigDecimal.Exp((double)200):               {bdExpd}");
+		TestContext.WriteLine($"(BigDecimal) exp_func((double)200):               {bdExpd}");
 		TestContext.WriteLine($"(BigDecimal) BigDecimal.Pow(Math.E, (double)200):       {bdPowEd}");
 		TestContext.WriteLine($"(BigDecimal) BigDecimal.Pow(BigDecimal.E, (double)200): {bdPowEBd}");
 		TestContext.WriteLine();
-		TestContext.WriteLine($"(BigDecimal) BigDecimal.Exp((BigDecimal)200):                   {bdExpbd}");
+		TestContext.WriteLine($"(BigDecimal) exp_func((BigDecimal)200):                   {bdExpbd}");
 		TestContext.WriteLine();
 		TestContext.WriteLine($"Actual:                                         722597376812574925817747704218930569735687442852731928403269789123221909361473891661561.926589062570557468402043101429418177110677119368226480983077273278800...");
 		TestContext.WriteLine();
