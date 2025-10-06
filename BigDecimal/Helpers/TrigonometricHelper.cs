@@ -121,6 +121,9 @@ namespace ExtendedNumerics.Helpers
 				lastResult = result;
 			} while (BigDecimal.Abs(difference) > targetPrecision);
 
+			//2025-10-06:BS: to test number of loop necessary to compute serie
+			BigDecimal.nExpPrecision = counter;
+
 			return result;
 		}
 

@@ -15,7 +15,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 
 [TestFixture]
-[Culture("en-US,ru-RU")]
+[Culture("en-US,ru-RU,fr-FR")]
 [NonParallelizable]
 public class TestBigDecimalTrigonometricFunctions
 {

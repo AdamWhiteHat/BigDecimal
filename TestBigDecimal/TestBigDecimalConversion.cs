@@ -8,7 +8,7 @@ namespace TestBigDecimal
 
 	[Parallelizable(ParallelScope.All)]
 	[TestFixture]
-	[Culture("en-US,ru-RU")]
+	[Culture("en-US,ru-RU,fr-FR")]
 	public class TestBigDecimalConversion
 	{
 		private const String LongNumbers =
