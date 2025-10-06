@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Linq;
+//using System.Drawing.Imaging;
+//using System.Linq;
 using System.Numerics;
 using ExtendedNumerics.Helpers;
 using ExtendedNumerics.Properties;
@@ -13,6 +14,11 @@ namespace ExtendedNumerics
 		public static BigDecimal ApproximateE(int precision)
 		{
 			return Exp(BigDecimal.One, precision);
+		}
+
+		public static BigDecimal Approximate_E_Accurate(int precision)
+		{
+			return Exp_Accurate(BigDecimal.One, precision);
 		}
 
 		public static BigDecimal ApproximatePi(int precision)
@@ -721,6 +727,278 @@ namespace ExtendedNumerics
 				BigDecimal.Precision = restorePrecision;
 			}
 			return result;
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		/// 2025-06-27: schlebe: add fast and precise exp() function
+		public static BigDecimal Exp_Fast_and_Accurate(BigDecimal x)
+		{
+			return Exp_Fast_and_Accurate(x, BigDecimal.Precision);
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <param name="precision">The number of digits of precision requested</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		public static BigDecimal Exp_Fast_and_Accurate(BigDecimal x, int precision)
+		{
+			BigDecimal x_exp_n = BigDecimal.One;
+			BigDecimal dSum = BigDecimal.One;
+			BigDecimal dFactoriel = BigDecimal.One;
+			int n = 1;
+			int nMax = precision;
+			BigDecimal dInc;
+			BigDecimal xPrecisionLimit = new BigDecimal(1, -precision);
+			BigDecimal z;
+			BigDecimal dSum0 = BigDecimal.Zero;
+			var iPrecision0 = precision;
+			BigDecimal k = BigDecimal.Floor(x);
+
+			z = x - k;
+
+			int iNrDigit = (int)BigDecimal.Floor(k / BigDecimal.Ln10);
+
+			if (x > 0)
+			{
+				BigDecimal.Precision = precision + iNrDigit + 3;
+			}
+			else
+			{
+				BigDecimal.Precision = precision + iNrDigit + 4;
+			}
+
+			int nExpPrecision0 = 0;
+
+			//2025-06-12.: schlebe: in VB.net version nExpPrevision is defined in static class
+			// to return number of loop necessary to get specific precision.
+
+			if (z > 0)
+			{
+				while (true)
+					{
+						x_exp_n *= z;
+						dFactoriel *= n;
+						dInc = x_exp_n / dFactoriel;
+						dSum += dInc;
+
+						//if (dSum - dSum0 < xPrecisionLimit)
+						if (dInc < xPrecisionLimit)
+						{
+							nExpPrecision0 = n;
+							break;
+						}
+
+						dSum0 = dSum;
+						n += 1;
+						if (n > nMax)
+						{
+							//2025-06-30:schlebe: this exception must be defined to inform user
+							// that there is a problem that, normally, must never occur !
+							//throw new ArgumentException(string.Format(LanguageResources.Error_Insuffisiant_Precision), nameof(argument));
+							int i0 = 0; // TODO !!!
+						}
+					}
+			}
+
+			if (!k.IsZero())
+			{
+				BigInteger exponent = (BigInteger) k;
+
+				if (x < 0)
+				{
+					dSum /= Pow_Fast(BigDecimal.E, -exponent);
+				}
+				else
+				{
+					dSum *= Pow_Fast(BigDecimal.E, exponent);
+				}
+			}
+			BigDecimal.Precision = iPrecision0;
+			BigDecimal.nExpPrecision = nExpPrecision0;
+			return dSum;
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		/// 2025-06-27: schlebe: add fast and precise exp() function
+		public static BigDecimal Exp_Fast2_and_Accurate(BigDecimal x)
+		{
+			return Exp_Fast2_and_Accurate(x, BigDecimal.Precision);
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <param name="precision">The number of digits of precision requested</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		public static BigDecimal Exp_Fast2_and_Accurate(BigDecimal x, int precision)
+		{
+			BigDecimal x_exp_n = BigDecimal.One;
+			BigDecimal dSum = BigDecimal.One;
+			BigDecimal dFactoriel = BigDecimal.One;
+			int n = 1;
+			int nMax = precision;
+			BigDecimal dInc;
+			BigDecimal xPrecisionLimit = new BigDecimal(1, -precision);
+			BigDecimal z;
+			BigDecimal dSum0 = BigDecimal.Zero;
+			var iPrecision0 = precision;
+			BigDecimal k = BigDecimal.Floor(x);
+
+			z = x - k;
+
+			int iNrDigit = (int)BigDecimal.Floor(k / BigDecimal.Ln10);
+
+			if (x > 0)
+			{
+				BigDecimal.Precision = precision + iNrDigit + 3;
+			}
+			else
+			{
+				BigDecimal.Precision = precision + iNrDigit + 4;
+			}
+
+			int nExpPrecision0 = 0;
+
+			//2025-06-12: schlebe: in VB.net version nExpPrecision is defined in static class
+			// to return number of loops necessary to get specific precision.
+			// this field is only used for performance's test.
+
+			if (z > 0)
+			{
+				BigDecimal z0 = z;
+				if (z0 > 0.5)
+				{
+					z0 = 1 - z0;
+				}
+
+				while (true)
+				{
+					x_exp_n *= z0;
+					dFactoriel *= n;
+					dInc = x_exp_n / dFactoriel;
+					dSum += dInc;
+
+					//if (dSum - dSum0 < xPrecisionLimit)
+					if (dInc < xPrecisionLimit)
+					{
+						nExpPrecision0 = n;
+						break;
+					}
+
+					dSum0 = dSum;
+					n += 1;
+					if (n > nMax)
+					{
+						//2025-06-30:schlebe: this exception must be defined to inform user
+						// that there is a problem that, normally, must never occur !
+						//throw new ArgumentException(string.Format(LanguageResources.Error_Insuffisiant_Precision), nameof(argument));
+						int i0 = 0;
+					}
+				}
+			}
+
+			if (z > 0.5)
+			{
+				dSum = BigDecimal.E / dSum;
+			}
+
+			if (!k.IsZero())
+			{
+				BigInteger exponent = (BigInteger)k;
+
+				if (x < 0)
+				{
+					dSum /= Pow_Fast(BigDecimal.E, -exponent);
+				}
+				else
+				{
+					dSum *= Pow_Fast(BigDecimal.E, exponent);
+				}
+			}
+			BigDecimal.Precision = iPrecision0;
+			BigDecimal.nExpPrecision = nExpPrecision0;
+			return dSum;
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		/// 2025-06-27: schlebe: add fast and precise exp() function
+		public static BigDecimal Exp_Accurate(BigDecimal x)
+		{
+			return Exp_Accurate(x, BigDecimal.Precision);
+		}
+
+		/// <summary>Calculates e^x to arbitrary precision using fast technics.</summary>
+		/// <param name="x">The exponent to raise e to the power of.</param>
+		/// <param name="precision">The number of digits of precision requested</param>
+		/// <returns>The number <see langword="e"/> raised to the specified power.</returns>
+		public static BigDecimal Exp_Accurate(BigDecimal x, int precision)
+		{
+			BigDecimal x_exp_n = BigDecimal.One;
+			BigDecimal dSum = BigDecimal.One;
+			BigDecimal dFactoriel = BigDecimal.One;
+			int n = 1;
+			int nMax = precision;
+			BigDecimal xPrecisionLimit = new BigDecimal(1, -precision);
+			BigDecimal z;
+			BigDecimal dSum0 = BigDecimal.Zero;
+			var iPrecision0 = precision;
+			int k = (int)BigDecimal.Floor(x);
+
+			int iNrDigit = (int)BigDecimal.Floor(new BigDecimal(k) / BigDecimal.Ln10);
+
+			if (x > 0)
+			{
+				z = x;
+				BigDecimal.Precision = precision + iNrDigit + 3;
+			}
+			else
+			{
+				z = -x;
+				BigDecimal.Precision = precision + iNrDigit + 4;
+			}
+
+			//2025-06-12.: schlebe: in VB.net version nExpPrevision is defined in static class
+			// to return number of loop necessary to get specific precision.
+			int nExpPrecision0 = 0;
+
+			if (z != BigDecimal.Zero)
+			{
+				while (true)
+				{
+					x_exp_n *= z;
+					dFactoriel *= n;
+					dSum += x_exp_n / dFactoriel;
+
+					if (dSum - dSum0 < xPrecisionLimit)
+					{
+						nExpPrecision0 = n;
+						break;
+					}
+
+					dSum0 = dSum;
+					n += 1;
+					if (n > nMax)
+					{
+						//2025-06-30:schlebe: this exception must be defined to inform user
+						// that there is a problem that, normally, must never occur !
+						//throw new ArgumentException(string.Format(LanguageResources.Error_Insuffisiant_Precision), nameof(argument));
+					}
+				}
+
+			    if (x < 0)
+				{
+					dSum = 1 / dSum;
+				}
+			}
+
+			BigDecimal.Precision = iPrecision0;
+			BigDecimal.nExpPrecision = nExpPrecision0;
+			return dSum;
 		}
 
 		/// <summary>

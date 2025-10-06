@@ -113,34 +113,6 @@ namespace ExtendedNumerics
 
 		#region Static Members
 
-		/// <summary>Gets a value that represents the number 10 (ten).</summary>
-		public static BigDecimal Ten => new BigDecimal(new Tuple<BigInteger, Int32>(1, 1));
-
-		/// <summary>Gets a value that represents the number 1 (one).</summary>
-		public static BigDecimal One => new BigDecimal(new Tuple<BigInteger, Int32>(1, 0));
-
-		/// <summary>Gets a value that represents the number 0 (zero).</summary>
-		public static BigDecimal Zero => new BigDecimal(new Tuple<BigInteger, Int32>(0, 0));
-
-		/// <summary>Gets a value that represents the number 0.5 (one half).</summary>
-		public static BigDecimal OneHalf => new BigDecimal(new Tuple<BigInteger, Int32>(5, -1));
-
-		/// <summary>Gets a value that represents the number -1 (negative one).</summary>
-		public static BigDecimal MinusOne => new BigDecimal(new Tuple<BigInteger, Int32>(-1, 0));
-
-		/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
-		public static BigDecimal E { get { return ApproximateE(Precision); } }
-
-		/// <summary>Gets a value that represents the number Pi.</summary>
-		public static BigDecimal Pi { get { return ApproximatePi(Precision); } }
-
-		/// <summary>Gets a value that represents the number Pi.</summary>
-		public static BigDecimal π { get { return ApproximatePi(Precision); } }
-
-		/// <summary>
-		/// Sets the desired precision of all BigDecimal instances, in terms of the number of digits to the right of the decimal.
-		/// If AlwaysTruncate is set to true all operations are affected.
-		/// </summary>
 		public static Int32 Precision { get; set; } = 100;
 
 		/// <summary>
@@ -156,6 +128,18 @@ namespace ExtendedNumerics
 		/// <summary>Specifies whether a call to Normalize is made after every operation and during constructor invocation. The default value is true.</summary>
 		public static Boolean AlwaysNormalize { get; set; } = true;
 
+		public static int nExpPrecision = 0;
+		/// <summary>
+		/// Sets the desired precision of all BigDecimal instances, in terms of the number of digits to the right of the decimal.
+		/// If AlwaysTruncate is set to true all operations are affected.
+		/// </summary>
+
+		public static void ResetVariablePrecision()
+			{
+			E = Approximate_E_Accurate(Precision);
+			Pi = ApproximatePi(Precision);
+			Ln10 = Ln(10.0,Precision);
+			}
 		#endregion
 
 		#region Public Properties and Property-like Members
@@ -218,6 +202,36 @@ namespace ExtendedNumerics
 			NumberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator,
 			NumberDecimalDigits = 0
 		};
+
+		/// <summary>Gets a value that represents the number 10 (ten).</summary>
+		public static BigDecimal Ten => new BigDecimal(new Tuple<BigInteger, Int32>(1, 1));
+
+		/// <summary>Gets a value that represents the number 1 (one).</summary>
+		public static BigDecimal One => new BigDecimal(new Tuple<BigInteger, Int32>(1, 0));
+
+		/// <summary>Gets a value that represents the number 0 (zero).</summary>
+		public static BigDecimal Zero => new BigDecimal(new Tuple<BigInteger, Int32>(0, 0));
+
+		/// <summary>Gets a value that represents the number 0.5 (one half).</summary>
+		public static BigDecimal OneHalf => new BigDecimal(new Tuple<BigInteger, Int32>(5, -1));
+
+		/// <summary>Gets a value that represents the number -1 (negative one).</summary>
+		public static BigDecimal MinusOne => new BigDecimal(new Tuple<BigInteger, Int32>(-1, 0));
+
+		/// <summary>Gets a value that represents the number Ln(10).</summary>
+		public static BigDecimal Ln10 { get; set; } = Ln(10.0, Precision);
+
+		/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
+		//public static BigDecimal E { get { return ApproximateE(Precision); } }
+		public static BigDecimal E { get; set; } = Approximate_E_Accurate(Precision);
+
+		/// <summary>Gets a value that represents the number Pi.</summary>
+		//public static BigDecimal Pi { get { return ApproximatePi(Precision); } }
+		public static BigDecimal Pi { get; set; } = ApproximatePi(Precision);
+
+		/// <summary>Gets a value that represents the number Pi.</summary>
+		//public static BigDecimal π { get { return ApproximatePi(Precision); } }
+		public static BigDecimal π { get; }
 
 		#endregion
 

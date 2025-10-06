@@ -9,7 +9,7 @@ namespace TestBigDecimal
 {
 
 	[TestFixture]
-	[Culture("en-US,ru-RU")]
+	[Culture("en-US,ru-RU,fr-FR")]
 	public class TestBigDecimalParsingFractions
 	{
 

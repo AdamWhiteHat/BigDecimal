@@ -12,7 +12,7 @@ namespace TestBigDecimal
 
 	[NonParallelizable]
 	[TestFixture]
-	[Culture("en-US,ru-RU")]
+	[Culture("en-US,ru-RU,fr-FR")]
 	public class TestBigDecimalCritical
 	{
 
