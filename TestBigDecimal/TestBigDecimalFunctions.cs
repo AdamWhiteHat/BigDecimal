@@ -202,16 +202,16 @@ namespace TestBigDecimal
 			Assert.AreEqual(one + three, four);
 			Assert.AreEqual(two + two, four);
 
-			var six = BigDecimal.Round(sixPointFive, MidpointRounding.ToEven);
+			var six = BigDecimal.Round(sixPointFive, RoundingStrategy.ToEven);
 			Assert.AreEqual(two + four, six);
 
-			var negEight = BigDecimal.Round(negEightPointFive, MidpointRounding.ToEven);
+			var negEight = BigDecimal.Round(negEightPointFive, RoundingStrategy.ToEven);
 			Assert.AreEqual(-four + -four, negEight);
 
-			var negNine = BigDecimal.Round(negEightPointFive, MidpointRounding.AwayFromZero);
+			var negNine = BigDecimal.Round(negEightPointFive, RoundingStrategy.AwayFromZero);
 			Assert.AreEqual(-four + -four - one, negNine);
 
-			var negTen = BigDecimal.Round(negNinePointFive, MidpointRounding.ToEven);
+			var negTen = BigDecimal.Round(negNinePointFive, RoundingStrategy.ToEven);
 			Assert.AreEqual(-four + -four - two, negTen);
 		}
 
@@ -286,31 +286,74 @@ namespace TestBigDecimal
 			Assert.AreEqual("0", result_7);
 		}
 
+
+		[Test]
+		public void TestRoundingMidpoint()
+		{
+			// MidpointRounding.AwayFromZero
+			// Midpoint values are rounded to the next number away from zero.
+			// For example, 3.75 rounds to 3.8, 3.85 rounds to 3.9, -3.75 rounds to -3.8, and - 3.85 rounds to -3.9.
+			Test(3.75m, 1, RoundingStrategy.AwayFromZero, "3.8");
+			Test(3.85m, 1, RoundingStrategy.AwayFromZero, "3.9");
+			Test(-3.75m, 1, RoundingStrategy.AwayFromZero, "-3.8");
+			Test(-3.85m, 1, RoundingStrategy.AwayFromZero, "-3.9");
+
+			BigDecimal bd = new BigDecimal(1002.007159m);
+			TestContext.WriteLine($"Mantissa: {bd.Mantissa}");
+			TestContext.WriteLine($"Exponent: {bd.Exponent}");
+
+			// MidpointRounding.ToEven
+			// Midpoint values are rounded to the nearest even number.
+			// For example, both 3.75 and 3.85 round to 3.8, and both -3.75 and -3.85 round to -3.8.
+			Test(-3.0075m, 3, RoundingStrategy.ToEven, "-3.008");
+
+
+			// Issue #84: BUG: Rounding issue
+			// Expected Behavior
+			// 1.11 and 1.20 are expected.
+			Test(1.111119m, 2, RoundingStrategy.AwayFromZero, "1.11");
+			Test(1.199991m, 2, RoundingStrategy.AwayFromZero, "1.2");
+
+
+			Test(-3.0085m, 3, RoundingStrategy.ToEven, "-3.008");
+			Test(3.75m, 1, RoundingStrategy.ToEven, "3.8");
+			Test(3.85m, 1, RoundingStrategy.ToEven, "3.8");
+
+		}
+
 		[Test]
 		public void TestRoundingWithPrecision()
 		{
 			BigDecimal.AlwaysNormalize = true;
 			BigDecimal.AlwaysTruncate = false;
 
-			//Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
-			Test(7.50m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.5m, 1, RoundingStrategy.AwayFromZero, "7.6");
 			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.555m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.5555m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.55555m, 1, RoundingStrategy.AwayFromZero, "7.6");
 
+			Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
+			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
+			
 			Test(-7.54m, 1, RoundingStrategy.AwayFromZero, "-7.5");
-			Test(-7.56m, 1, RoundingStrategy.AwayFromZero, "-7.6");
 			Test(-7.55m, 1, RoundingStrategy.AwayFromZero, "-7.6");
-
-			Test(7.54m, 1, RoundingStrategy.TowardZero, "7.5");
-			Test(7.56m, 1, RoundingStrategy.TowardZero, "7.6");
-			Test(7.55m, 1, RoundingStrategy.TowardZero, "7.5");
-
-			Test(-7.54m, 1, RoundingStrategy.TowardZero, "-7.5");
-			Test(-7.56m, 1, RoundingStrategy.TowardZero, "-7.6");
-			Test(-7.55m, 1, RoundingStrategy.TowardZero, "-7.5");
-
-			Test(-7.551m, 2, RoundingStrategy.AwayFromZero, "-7.55");
-			Test(-7.559m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+			Test(-7.56m, 1, RoundingStrategy.AwayFromZero, "-7.6");
+			
+			Test(7.54m, 1, RoundingStrategy.ToEven, "7.5");
+			Test(7.55m, 1, RoundingStrategy.ToEven, "7.6");
+			Test(7.56m, 1, RoundingStrategy.ToEven, "7.6");
+			
+			Test(-7.54m, 1, RoundingStrategy.ToEven, "-7.5");
+			Test(-7.55m, 1, RoundingStrategy.ToEven, "-7.6");
+			Test(-7.56m, 1, RoundingStrategy.ToEven, "-7.6");
+			
+			Test(-7.554m, 2, RoundingStrategy.AwayFromZero, "-7.55");
 			Test(-7.555m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+			Test(-7.556m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+			Test(-7.559m, 2, RoundingStrategy.AwayFromZero, "-7.56");
+			Test(-7.55m, 2, RoundingStrategy.AwayFromZero, "-7.56");
 		}
 
 		private static void Test(decimal value, int precision, RoundingStrategy roundingStrategy, string expected)

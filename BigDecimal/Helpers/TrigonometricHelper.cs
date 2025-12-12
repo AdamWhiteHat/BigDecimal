@@ -145,7 +145,7 @@ namespace ExtendedNumerics.Helpers
 
 			if (radians > HalfPi)
 			{
-				var i = (int)BigDecimal.Round(radians / BigDecimal.Pi, MidpointRounding.ToEven);
+				var i = (int)BigDecimal.Round(radians / BigDecimal.Pi, RoundingStrategy.ToEven);
 				BigDecimal sign = BigInteger.Pow(BigInteger.MinusOne, i);
 
 				var sum = radians + HalfPi;

@@ -15,7 +15,7 @@ namespace ExtendedNumerics
 	/// <para>Division never determines more digits than the given precision.</para>
 	/// <para>Based on code by Jan Christoph Bernack (https://gist.github.com/JcBernack/0b4eef59ca97ee931a2f45542b9ff06d)</para>
 	/// <para>Modified, extended and maintained by Adam White (https://github.com/AdamWhiteHat or adamwhitehat 𝚊𝚝 outlook 𝖽𝗈𝗍 com)</para>
-	/// <para>Contributions by Rick Harker (Rick.Rick.Harker 𝖺𝗍 gmail 𝚍𝚘𝚝 com) and Protiguous (https://github.com/Protiguous)</para>
+	/// <para>Contributions by Rick Harker (Rick.Rick.Harker 𝖺𝗍 gmail 𝚍𝚘𝚝 com) and Protiguous (https://github.com/Protiguous)</para> 
 	/// </remarks>
 	public readonly partial record struct BigDecimal : IComparable, IComparable<BigDecimal>, IComparable<Int32>, IComparable<Int32?>, IComparable<Decimal>, IComparable<Double>, IComparable<Single>
 	{
@@ -165,6 +165,16 @@ namespace ExtendedNumerics
 		/// <para>The default value is <see langword="true"/>.</para>
 		/// </summary>
 		public static Boolean AlwaysNormalize { get; set; } = true;
+
+		/// <summary>
+		/// Default mid-point rounding strategy when calling <see cref="Round(BigDecimal, int)"/>.
+		/// <para>The default value is <see cref="RoundingStrategy.ToEven"/>.</para>
+		/// </summary>
+		/// <remarks>
+		/// This was introduced when the default rounding strategy changed (a breaking change) so those who relied upon it
+		/// can recover the old behavior by setting this to <see cref="RoundingStrategy.AwayFromZero"/>.
+		/// </remarks>
+		public static RoundingStrategy DefaultRoundingStrategy { get; set; } = RoundingStrategy.ToEven;
 
 		#endregion
 
@@ -1183,11 +1193,11 @@ namespace ExtendedNumerics
 			return new BigDecimal(new Tuple<BigInteger, Int32>(mantissa, exponent));
 		}
 
-		/// <summary>Rounds a BigDecimal value to the nearest integral value.</summary>
-		public static BigInteger Round(BigDecimal value) => Round(value, MidpointRounding.AwayFromZero);
+		/// <summary>Rounds a <see cref="BigDecimal" /> value to the nearest integral value.</summary>
+		public static BigInteger Round(BigDecimal value) => Round(value, DefaultRoundingStrategy);
 
-		/// <summary>Rounds a BigDecimal value to the nearest integral value. A parameter specifies how to round the value if it is midway between two numbers.</summary>
-		public static BigInteger Round(BigDecimal value, MidpointRounding mode)
+		/// <summary>Rounds a <see cref="BigDecimal" /> value to the nearest integral value. A parameter specifies how to round the value if it is midway between two numbers.</summary>
+		public static BigInteger Round(BigDecimal value, RoundingStrategy mode)
 		{
 			var wholePart = value.WholeValue;
 			var decimalPart = value.GetFractionalPart();
@@ -1200,22 +1210,26 @@ namespace ExtendedNumerics
 			}
 			else if (decimalPart == OneHalf)
 			{
-				if (mode == MidpointRounding.AwayFromZero)
+				if (mode == RoundingStrategy.AwayFromZero)
 				{
 					wholePart += addOne;
 				}
-				else // MidpointRounding.ToEven
+				else if (mode == RoundingStrategy.ToEven) // RoundingStrategy.ToEven
 				{
 					if (!wholePart.IsEven)
 					{
 						wholePart += addOne;
 					}
 				}
+				else
+				{
+					throw new NotImplementedException($"You must have added a new {nameof(RoundingStrategy)} enum value but not implemented it. Please add the implementation here.");
+				}
 			}
 			return wholePart;
 		}
 
-		/// <summary>Rounds a BigDecimal value off at the specified level of precision. A parameter specifies how to round the value if it is midway between two values.</summary>
+		/// <summary>Rounds a <see cref="BigDecimal" /> value off at the specified level of precision. A parameter specifies how to round the value if it is midway between two values.</summary>
 		public static BigDecimal Round(BigDecimal value, int precision, RoundingStrategy roundingStrategy)
 		{
 			if (precision < 0)
@@ -1230,62 +1244,44 @@ namespace ExtendedNumerics
 			}
 
 			int sign = value.Sign;
-
-			bool roundUp = true;
-			if (roundingStrategy == RoundingStrategy.AwayFromZero)
-			{
-				if (sign == -1)
-				{
-					roundUp = false;
-				}
-			}
-			else if (roundingStrategy == RoundingStrategy.TowardZero)
-			{
-				if (sign == 1)
-				{
-					roundUp = false;
-				}
-			}
-
 			BigDecimal absValue = BigDecimal.Abs(value);
-
-			var onesDigit = absValue.Mantissa % 10;
-			bool isMidway = onesDigit % 5 == 0;
-
 			BigDecimal precisionTarget = new BigDecimal(mantissa: BigInteger.One, exponent: -precision);
-			BigDecimal truncated = Truncate(absValue, precision);
+			BigDecimal truncated = Truncate(absValue, precision + 1);
+			BigInteger lastDigit = truncated.Mantissa % 10;
 
-			if (onesDigit == 5)
+			truncated = Truncate(truncated, precision);
+
+			if (lastDigit == 5)
 			{
-				if (sign == -1)
+				if (roundingStrategy == RoundingStrategy.AwayFromZero)
 				{
-					if (!roundUp)
-					{
-						return (truncated + precisionTarget) * sign;
-					}
+					return (truncated + precisionTarget) * sign;
 				}
-				else // sign = 1
+				else if (roundingStrategy == RoundingStrategy.ToEven)
 				{
-					if (roundUp)
+					if (truncated.Mantissa % 2 == 1)
 					{
 						return (truncated + precisionTarget) * sign;
 					}
 				}
 			}
-			else if (onesDigit > 5)
+			else if (lastDigit > 5)
 			{
 				return (truncated + precisionTarget) * sign;
 			}
+
 
 			return truncated * sign;
 		}
 
 		/// <summary>
-		/// Rounds a BigDecimal to the given number of digits to the right of the decimal point.
-		/// Pass a negative precision value to zero out abs(precision) many digits to the left of the decimal point, in a manner that mimics Excel's ROUNDDOWN function.
-		/// A zero or greater precision value performs rounding in the standard way.
-		/// Call <see cref="Truncate(BigDecimal, int)"/> for a method that is functionally identical to Excel's ROUNDDOWN function.
+		/// Rounds a <see cref="BigDecimal" /> to the given number of digits to the right of the decimal point.
 		/// </summary>
+		/// <remarks>
+		/// Pass a negative precision value to zero out <c>abs(precision)</c> many digits to the left of the decimal point, in a manner that mimics Excel's ROUNDDOWN function.<br />
+		/// A zero or greater precision value performs rounding in the standard way.<br />
+		/// Call <see cref="Truncate(BigDecimal, int)"/> for a method that is functionally identical to Excel's ROUNDDOWN function.
+		/// </remarks>
 		public static BigDecimal Round(BigDecimal value, Int32 precision)
 		{
 			if (precision < 0)
@@ -1302,7 +1298,7 @@ namespace ExtendedNumerics
 				result += new string(Enumerable.Repeat(BigDecimalNumberFormatInfo.NativeDigits[0][0], Math.Abs(precision)).ToArray());
 				return BigDecimal.Parse(result);
 			}
-			return Round(value, precision, RoundingStrategy.AwayFromZero);
+			return Round(value, precision, DefaultRoundingStrategy);
 		}
 
 		/// <summary>Rounds a <see cref="BigDecimal" /> up to the next largest integer value, even if the fractional part is less than one half. Equivalent to obtaining the floor and then adding one.</summary>

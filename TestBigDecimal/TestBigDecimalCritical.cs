@@ -227,7 +227,6 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected, actual);
 		}
 
-		[Test]
 		public void TestCurrentThreadChangeCulture()
 		{
 			Thread.CurrentThread.CurrentCulture = new CultureInfo("fr_FR");
@@ -236,7 +235,7 @@ namespace TestBigDecimal
 			BigDecimal ten = new BigDecimal(10);
 			var result = BigDecimal.Ln(ten);
 			TestContext.WriteLine($"ln({ten}) = {result}");
-
+			
 			BigDecimal threePointOneFour = BigDecimal.Parse("3.14");
 			BigDecimal threeCommaOneFour = BigDecimal.Parse("3,14");
 
