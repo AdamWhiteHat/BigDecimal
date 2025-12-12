@@ -174,7 +174,7 @@ namespace ExtendedNumerics
 		/// This was introduced when the default rounding strategy changed (a breaking change) so those who relied upon it
 		/// can recover the old behavior by setting this to <see cref="RoundingStrategy.AwayFromZero"/>.
 		/// </remarks>
-		public static RoundingStrategy DefaultRoundingStrategy { get; set; } = RoundingStrategy.ToEven;
+		public static RoundingStrategy DefaultRoundingStrategy { get; set; } = RoundingStrategy.AwayFromZero;
 
 		#endregion
 
