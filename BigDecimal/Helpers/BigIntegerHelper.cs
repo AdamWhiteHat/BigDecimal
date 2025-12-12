@@ -58,7 +58,7 @@ namespace ExtendedNumerics.Helpers
 				return 0;
 			}
 
-			var valueString = value.ToString().TrimEnd(CultureInfo.CurrentCulture.NumberFormat.NativeDigits[0][0]);
+			var valueString = value.ToString(CultureInfo.InvariantCulture).TrimEnd('0');
 
 			if (String.IsNullOrEmpty(valueString))
 			{

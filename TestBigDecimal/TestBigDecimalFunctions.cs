@@ -336,19 +336,19 @@ namespace TestBigDecimal
 			Test(7.54m, 1, RoundingStrategy.AwayFromZero, "7.5");
 			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
 			Test(7.55m, 1, RoundingStrategy.AwayFromZero, "7.6");
-			
+
 			Test(-7.54m, 1, RoundingStrategy.AwayFromZero, "-7.5");
 			Test(-7.55m, 1, RoundingStrategy.AwayFromZero, "-7.6");
 			Test(-7.56m, 1, RoundingStrategy.AwayFromZero, "-7.6");
-			
+
 			Test(7.54m, 1, RoundingStrategy.ToEven, "7.5");
 			Test(7.55m, 1, RoundingStrategy.ToEven, "7.6");
 			Test(7.56m, 1, RoundingStrategy.ToEven, "7.6");
-			
+
 			Test(-7.54m, 1, RoundingStrategy.ToEven, "-7.5");
 			Test(-7.55m, 1, RoundingStrategy.ToEven, "-7.6");
 			Test(-7.56m, 1, RoundingStrategy.ToEven, "-7.6");
-			
+
 			Test(-7.554m, 2, RoundingStrategy.AwayFromZero, "-7.55");
 			Test(-7.555m, 2, RoundingStrategy.AwayFromZero, "-7.56");
 			Test(-7.556m, 2, RoundingStrategy.AwayFromZero, "-7.56");
@@ -446,6 +446,11 @@ namespace TestBigDecimal
 		[Test]
 		public void TestSignifigantDigits()
 		{
+			const Int32 expected0 = 1;
+			var number0 = new BigDecimal(3, 0);
+			var result0 = BigIntegerHelper.GetSignificantDigits(number0.Mantissa);
+			Assert.AreEqual(expected0, result0);
+
 			const Int32 expected1 = 19;
 			var number1 = new BigDecimal(12345678901234567890, -10);
 			var result1 = number1.SignificantDigits;

@@ -594,8 +594,8 @@ namespace ExtendedNumerics
 				return value;
 			}
 
-			var s = value.Mantissa.ToString(BigDecimalNumberFormatInfo);
-			var pos = s.LastIndexOf(BigDecimalNumberFormatInfo.NativeDigits[0][0], s.Length - 1);
+			var s = value.Mantissa.ToString(CultureInfo.InvariantCulture);
+			var pos = s.LastIndexOf('0', s.Length - 1);
 
 			if (pos < (s.Length - 1))
 			{
@@ -604,7 +604,7 @@ namespace ExtendedNumerics
 
 			var c = s[pos];
 
-			while ((pos > 0) && (c == BigDecimalNumberFormatInfo.NativeDigits[0][0]))
+			while ((pos > 0) && (c == '0'))
 			{
 				c = s[--pos]; //scan backwards to find the last not-0.
 			}
@@ -638,9 +638,9 @@ namespace ExtendedNumerics
 		public BigInteger GetWholePart()
 		{
 			var resultString = String.Empty;
-			var decimalString = this.ToString(BigDecimalNumberFormatInfo);
+			var decimalString = this.ToString(CultureInfo.InvariantCulture);
 
-			var valueSplit = decimalString.Split(BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray()); //, StringSplitOptions.RemoveEmptyEntries
+			var valueSplit = decimalString.Split('.'); //, StringSplitOptions.RemoveEmptyEntries
 			if (valueSplit.Length > 0)
 			{
 				resultString = valueSplit[0];
@@ -659,9 +659,9 @@ namespace ExtendedNumerics
 		public BigDecimal GetFractionalPart()
 		{
 			var resultString = String.Empty;
-			var decimalString = this.ToString(BigDecimalNumberFormatInfo);
+			var decimalString = this.ToString();
 
-			var valueSplit = decimalString.Split(BigDecimalNumberFormatInfo.NumberDecimalSeparator.ToCharArray());
+			var valueSplit = decimalString.Split('.');
 			if (valueSplit.Length == 1)
 			{
 				return Zero; //BUG Is this right?
@@ -672,7 +672,7 @@ namespace ExtendedNumerics
 				resultString = valueSplit[1];
 			}
 
-			var newmantissa = BigInteger.Parse(resultString.TrimStart(BigDecimalNumberFormatInfo.NativeDigits[0][0]));
+			var newmantissa = BigInteger.Parse(resultString.TrimStart('0'));
 			var result = new BigDecimal(newmantissa, 0 - resultString.Length);
 			return result;
 		}
@@ -1286,7 +1286,7 @@ namespace ExtendedNumerics
 		{
 			if (precision < 0)
 			{
-				string integer = value.WholeValue.ToString(BigDecimalNumberFormatInfo);
+				string integer = value.WholeValue.ToString(CultureInfo.InvariantCulture);
 				int len = integer.Length;
 				if (Math.Abs(precision) >= len)
 				{
@@ -1295,8 +1295,8 @@ namespace ExtendedNumerics
 				int diff = len + precision;
 
 				string result = integer.Substring(0, diff);
-				result += new string(Enumerable.Repeat(BigDecimalNumberFormatInfo.NativeDigits[0][0], Math.Abs(precision)).ToArray());
-				return BigDecimal.Parse(result);
+				result += new string(Enumerable.Repeat('0', Math.Abs(precision)).ToArray());
+				return BigDecimal.Parse(result, CultureInfo.InvariantCulture);
 			}
 			return Round(value, precision, DefaultRoundingStrategy);
 		}
@@ -1422,7 +1422,7 @@ namespace ExtendedNumerics
 			// -1E-456
 			// -3E-2
 
-			string mantissa = bigDecimal.Mantissa.ToString(); //Note: will be prefixed with "-" if negative.
+			string mantissa = bigDecimal.Mantissa.ToString(CultureInfo.InvariantCulture); //Note: will be prefixed with "-" if negative.
 
 			int exponent = bigDecimal.Exponent + (bigDecimal.SignificantDigits - 1);
 			int point = 1;
