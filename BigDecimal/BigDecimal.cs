@@ -132,13 +132,35 @@ namespace ExtendedNumerics
 		public static BigDecimal MinusOne => new BigDecimal(new Tuple<BigInteger, Int32>(-1, 0));
 
 		/// <summary>Gets a value that represents the number e, also called Euler's number.</summary>
-		public static BigDecimal E { get { return ApproximateE(Precision); } }
+		public static BigDecimal E
+		{
+			get
+			{
+				if (Precision > _eCache.Item1)
+				{
+					_eCache = new Tuple<int, BigDecimal>(Precision, ApproximateE(Precision));
+				}
+				return Truncate(_eCache.Item2, Precision);
+			}
+		}
+		private static Tuple<Int32, BigDecimal> _eCache = new Tuple<Int32, BigDecimal>(-1, BigDecimal.Zero);
 
 		/// <summary>Gets a value that represents the number Pi.</summary>
-		public static BigDecimal Pi { get { return ApproximatePi(Precision); } }
+		public static BigDecimal Pi
+		{
+			get
+			{
+				if (Precision > _piCache.Item1)
+				{
+					_piCache = new Tuple<int, BigDecimal>(Precision, ApproximatePi(Precision));
+				}
+				return Truncate(_piCache.Item2, Precision);
+			}
+		}
+		public static Tuple<Int32, BigDecimal> _piCache = new Tuple<Int32, BigDecimal>(-1, BigDecimal.Zero);
 
 		/// <summary>Gets a value that represents the number Pi.</summary>
-		public static BigDecimal π { get { return ApproximatePi(Precision); } }
+		public static BigDecimal π { get { return Pi; } }
 
 		/// <summary>
 		/// Sets the desired precision of all <see cref="BigDecimal" /> instances, in terms of the number of digits to the right of the decimal.
