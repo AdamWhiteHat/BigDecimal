@@ -105,10 +105,7 @@ namespace ExtendedNumerics.Helpers
 					denominator = new BigDecimal(BigIntegerHelper.FastFactorial.Factorial(n));
 				}
 
-				var left = BigDecimal.One / denominator;
-				var right = BigDecimal.Pow(radians, n);
-
-				result += left * right * sign;
+				result += (BigDecimal.Pow(radians, n) / denominator) * sign;
 
 				if (lastResult != -1)
 				{
