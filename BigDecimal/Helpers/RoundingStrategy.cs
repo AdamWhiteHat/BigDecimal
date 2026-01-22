@@ -8,7 +8,7 @@ namespace ExtendedNumerics
 {
 	public enum RoundingStrategy
 	{
-		TowardZero,
 		AwayFromZero,
+		ToEven
 	}
 }

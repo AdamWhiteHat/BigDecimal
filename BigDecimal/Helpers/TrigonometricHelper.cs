@@ -105,10 +105,7 @@ namespace ExtendedNumerics.Helpers
 					denominator = new BigDecimal(BigIntegerHelper.FastFactorial.Factorial(n));
 				}
 
-				var left = BigDecimal.One / denominator;
-				var right = BigDecimal.Pow(radians, n);
-
-				result += left * right * sign;
+				result += (BigDecimal.Pow(radians, n) / denominator) * sign;
 
 				if (lastResult != -1)
 				{
@@ -145,7 +142,7 @@ namespace ExtendedNumerics.Helpers
 
 			if (radians > HalfPi)
 			{
-				var i = (int)BigDecimal.Round(radians / BigDecimal.Pi, MidpointRounding.ToEven);
+				var i = (int)BigDecimal.Round(radians / BigDecimal.Pi, RoundingStrategy.ToEven);
 				BigDecimal sign = BigInteger.Pow(BigInteger.MinusOne, i);
 
 				var sum = radians + HalfPi;
