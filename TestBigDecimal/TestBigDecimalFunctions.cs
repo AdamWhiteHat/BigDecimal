@@ -236,6 +236,28 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestRounding003()
+		{
+			decimal compareExpected = 9m;
+			decimal compareActual = Decimal.Round(compareExpected, 2);
+
+			BigDecimal expected = new BigDecimal(9);
+			BigDecimal actual = BigDecimal.Round(9, 2);
+
+			string compareExpectedString = compareExpected.ToString();
+			string compareActualString = compareActual.ToString();
+
+			string expectedString = expected.ToString();
+			string actualString = actual.ToString();
+
+			TestContext.WriteLine($"Decimal.Round(9, 2)    = {compareActualString}");
+			TestContext.WriteLine($"BigDecimal.Round(9, 2) = {actualString}");
+
+			Assert.AreEqual(compareExpectedString, compareActualString, $"decimal: {compareExpectedString} != {compareActualString}");
+			Assert.AreEqual(expectedString, actualString, $"BigDecimal: {expectedString} != {actualString}");
+		}
+
+		[Test]
 		public void TestTruncate_OverloadWithPrecisionArgument_001()
 		{
 			BigDecimal a = BigDecimal.Parse("31415.92654");
@@ -444,7 +466,7 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestSignifigantDigits()
+		public void TestSignificantDigits()
 		{
 			const Int32 expected0 = 1;
 			var number0 = new BigDecimal(3, 0);

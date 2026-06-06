@@ -33,8 +33,8 @@
 
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3003</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">3</PatchVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">1</MinorVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -77,11 +77,11 @@
 	</Choose>
 
 	<ItemGroup>
-	  <None Remove="Properties\Images\real.png" />
+		<None Remove="Properties\Images\real.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="Properties\Images\real.png" Pack="true" PackagePath="\" />
+		<Content Include="Properties\Images\real.png" Pack="true" PackagePath="\" />
 	</ItemGroup>
 
 	<ItemGroup>

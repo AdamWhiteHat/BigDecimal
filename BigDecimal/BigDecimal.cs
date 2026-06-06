@@ -1265,6 +1265,12 @@ namespace ExtendedNumerics
 				return BigDecimal.Zero;
 			}
 
+			int currentPrecision = BigDecimal.PlacesRightOfDecimal(value);
+			if (currentPrecision == 0 || currentPrecision < precision)
+			{
+				return value;
+			}
+
 			int sign = value.Sign;
 			BigDecimal absValue = BigDecimal.Abs(value);
 			BigDecimal precisionTarget = new BigDecimal(mantissa: BigInteger.One, exponent: -precision);
