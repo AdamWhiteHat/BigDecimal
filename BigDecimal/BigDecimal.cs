@@ -190,12 +190,8 @@ namespace ExtendedNumerics
 
 		/// <summary>
 		/// Default mid-point rounding strategy when calling <see cref="Round(BigDecimal, int)"/>.
-		/// <para>The default value is <see cref="RoundingStrategy.ToEven"/>.</para>
+		/// <para>The default value is <see cref="RoundingStrategy.AwayFromZero"/>.</para>
 		/// </summary>
-		/// <remarks>
-		/// This was introduced when the default rounding strategy changed (a breaking change) so those who relied upon it
-		/// can recover the old behavior by setting this to <see cref="RoundingStrategy.AwayFromZero"/>.
-		/// </remarks>
 		public static RoundingStrategy DefaultRoundingStrategy { get; set; } = RoundingStrategy.AwayFromZero;
 
 		#endregion
