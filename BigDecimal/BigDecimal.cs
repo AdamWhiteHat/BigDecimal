@@ -373,6 +373,22 @@ namespace ExtendedNumerics
 
 		#region Equals
 
+		public bool Equals(BigDecimal other)
+		{
+			if (!Sign.Equals(other.Sign)) return false;
+
+			if (Exponent.Equals(other.Exponent)) return Mantissa.Equals(other.Mantissa);
+
+			if (Exponent > other.Exponent)
+			{
+				return (AlignExponent(this, other) == other.Mantissa);
+			}
+			else
+			{
+				return (Mantissa == AlignExponent(other, this));
+			}
+		}
+
 		public Boolean Equals(BigDecimal? other) => Equals(this, other);
 
 		/// <summary>

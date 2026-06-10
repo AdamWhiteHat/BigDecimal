@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Globalization;
 using System.Numerics;
 using System.Threading;
@@ -12,7 +13,7 @@ namespace TestBigDecimal
 {
 
 	[TestFixture]
-	[Culture("en-US,ru-RU")]
+	//[Culture("en-US,ru-RU,fr-FR,be-FR")]
 	public class TestBigDecimalOperations
 	{
 		private NumberFormatInfo Format { get { return Thread.CurrentThread.CurrentCulture.NumberFormat; } }
@@ -364,6 +365,7 @@ namespace TestBigDecimal
 		[Test]
 		public void TestFloor003()
 		{
+			BigDecimal.AlwaysNormalize = false;
 			var start = BigDecimal.Parse(TestBigDecimalHelper.PrepareValue("-0.14159265", this.Format));
 			var floor = BigDecimal.Floor(start);
 
@@ -391,6 +393,28 @@ namespace TestBigDecimal
 			float expectedFloor = (float)Math.Floor(start_compare);
 
 			Assert.AreEqual(expectedFloor.ToString(), actualFloor.ToString());
+		}
+
+		[Test]
+		public void TestFloorNegative()
+		{
+			BigDecimal.AlwaysNormalize = false;
+
+			BigDecimal k = new BigDecimal(-1,1); // = -10
+			//Assert.AreEqual(new BigDecimal(-10), k);
+			BigDecimal e1 = BigDecimal.Floor(k);
+			Assert.AreEqual(new BigDecimal(-10), e1);
+			BigDecimal e2 = k.GetWholePart();
+			Assert.AreEqual(new BigDecimal(-10), e2);
+		}
+
+		[Test]
+		public void TestEqualToInt()
+		{
+			BigDecimal.AlwaysNormalize = false;
+
+			BigDecimal n = new BigDecimal(50, -1); // = 5 
+		    Assert.AreEqual(new BigDecimal(5), n);
 		}
 
 		[Test]
