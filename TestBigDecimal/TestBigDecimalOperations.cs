@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Globalization;
 using System.Numerics;
 using System.Threading;
@@ -396,25 +393,49 @@ namespace TestBigDecimal
 		}
 
 		[Test]
-		public void TestFloorNegative()
+		public void TestFloor_Negative()
 		{
+			bool restore = BigDecimal.AlwaysNormalize;
 			BigDecimal.AlwaysNormalize = false;
 
-			BigDecimal k = new BigDecimal(-1,1); // = -10
-			//Assert.AreEqual(new BigDecimal(-10), k);
-			BigDecimal e1 = BigDecimal.Floor(k);
-			Assert.AreEqual(new BigDecimal(-10), e1);
-			BigDecimal e2 = k.GetWholePart();
-			Assert.AreEqual(new BigDecimal(-10), e2);
+			BigDecimal expected = new BigDecimal(-10);
+
+			BigDecimal actual1 = new BigDecimal(-1, 1); // = -10
+			Assert.AreEqual(expected, actual1,
+				"new BigDecimal(-10) != new BigDecimal(-1, 1)\r\n" +
+				$"({expected.Mantissa}, {expected.Exponent}) != ({actual1.Mantissa}, {actual1.Exponent})"
+			);
+
+			BigDecimal actual2 = actual1.GetWholePart();
+			Assert.AreEqual(expected, actual2, "new BigDecimal(-10) != new BigDecimal(-1, 1).GetWholePart()\r\n" +
+				$"({expected.Mantissa}, {expected.Exponent}) != ({actual2.Mantissa}, {actual2.Exponent})"
+			);
+
+			BigDecimal actual3 = BigDecimal.Floor(actual1);
+			Assert.AreEqual(expected, actual3, "new BigDecimal(-10) != BigDecimal.Floor(k)\r\n" +
+				$"({expected.Mantissa}, {expected.Exponent}) != ({actual3.Mantissa}, {actual3.Exponent})"
+			);
+
+			BigDecimal.AlwaysNormalize = restore;
 		}
 
 		[Test]
 		public void TestEqualToInt()
 		{
+			bool restore = BigDecimal.AlwaysNormalize;
 			BigDecimal.AlwaysNormalize = false;
 
-			BigDecimal n = new BigDecimal(50, -1); // = 5 
-		    Assert.AreEqual(new BigDecimal(5), n);
+			BigDecimal expected = new BigDecimal(5);
+			BigDecimal actual = new BigDecimal(50, -1); // = 5 
+			Assert.AreEqual(expected, actual, "new BigDecimal(5) != new BigDecimal(50, -1)\r\n" +
+				$"({expected.Mantissa}, {expected.Exponent}) != ({actual.Mantissa}, {actual.Exponent})"
+			);
+
+			Assert.IsTrue(BigDecimal.Equals(expected, actual), "BigDecimal.Equals(expected, actual)");
+
+			Assert.IsTrue(BigDecimal.Equals(expected, actual, 1), "BigDecimal.Equals(expected, actual, 1)");
+
+			BigDecimal.AlwaysNormalize = restore;
 		}
 
 		[Test]

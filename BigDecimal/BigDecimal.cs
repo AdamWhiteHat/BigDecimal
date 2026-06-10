@@ -373,22 +373,16 @@ namespace ExtendedNumerics
 
 		#region Equals
 
-		public bool Equals(BigDecimal other)
-		{
-			if (!Sign.Equals(other.Sign)) return false;
+		/// <summary>
+		/// Determines if another <see cref="BigDecimal" /> instance is equal to this one. 
+		/// </summary>
+		/// <returns>True if the other<see cref="BigDecimal" /> instance is equal to this one.</returns>
+		public bool Equals(BigDecimal other) => BigDecimal.Equals(this, other);
 
-			if (Exponent.Equals(other.Exponent)) return Mantissa.Equals(other.Mantissa);
-
-			if (Exponent > other.Exponent)
-			{
-				return (AlignExponent(this, other) == other.Mantissa);
-			}
-			else
-			{
-				return (Mantissa == AlignExponent(other, this));
-			}
-		}
-
+		/// <summary>
+		/// Determines if another <see cref="BigDecimal" /> instance is equal to this one. 
+		/// </summary>
+		/// <returns>True if the other<see cref="BigDecimal" /> instance is equal to this one.</returns>
 		public Boolean Equals(BigDecimal? other) => Equals(this, other);
 
 		/// <summary>
@@ -424,7 +418,24 @@ namespace ExtendedNumerics
 				r = Truncate(r, Precision);
 			}
 
-			return l.Sign.Equals(r.Sign) && l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa);
+			if (!l.Sign.Equals(r.Sign))
+			{
+				return false;
+			}
+
+			if (l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa))
+			{
+				return true;
+			}
+
+			if (l.Exponent > r.Exponent)
+			{
+				return (AlignExponent(l, r) == r.Mantissa);
+			}
+			else
+			{
+				return (l.Mantissa == AlignExponent(r, l));
+			}
 		}
 
 		/// <summary>
@@ -464,7 +475,25 @@ namespace ExtendedNumerics
 			l = Round(l, prec);
 			r = Round(r, prec);
 
-			return l.Sign.Equals(r.Sign) && l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa);
+
+			if (!l.Sign.Equals(r.Sign))
+			{
+				return false;
+			}
+
+			if (l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa))
+			{
+				return true;
+			}
+
+			if (l.Exponent > r.Exponent)
+			{
+				return (AlignExponent(l, r) == r.Mantissa);
+			}
+			else
+			{
+				return (l.Mantissa == AlignExponent(r, l));
+			}
 		}
 
 		#endregion
