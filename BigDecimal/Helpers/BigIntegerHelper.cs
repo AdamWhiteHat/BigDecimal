@@ -32,14 +32,23 @@ namespace ExtendedNumerics.Helpers
 
 		public static Int32 GetLength(this BigInteger source)
 		{
-			var result = 0;
-			var copy = BigInteger.Abs(source);
-			while (copy > BigInteger.Zero)
+			BigInteger value = BigInteger.Abs(source);
+			if (value == BigInteger.Zero)
 			{
-				copy /= Ten;
-				result++;
+				return 0;
 			}
-			return result;
+			else if (value == BigInteger.One)
+			{
+				return 1;
+			}
+
+			if (value % 10 == 0)
+			{
+				value += 1;
+			}
+
+			double log10 = BigInteger.Log10(value);
+			return (Int32)Math.Ceiling(log10);
 		}
 
 		public static IEnumerable<BigInteger> GetRange(BigInteger min, BigInteger max)

@@ -245,17 +245,23 @@ namespace ExtendedNumerics
 		private static BigDecimal MaxBigDemicalForUInt32 => (BigDecimal)UInt32.MaxValue;
 		private static Int32 GetSignificantDigits(BigInteger value) => value.GetSignificantDigits();
 		private const Int32 DecimalScaleMask = 0x00FF0000;
-		private static NumberFormatInfo BigDecimalNumberFormatInfo = new System.Globalization.NumberFormatInfo()
+		private static NumberFormatInfo BigDecimalNumberFormatInfo
 		{
-			NativeDigits = CultureInfo.CurrentCulture.NumberFormat.NativeDigits,
-			PositiveSign = CultureInfo.CurrentCulture.NumberFormat.PositiveSign,
-			NegativeSign = CultureInfo.CurrentCulture.NumberFormat.NegativeSign,
-			NumberNegativePattern = CultureInfo.CurrentCulture.NumberFormat.NumberNegativePattern,
-			NumberGroupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
-			NumberGroupSizes = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes,
-			NumberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator,
-			NumberDecimalDigits = 0
-		};
+			get
+			{
+				return new System.Globalization.NumberFormatInfo()
+				{
+					NativeDigits = CultureInfo.CurrentCulture.NumberFormat.NativeDigits,
+					PositiveSign = CultureInfo.CurrentCulture.NumberFormat.PositiveSign,
+					NegativeSign = CultureInfo.CurrentCulture.NumberFormat.NegativeSign,
+					NumberNegativePattern = CultureInfo.CurrentCulture.NumberFormat.NumberNegativePattern,
+					NumberGroupSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSeparator,
+					NumberGroupSizes = CultureInfo.CurrentCulture.NumberFormat.NumberGroupSizes,
+					NumberDecimalSeparator = CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator,
+					NumberDecimalDigits = 0
+				};
+			}
+		}
 
 		#endregion
 
@@ -377,13 +383,40 @@ namespace ExtendedNumerics
 		/// Determines if another <see cref="BigDecimal" /> instance is equal to this one. 
 		/// </summary>
 		/// <returns>True if the other<see cref="BigDecimal" /> instance is equal to this one.</returns>
-		public bool Equals(BigDecimal other) => BigDecimal.Equals(this, other);
+		public bool Equals(BigDecimal other)
+		{
+			if (!this.Sign.Equals(other.Sign))
+			{
+				return false;
+			}
+
+			if (this.Exponent.Equals(other.Exponent) && this.Mantissa.Equals(other.Mantissa))
+			{
+				return true;
+			}
+
+			if (this.Exponent > other.Exponent)
+			{
+				return (AlignExponent(this, other) == other.Mantissa);
+			}
+			else
+			{
+				return (this.Mantissa == AlignExponent(other, this));
+			}
+		}
 
 		/// <summary>
 		/// Determines if another <see cref="BigDecimal" /> instance is equal to this one. 
 		/// </summary>
 		/// <returns>True if the other<see cref="BigDecimal" /> instance is equal to this one.</returns>
-		public Boolean Equals(BigDecimal? other) => Equals(this, other);
+		public Boolean Equals(BigDecimal? other)
+		{
+			if (!other.HasValue)
+			{
+				return false;
+			}
+			return Equals(other.Value);
+		}
 
 		/// <summary>
 		/// Determines if two instances of <see cref="BigDecimal" /> are equal. 
@@ -418,24 +451,7 @@ namespace ExtendedNumerics
 				r = Truncate(r, Precision);
 			}
 
-			if (!l.Sign.Equals(r.Sign))
-			{
-				return false;
-			}
-
-			if (l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa))
-			{
-				return true;
-			}
-
-			if (l.Exponent > r.Exponent)
-			{
-				return (AlignExponent(l, r) == r.Mantissa);
-			}
-			else
-			{
-				return (l.Mantissa == AlignExponent(r, l));
-			}
+			return l.Equals(r);
 		}
 
 		/// <summary>
@@ -476,24 +492,7 @@ namespace ExtendedNumerics
 			r = Round(r, prec);
 
 
-			if (!l.Sign.Equals(r.Sign))
-			{
-				return false;
-			}
-
-			if (l.Exponent.Equals(r.Exponent) && l.Mantissa.Equals(r.Mantissa))
-			{
-				return true;
-			}
-
-			if (l.Exponent > r.Exponent)
-			{
-				return (AlignExponent(l, r) == r.Mantissa);
-			}
-			else
-			{
-				return (l.Mantissa == AlignExponent(r, l));
-			}
+			return l.Equals(r);
 		}
 
 		#endregion
@@ -700,44 +699,29 @@ namespace ExtendedNumerics
 		/// <example>BigDecimal.PI.GetWholePart() == 3</example>
 		public BigInteger GetWholePart()
 		{
-			var resultString = String.Empty;
-			var decimalString = this.ToString(CultureInfo.InvariantCulture);
-
-			var valueSplit = decimalString.Split('.'); //, StringSplitOptions.RemoveEmptyEntries
-			if (valueSplit.Length > 0)
+			if (this.Exponent == 0)
 			{
-				resultString = valueSplit[0];
+				return this.Mantissa;
+			}
+			else if (this.Exponent > 0)
+			{
+				return this.Mantissa * BigInteger.Pow(10, this.Exponent);
 			}
 
-			var posE = resultString.IndexOf("E", StringComparison.Ordinal);
-			if (posE > 0)
-			{
-				resultString = resultString.Split('E')[0]; //, StringSplitOptions.RemoveEmptyEntries 
-			}
+			BigInteger toDivide = BigInteger.Pow(10, (int)Math.Abs(this.Exponent));
+			BigInteger newMantissa = this.Mantissa / toDivide;
 
-			return BigInteger.Parse(resultString);
+			return newMantissa;
 		}
 
 		/// <summary>Gets the fractional part of the <see cref="BigDecimal" />, setting everything left of the decimal point to zero.</summary>
 		public BigDecimal GetFractionalPart()
 		{
-			var resultString = String.Empty;
-			var decimalString = this.ToString();
-
-			var valueSplit = decimalString.Split('.');
-			if (valueSplit.Length == 1)
+			if (this.Exponent >= 0)
 			{
-				return Zero; //BUG Is this right?
+				return BigDecimal.Zero;
 			}
-
-			if (valueSplit.Length == 2)
-			{
-				resultString = valueSplit[1];
-			}
-
-			var newmantissa = BigInteger.Parse(resultString.TrimStart('0'));
-			var result = new BigDecimal(newmantissa, 0 - resultString.Length);
-			return result;
+			return BigDecimal.Subtract(this, this.GetWholePart());
 		}
 
 		#endregion
@@ -1271,7 +1255,7 @@ namespace ExtendedNumerics
 			{
 				wholePart += addOne;
 			}
-			else if (decimalPart == OneHalf)
+			else if (BigDecimal.Abs(decimalPart) == OneHalf)
 			{
 				if (mode == RoundingStrategy.AwayFromZero)
 				{

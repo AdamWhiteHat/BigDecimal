@@ -32,8 +32,8 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3003</MajorVersion>
-		<MinorVersion Condition=" '$(MinorVersion)' == '' ">2</MinorVersion>
+		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3004</MajorVersion>
+		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
 		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
@@ -41,6 +41,10 @@
 		<Version>$(MajorVersion).$(MinorVersion).$(PatchVersion)</Version>
 		<AssemblyVersion>$(Version).$(BuildTimestamp)</AssemblyVersion>
 		<PackageVersion>$(AssemblyVersion)</PackageVersion>
+
+		<PackageReleaseNotes>
+			Breaking Change: BigDecimal.GetFractionalPart() now returns a negative value for negative numbers. While this technically is correcting faulty behavior and so is technically a bug fix and not a breaking change, it is changing the behavior that people could be relying on, so I wanted to draw attention to it by bumping the major version.
+		</PackageReleaseNotes>
 	</PropertyGroup>
 
 	<PropertyGroup>

@@ -235,7 +235,7 @@ namespace TestBigDecimal
 			BigDecimal ten = new BigDecimal(10);
 			var result = BigDecimal.Ln(ten);
 			TestContext.WriteLine($"ln({ten}) = {result}");
-			
+
 			BigDecimal threePointOneFour = BigDecimal.Parse("3.14");
 			BigDecimal threeCommaOneFour = BigDecimal.Parse("3,14");
 
@@ -478,6 +478,62 @@ namespace TestBigDecimal
 			Assert.AreEqual(expected9, actual9, $"Test Truncate On All Arithmetic Operations  - #9: ");
 			Assert.AreEqual(expected10, actual10, $"Test Truncate On All Arithmetic Operations - #10: ");
 			Assert.AreEqual(expected11, actual11, $"Test Truncate On All Arithmetic Operations - #11: ");
+		}
+
+		[Test]
+		public void TestCultureChangedAfterFirstUseBug001()
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");   // e.g. the next web request
+
+			BigDecimal x = new BigDecimal(new BigInteger(15), -1);   // 1.5
+
+			string actual1 = ((double)x).ToString();
+			string actual2 = ((decimal)x).ToString();
+
+			string expected = "1.5";
+
+			Assert.AreEqual(expected, actual1);
+			Assert.AreEqual(expected, actual2);
+		}
+
+		[Test]
+		public void TestCultureChangedAfterFirstUseBug002()
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");
+			_ = new BigDecimal(1).ToString();                                    // first use captures de-DE
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("en-US");   // e.g. the next web request
+
+			BigDecimal x = new BigDecimal(new BigInteger(15), -1);   // 1.5
+
+			string actual1 = ((double)x).ToString();
+			string actual2 = ((decimal)x).ToString();
+
+			string expected = "1.5";
+
+			Assert.AreEqual(expected, actual1, "double");
+			Assert.AreEqual(expected, actual2, "decimal");
+		}
+
+		[Test]
+		public void TestCultureChangedAfterFirstUseBug003()
+		{
+			Thread.CurrentThread.CurrentCulture = CultureInfo.GetCultureInfo("de-DE");   // before the first use of BigDecimal
+
+			static BigDecimal D(long mantissa, int scale) => new BigDecimal(new BigInteger(mantissa), scale);
+
+			string actual1 = (BigDecimal.Round(D(6366, -4))).ToString();      // 0.6366 -> prints 0, expected 1
+			string actual2 = (BigDecimal.Round(D(15, -1))).ToString();        // 1.5    -> prints 1, expected 2
+			string actual3 = (D(15, -1).GetFractionalPart()).ToString();      // 1.5    -> prints 0, expected 0,5
+			string actual4 = ((double)BigDecimal.Sin(D(2, 0))).ToString();    // expected  0.9093, prints -0.9093
+			string actual5 = ((double)BigDecimal.Cos(D(12, -1))).ToString();  // expected  0.3624, prints -0.3624
+			string actual6 = ((double)BigDecimal.Tan(D(-12, -1))).ToString(); // expected -2.5722, prints  2.5722
+
+			StringAssert.StartsWith("1", actual1);
+			StringAssert.StartsWith("2", actual2);
+			StringAssert.StartsWith("0,5", actual3);
+			StringAssert.StartsWith("0,9092", actual4.Substring(0, 6));
+			StringAssert.StartsWith("0,3623", actual5.Substring(0, 6));
+			StringAssert.StartsWith("-2,5721", actual6.Substring(0, 7));
 		}
 	}
 

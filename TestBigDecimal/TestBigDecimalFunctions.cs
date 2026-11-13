@@ -429,13 +429,13 @@ namespace TestBigDecimal
 			BigDecimal parsed8 = new BigDecimal(-3, -1);
 
 			var expected1 = TestBigDecimalHelper.PrepareValue("0.1415926535", this.Format);
-			var expected2 = TestBigDecimalHelper.PrepareValue("0.1415926535", this.Format);
+			var expected2 = TestBigDecimalHelper.PrepareValue("-0.1415926535", this.Format);
 			var expected3 = TestBigDecimalHelper.PrepareValue("0.000031415926535", this.Format);
-			var expected4 = TestBigDecimalHelper.PrepareValue("0.000031415926535", this.Format);
+			var expected4 = TestBigDecimalHelper.PrepareValue("-0.000031415926535", this.Format);
 			var expected5 = "0";
 			var expected6 = "0";
 			var expected7 = TestBigDecimalHelper.PrepareValue("0.3", this.Format);
-			var expected8 = TestBigDecimalHelper.PrepareValue("0.3", this.Format);
+			var expected8 = TestBigDecimalHelper.PrepareValue("-0.3", this.Format);
 
 			var result1 = parsed1.GetFractionalPart();
 			var result2 = parsed2.GetFractionalPart();

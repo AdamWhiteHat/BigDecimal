@@ -155,6 +155,11 @@ namespace ExtendedNumerics
 		/// <returns>The tangent of <paramref name="radians"/>, in radians.</returns>
 		public static BigDecimal Tan(BigDecimal radians, int precision)
 		{
+			if(radians == BigDecimal.Zero)
+			{
+				return BigDecimal.Zero;
+			}
+
 			BigDecimal mod = Normalize(Mod(radians, TrigonometricHelper.HalfPi));
 			if (mod.IsZero())
 			{
