@@ -92,6 +92,39 @@ namespace TestBigDecimal
 		}
 
 		[Test]
+		public void TestConstructor_Decimal002()
+		{
+			decimal tiny = -0.0000000000000000000000000001m;  // -1E-28
+			var bdTiny = new BigDecimal(tiny);
+
+			string actual = bdTiny.ToString();
+			string expected = "-0.0000000000000000000000000001";
+
+			TestContext.WriteLine(expected);
+			TestContext.WriteLine(actual);
+
+			// .NET 10: -0.0000000000000000000000000001
+			// .NET 11: 0   (Mantissa = 0, Exponent = -28)
+			Assert.AreEqual(expected, actual);
+		}
+
+		[Test]
+		public void TestConstructor_Decimal003()
+		{
+			decimal d = 0.4362824299065688035384139251m;                // scale 28
+			BigDecimal b = d;                                           // implicit conversion
+
+			bool actual = (decimal)b == d;
+			bool expected = true;
+
+			TestContext.WriteLine(b);
+
+			// .NET 10: True
+			// .NET 11: False; the last digits differ from d
+			Assert.AreEqual(expected, actual, b.ToString());
+		}
+
+		[Test]
 		public void TestConstructor_Float()
 		{
 			string expected1 = "0.3486328";
@@ -110,15 +143,15 @@ namespace TestBigDecimal
 		[Test]
 		public void TestConstructor_Double()
 		{
-			//TestConstructor_Double("0", 0);
-			//TestConstructor_Double("0", 0.0);
-			////TestConstructor_Double("0", -0.0);
-			//
-			//TestConstructor_Double("7976931348623157", 7976931348623157);
-			//TestConstructor_Double("-7976931348623157", -7976931348623157);
-			//
-			//TestConstructor_Double("1000000000000000", 1000000000000000);
-			//TestConstructor_Double("-1000000000000000", -1000000000000000);
+			TestConstructor_Double("0", 0);
+			TestConstructor_Double("0", 0.0);
+			TestConstructor_Double("0", -0.0);
+
+			TestConstructor_Double("7976931348623157", 7976931348623157);
+			TestConstructor_Double("-7976931348623157", -7976931348623157);
+
+			TestConstructor_Double("1000000000000000", 1000000000000000);
+			TestConstructor_Double("-1000000000000000", -1000000000000000);
 
 			TestConstructor_Double("1.7976931348623157", 1.7976931348623157);
 			TestConstructor_Double("-1.7976931348623157", -1.7976931348623157);

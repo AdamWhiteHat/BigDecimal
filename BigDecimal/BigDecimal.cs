@@ -106,10 +106,14 @@ namespace ExtendedNumerics
 		/// <summary>Initializes a new instance of <see cref="BigDecimal" /> from a <see cref="Decimal"/>.</summary>
 		public BigDecimal(Decimal value)
 		{
-			Int32 exponent = ((Decimal.GetBits(value)[3] & DecimalScaleMask) >> 16);
-			decimal value_scaled = value * (decimal)Math.Pow(10, exponent);
-			this.Mantissa = new BigInteger(value_scaled);
-			this.Exponent = -exponent;
+			int[] bits = Decimal.GetBits(value);
+			BigInteger mantissa = (new BigInteger((uint)bits[2]) << 64) | (new BigInteger((uint)bits[1]) << 32) | (uint)bits[0];
+			if (bits[3] < 0)
+			{
+				mantissa = BigInteger.Negate(mantissa);
+			}
+			this.Mantissa = mantissa;
+			this.Exponent = -((bits[3] & DecimalScaleMask) >> 16);
 		}
 
 		#endregion

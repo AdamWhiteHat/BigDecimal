@@ -753,8 +753,8 @@ namespace TestBigDecimal
 		[Test]
 		public void TestSubtraction004()
 		{
-			BigDecimal high = (Decimal)100.3;
-			BigDecimal low = (Decimal)0.3;
+			BigDecimal high = Decimal.Parse("100.3");
+			BigDecimal low = Decimal.Parse("0.3");
 
 			string expected = "100";
 			BigDecimal actual = BigDecimal.Subtract(high, low);

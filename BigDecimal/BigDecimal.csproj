@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFrameworks>net45;net46;net472;net48;netstandard2.0;netstandard2.1;netcoreapp3.1;net5.0;net6.0;net7.0;net8.0</TargetFrameworks>
+		<TargetFrameworks>net45;net46;net472;net48;netstandard2.0;netstandard2.1;netcoreapp3.1;net5.0;net6.0;net7.0;net8.0;net9.0;net10.0;net11.0</TargetFrameworks>
 		<PlatformTarget>AnyCPU</PlatformTarget>
 		<OutputType>Library</OutputType>
 		<Nullable>annotations</Nullable>
@@ -34,7 +34,7 @@
 	<PropertyGroup>
 		<MajorVersion Condition=" '$(MajorVersion)' == '' ">3004</MajorVersion>
 		<MinorVersion Condition=" '$(MinorVersion)' == '' ">0</MinorVersion>
-		<PatchVersion Condition=" '$(PatchVersion)' == '' ">0</PatchVersion>
+		<PatchVersion Condition=" '$(PatchVersion)' == '' ">1</PatchVersion>
 
 		<BuildTimestamp>$([System.DateTime]::Now.DayOfYear.ToString().PadLeft(3,'0'))</BuildTimestamp>
 
@@ -43,7 +43,8 @@
 		<PackageVersion>$(AssemblyVersion)</PackageVersion>
 
 		<PackageReleaseNotes>
-			Breaking Change: BigDecimal.GetFractionalPart() now returns a negative value for negative numbers. While this technically is correcting faulty behavior and so is technically a bug fix and not a breaking change, it is changing the behavior that people could be relying on, so I wanted to draw attention to it by bumping the major version.
+			Added Target Frameworks: .NET 10 and .NET 11
+			Minor changes to the way Decimal to BigDecimal conversion works to account for the change in the way decimal is stored in .NET 11
 		</PackageReleaseNotes>
 	</PropertyGroup>
 
